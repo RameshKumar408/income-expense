@@ -40,15 +40,13 @@ export default function Home() {
   };
 
   const handleDateChange = (date) => {
-    console.log("🚀 ~ handleDateChange ~ date:", `${date?.$D}-${date?.$M + 1}-${date?.$y}`)
-    setSelectedDate(`${date?.$D}-${date?.$M + 1}-${date?.$y}`);
+    setSelectedDate(`${date?.$y}-${date?.$M + 1}-${date?.$D}`);
     setSelectedDateError()
   };
 
   const handleSubmit = async (e) => {
     try {
       e?.preventDefault();
-      console.log('Topic: ', topic, 'Amount: ', amount, 'Date: ', selectedDate);
       if ((selectedDate == "") || (selectedDate == undefined)) {
         setSelectedDateError("Please Select A Date");
       } else if (topic == "") {
@@ -65,9 +63,7 @@ export default function Home() {
           },
           body: JSON.stringify({ Title: topic, Amount: amount, Type: type, Date: selectedDate }),
         });
-        console.log(res?.ok, "res")
         if (res?.ok) {
-          console.log("success")
           router.push("/");
           window.location.reload();
         } else {

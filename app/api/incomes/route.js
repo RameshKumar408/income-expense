@@ -3,7 +3,6 @@ import Income from "../../../modules/income";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
-    console.log("POST request")
     const { Title, Amount, Type, Date } = await request.json();
     await connectMongoDB();
     await Income.create({ Title, Amount, Type, Date });
