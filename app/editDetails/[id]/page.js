@@ -69,6 +69,7 @@ export default function Home({ params }) {
             setAmount(resp?.topics?.Amount)
             setType(resp?.topics?.Type)
             setSelectedDate(resp?.topics?.Date)
+            setTimeStamp(resp?.topics?.TimeStamp)
         }
     }
 

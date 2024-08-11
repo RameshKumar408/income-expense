@@ -45,6 +45,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export default function Page() {
 
     const [datas, setDatas] = useState()
+    const [totalcount, setTotalCount] = useState("")
 
     const [from, setFrom] = useState("")
     const [to, setTo] = useState("")
@@ -57,11 +58,13 @@ export default function Page() {
         var month = date?.$M + 1 >= 10 ? date?.$M + 1 : `0${date?.$M + 1}`
         var dates = date?.$D >= 10 ? date?.$D : `0${date?.$D}`
         if (type == "From") {
+            setFrom(`${year}-${month}-${dates}`)
             const dateString = `${year}-${month}-${dates}`;
             const dateObject = new Date(dateString);
             const timestamp = dateObject.getTime();
             setFromTimestamp(timestamp)
         } else {
+            setTo(`${year}-${month}-${dates}`)
             const dateString = `${year}-${month}-${dates}`;
             const dateObject = new Date(dateString);
             const timestamp = dateObject.getTime();
@@ -85,6 +88,12 @@ export default function Page() {
             }
             var top = await res.json()
             setDatas(top?.topics)
+            if (top?.totalCount?.length > 0) {
+                setTotalCount(top?.totalCount[0])
+            } else {
+                setTotalCount("")
+            }
+
         } catch (error) {
             console.log("Error loading topics: ", error);
         }
@@ -146,7 +155,9 @@ export default function Page() {
             <Link href="/">
                 <Button variant="outlined">Back</Button>
             </Link>
-
+            <div style={{ marginTop: "10px" }}>
+                <Button variant="outlined" onClick={() => { getTodayTimeStamp() }}>ReSet</Button>
+            </div >
             <div style={{ marginTop: "10px" }}>
                 <div>From</div>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -175,6 +186,17 @@ export default function Page() {
 
                     </DemoContainer>
                 </LocalizationProvider>
+            </div>
+            <div style={{ marginTop: "10px" }}>
+                <div>
+                    Total Income: {totalcount?.totalIncome}
+                </div>
+                <div>
+                    Total Expense: {totalcount?.totalExpense}
+                </div>
+                <div>
+                    Balance: {totalcount?.netIncome}
+                </div>
             </div>
             <div style={{ marginTop: '20px' }}>
                 <TableContainer component={Paper}>
