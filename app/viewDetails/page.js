@@ -19,6 +19,8 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 
+import constant from '../../constant'
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: theme.palette.common.black,
@@ -60,7 +62,7 @@ export default function Page() {
     const getDetails = async () => {
         try {
             setDatas([])
-            const res = await fetch("http://localhost:3000/api/incomes", {
+            const res = await fetch(`${constant?.Live_url}/api/incomes`, {
                 cache: "no-store",
             });
 
@@ -80,7 +82,7 @@ export default function Page() {
     }, [])
 
     const removeTopic = async (id) => {
-        const res = await fetch(`http://localhost:3000/api/incomes?id=${id}`, {
+        const res = await fetch(`${constant?.Live_url}/api/ incomes?id=${id}`, {
             method: "DELETE",
         });
         console.log(res, "res")
