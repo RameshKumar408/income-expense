@@ -22,12 +22,12 @@ import constant from '@/constant';
 
 
 export default function Home({ params }) {
-    console.log("🚀 ~ Home ~ id:", params)
 
     const [selectedDate, setSelectedDate] = useState();
     const [topic, setTopic] = useState('');
     const [amount, setAmount] = useState('');
     const [type, setType] = useState('');
+    const [TimeStamp, setTimeStamp] = useState('');
 
     const [selectedDateError, setSelectedDateError] = useState('')
     const [topicError, setTopicError] = useState('')
@@ -42,7 +42,16 @@ export default function Home({ params }) {
     };
 
     const handleDateChange = (date) => {
-        setSelectedDate(`${date?.$y}-${date?.$M + 1}-${date?.$D}`);
+        var year = date?.$y
+        var month = date?.$M + 1 >= 10 ? date?.$M + 1 : `0${date?.$M + 1}`
+        var dates = date?.$D >= 10 ? date?.$D : `0${date?.$D}`
+        setSelectedDate(`${year}-${month}-${dates}`);
+
+        const dateString = `${year}-${month}-${dates}`;
+        const dateObject = new Date(dateString);
+        const timestamp = dateObject.getTime();
+        setTimeStamp(timestamp)
+
         setSelectedDateError()
     };
 
@@ -87,7 +96,7 @@ export default function Home({ params }) {
                     headers: {
                         "Content-type": "application/json",
                     },
-                    body: JSON.stringify({ Id: params?.id, Title: topic, Amount: amount, Type: type, Date: selectedDate }),
+                    body: JSON.stringify({ Id: params?.id, Title: topic, Amount: amount, Type: type, Date: selectedDate, TimeStamp: TimeStamp }),
                 });
                 if (res?.ok) {
                     router.push("/viewDetails");

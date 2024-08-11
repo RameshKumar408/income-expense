@@ -5,7 +5,8 @@ const topicSchema = new Schema(
         Title: String,
         Amount: Number,
         Type: String,
-        Date: String
+        Date: String,
+        TimeStamp: Number
     },
     {
         timestamps: true,

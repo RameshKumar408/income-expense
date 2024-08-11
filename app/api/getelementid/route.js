@@ -11,8 +11,8 @@ export async function POST(request) {
 }
 
 export async function PUT(request) {
-    const { Id, Title, Amount, Type, Date } = await request.json();
+    const { Id, Title, Amount, Type, Date, TimeStamp } = await request.json();
     await connectMongoDB();
-    await Income.findOneAndUpdate({ _id: Id }, { Title, Amount, Type, Date });
+    await Income.findOneAndUpdate({ _id: Id }, { Title, Amount, Type, Date, TimeStamp });
     return NextResponse.json({ message: "Updated Successfully" }, { status: 200 });
 }

@@ -3,9 +3,9 @@ import Income from "../../../modules/income";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
-    const { Title, Amount, Type, Date } = await request.json();
+    const { Title, Amount, Type, Date, TimeStamp } = await request.json();
     await connectMongoDB();
-    await Income.create({ Title, Amount, Type, Date });
+    await Income.create({ Title, Amount, Type, Date, TimeStamp });
     return NextResponse.json({ message: "Topic Created", status: true }, { status: 200 });
 }
 

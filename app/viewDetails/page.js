@@ -20,6 +20,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 
 import constant from '../../constant'
+import dayjs from 'dayjs';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -45,13 +46,38 @@ export default function Page() {
 
     const [datas, setDatas] = useState()
 
-    const router = useRouter();
+    const [from, setFrom] = useState("")
+    const [to, setTo] = useState("")
+
+    const [fromTimestamp, setFromTimestamp] = useState()
+    const [toTimestamp, setToTimestamp] = useState()
+
+    const handleDateChange = (date, type) => {
+        var year = date?.$y
+        var month = date?.$M + 1 >= 10 ? date?.$M + 1 : `0${date?.$M + 1}`
+        var dates = date?.$D >= 10 ? date?.$D : `0${date?.$D}`
+        if (type == "From") {
+            const dateString = `${year}-${month}-${dates}`;
+            const dateObject = new Date(dateString);
+            const timestamp = dateObject.getTime();
+            setFromTimestamp(timestamp)
+        } else {
+            const dateString = `${year}-${month}-${dates}`;
+            const dateObject = new Date(dateString);
+            const timestamp = dateObject.getTime();
+            setToTimestamp(timestamp)
+        }
+    };
 
     const getDetails = async () => {
         try {
             setDatas([])
-            const res = await fetch(`${constant?.Live_url}/api/incomes`, {
-                cache: "no-store",
+            const res = await fetch(`${constant?.Live_url}/api/getDateRange`, {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json",
+                },
+                body: JSON.stringify({ From: fromTimestamp, To: toTimestamp }),
             });
 
             if (!res.ok) {
@@ -62,11 +88,49 @@ export default function Page() {
         } catch (error) {
             console.log("Error loading topics: ", error);
         }
+    };
+
+    const getTodayTimeStamp = async () => {
+        try {
+            const currentDate = new Date();
+
+            // Get the first date of the current month
+            const firstDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+            // Get the last date of the current month
+            const lastDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+            // Convert to timestamps
+
+            var fromyear = firstDate?.getFullYear()
+            var frommonth = firstDate?.getMonth() + 1 >= 10 ? firstDate?.getMonth() + 1 : `0${firstDate?.getMonth() + 1}`
+            var fromdat = firstDate?.getDate() >= 10 ? firstDate?.getDate() : `0${firstDate?.getDate()}`
+            setFrom(`${fromyear}-${frommonth}-${fromdat}`)
+
+
+            var toyear = lastDate?.getFullYear()
+            var tomonth = lastDate?.getMonth() + 1 >= 10 ? lastDate?.getMonth() + 1 : `0${lastDate?.getMonth() + 1}`
+            var todat = lastDate?.getDate() >= 10 ? lastDate?.getDate() : `0${lastDate?.getDate()}`
+            setTo(`${toyear}-${tomonth}-${todat}`)
+
+            const firstDateTimestamp = firstDate.getTime();
+            const lastDateTimestamp = lastDate.getTime();
+            setFromTimestamp(firstDateTimestamp)
+            setToTimestamp(lastDateTimestamp)
+        } catch (error) {
+            console.log("🚀 ~ getTodayTimeStamp ~ error:", error)
+        }
     }
 
     useEffect(() => {
-        getDetails()
-    }, [])
+        getTodayTimeStamp()
+    }, []);
+
+    useEffect(() => {
+        if (fromTimestamp && toTimestamp) {
+            getDetails()
+        }
+    }, [fromTimestamp, toTimestamp]);
 
     const removeTopic = async (id) => {
         const res = await fetch(`${constant?.Live_url}/api/incomes?id=${id}`, {
@@ -87,7 +151,13 @@ export default function Page() {
                 <div>From</div>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={['DatePicker']}>
-                        <DatePicker label="Basic date picker" />
+                        {
+                            from != "" ?
+                                <DatePicker label="Basic date picker" value={dayjs(from)} onChange={(e) => { handleDateChange(e, "From") }} />
+                                :
+                                <DatePicker label="Basic date picker" onChange={(e) => { handleDateChange(e, "From") }} />
+                        }
+
                     </DemoContainer>
                 </LocalizationProvider>
             </div>
@@ -96,7 +166,13 @@ export default function Page() {
                 <div>To</div>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DemoContainer components={['DatePicker']}>
-                        <DatePicker label="Basic date picker" />
+                        {
+                            to != "" ?
+                                <DatePicker label="Basic date picker" value={dayjs(to)} onChange={(e) => { handleDateChange(e, "To") }} />
+                                :
+                                <DatePicker label="Basic date picker" onChange={(e) => { handleDateChange(e, "To") }} />
+                        }
+
                     </DemoContainer>
                 </LocalizationProvider>
             </div>
