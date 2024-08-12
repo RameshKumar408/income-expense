@@ -54,6 +54,22 @@ export default function Page() {
         }
     }
 
+    function getMonthSortNameAndTwoDigitDate(timestamp) {
+        // Create a Date object from the timestamp
+        const date = new Date(timestamp);
+
+        // Get the day of the month and format it as a two-digit number
+        const day = String(date.getDate()).padStart(2, '0'); // Ensures two digits
+
+        // Get the month name (short format)
+        const options = { month: 'short' }; // 'short' gives abbreviated month names
+        const monthName = date.toLocaleDateString('en-US', options); // Format the date
+
+        // Combine month name and two-digit day
+        return `${monthName} ${day}`; // e.g., "Jan 10" becomes "Jan 10"
+    }
+
+
     const [datas, setDatas] = useState()
     const [totalcount, setTotalCount] = useState("")
 
@@ -142,6 +158,32 @@ export default function Page() {
         }
     };
 
+    const SendEmail = async () => {
+        try {
+            // setDatas([])
+            const res = await fetch(`${constant?.Live_url}/api/sendMail`, {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json",
+                },
+                body: JSON.stringify({ From: fromTimestamp, To: toTimestamp }),
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to fetch topics");
+            }
+            console.log(res, "res")
+            if (res.ok) {
+                console.log(await res.json())
+            } else {
+                console.log(await res.json())
+            }
+
+        } catch (error) {
+            console.log("Error loading topics: ", error);
+        }
+    };
+
     const getTodayTimeStamp = async () => {
         try {
             const currentDate = new Date();
@@ -205,6 +247,11 @@ export default function Page() {
             <div style={{ marginTop: "10px" }}>
                 <Button variant="outlined" onClick={() => { Export() }}>Export</Button>
             </div >
+
+            <div style={{ marginTop: "10px" }}>
+                <Button variant="outlined" onClick={() => { SendEmail() }}>SendEmail</Button>
+            </div >
+
             <div style={{ marginTop: "10px" }}>
                 <div>From</div>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -262,7 +309,7 @@ export default function Page() {
 
 
                                     <StyledTableCell >
-                                        <div style={{ fontSize: "17px" }}>{row?.Type}</div>
+                                        <div style={{ fontSize: "17px" }}> {row?.Type} </div>
                                         <div style={{ fontSize: "15px" }}>  {row?.Title}</div>
                                     </StyledTableCell>
 
@@ -271,12 +318,14 @@ export default function Page() {
                                             row?.Type == "Income" ?
                                                 <StyledTableCell >
                                                     <div style={{ color: "green", fontSize: "17px" }}> +{formatIndianNumber(row.Amount)}</div>
-                                                    <div style={{ fontSize: "15px" }}>  {row.Date}</div>
+                                                    {/* <div style={{ fontSize: "15px" }}>  {`${row.Date?.split('-')[1]}-${row.Date?.split('-')[2]}`}</div> */}
+                                                    <div style={{ fontSize: "15px" }}>  {getMonthSortNameAndTwoDigitDate(row?.TimeStamp)}</div>
                                                 </StyledTableCell>
                                                 :
                                                 <StyledTableCell >
                                                     <div style={{ color: "red", fontSize: "17px" }}> -{formatIndianNumber(row.Amount)}</div>
-                                                    <div style={{ fontSize: "15px" }}>  {row.Date}</div>
+                                                    {/* <div style={{ fontSize: "15px" }}>  {`${row.Date?.split('-')[1]}-${row.Date?.split('-')[2]}`}</div> */}
+                                                    <div style={{ fontSize: "15px" }}>   {getMonthSortNameAndTwoDigitDate(row?.TimeStamp)}</div>
                                                 </StyledTableCell>
                                         }
                                     </StyledTableCell>
