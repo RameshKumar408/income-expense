@@ -44,6 +44,16 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function Page() {
 
+    function formatIndianNumber(num) {
+        if (num) {
+            const numString = num?.toString();
+            const lastThreeDigits = numString?.slice(-3);
+            const otherDigits = numString?.slice(0, -3);
+            const formatted = otherDigits?.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + (otherDigits ? "," : "") + lastThreeDigits;
+            return formatted;
+        }
+    }
+
     const [datas, setDatas] = useState()
     const [totalcount, setTotalCount] = useState("")
 
@@ -92,6 +102,39 @@ export default function Page() {
                 setTotalCount(top?.totalCount[0])
             } else {
                 setTotalCount("")
+            }
+
+        } catch (error) {
+            console.log("Error loading topics: ", error);
+        }
+    };
+
+    const Export = async () => {
+        try {
+            // setDatas([])
+            const res = await fetch(`${constant?.Live_url}/api/export`, {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json",
+                },
+                body: JSON.stringify({ From: fromTimestamp, To: toTimestamp }),
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to fetch topics");
+            }
+            if (res.ok) {
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'income_data.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } else {
+                const errorData = await res.json();
+                alert(errorData.message || 'Failed to download data');
             }
 
         } catch (error) {
@@ -158,6 +201,10 @@ export default function Page() {
             <div style={{ marginTop: "10px" }}>
                 <Button variant="outlined" onClick={() => { getTodayTimeStamp() }}>ReSet</Button>
             </div >
+
+            <div style={{ marginTop: "10px" }}>
+                <Button variant="outlined" onClick={() => { Export() }}>Export</Button>
+            </div >
             <div style={{ marginTop: "10px" }}>
                 <div>From</div>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -189,59 +236,55 @@ export default function Page() {
             </div>
             <div style={{ marginTop: "10px" }}>
                 <div>
-                    Total Income: {totalcount?.totalIncome}
+                    Total Income: {formatIndianNumber(totalcount?.totalIncome)}
                 </div>
                 <div>
-                    Total Expense: {totalcount?.totalExpense}
+                    Total Expense: {formatIndianNumber(totalcount?.totalExpense)}
                 </div>
                 <div>
-                    Balance: {totalcount?.netIncome}
+                    Balance: {formatIndianNumber(totalcount?.netIncome)}
                 </div>
             </div>
             <div style={{ marginTop: '20px' }}>
                 <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                        <TableHead>
+                    <Table aria-label="customized table">
+                        {/* <TableHead>
                             <TableRow>
                                 <StyledTableCell>Date</StyledTableCell>
                                 <StyledTableCell >Income</StyledTableCell>
                                 <StyledTableCell >Expense</StyledTableCell>
                                 <StyledTableCell >Action</StyledTableCell>
                             </TableRow>
-                        </TableHead>
+                        </TableHead> */}
                         <TableBody>
                             {datas?.length > 0 && datas?.map((row) => (
                                 <StyledTableRow key={row._id}>
-                                    <StyledTableCell>
-                                        {row.Date}
+
+
+                                    <StyledTableCell >
+                                        <div style={{ fontSize: "17px" }}>{row?.Type}</div>
+                                        <div style={{ fontSize: "15px" }}>  {row?.Title}</div>
                                     </StyledTableCell>
-                                    {
-                                        row?.Type == "Income" ?
-                                            <StyledTableCell >
-                                                <div>  {row?.Title}</div>
-                                                <div> {row.Amount}</div>
-                                            </StyledTableCell>
-                                            :
-                                            <StyledTableCell >
-                                            </StyledTableCell>
-                                    }
+
                                     <StyledTableCell >
                                         {
-                                            row?.Type != "Income" ?
+                                            row?.Type == "Income" ?
                                                 <StyledTableCell >
-                                                    <div>  {row?.Title}</div>
-                                                    <div> {row.Amount}</div>
+                                                    <div style={{ color: "green", fontSize: "17px" }}> +{formatIndianNumber(row.Amount)}</div>
+                                                    <div style={{ fontSize: "15px" }}>  {row.Date}</div>
                                                 </StyledTableCell>
                                                 :
                                                 <StyledTableCell >
+                                                    <div style={{ color: "red", fontSize: "17px" }}> -{formatIndianNumber(row.Amount)}</div>
+                                                    <div style={{ fontSize: "15px" }}>  {row.Date}</div>
                                                 </StyledTableCell>
                                         }
                                     </StyledTableCell>
 
-                                    <StyledTableCell>
+                                    {/* <StyledTableCell>
                                         <Button variant="outlined" onClick={() => { removeTopic(row?._id) }} >Delete</Button>
                                         <Link href={`/editDetails/${row?._id}`}> <Button variant="outlined" >Edit</Button></Link>
-                                    </StyledTableCell>
+                                    </StyledTableCell> */}
                                 </StyledTableRow>
                             ))}
                         </TableBody>
