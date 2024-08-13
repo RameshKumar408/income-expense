@@ -25,11 +25,11 @@ export async function POST(request) {
 
         // Set up nodemailer transporter
         const transporter = nodemailer.createTransport({
-            host: "smtp-relay.brevo.com", // Replace with your SMTP server
-            port: 587, // Replace with your SMTP port
+            host: process.env.HOST, // Replace with your SMTP server
+            port: process.env.PORT, // Replace with your SMTP port
             auth: {
-                user: '7a3f18002@smtp-brevo.com', // Replace with your email
-                pass: 'jT7LQZXFhyOKt2q8', // Replace with your email password
+                user: process.env.USER, // Replace with your email
+                pass: process.env.PASS, // Replace with your email password
             },
         });
 
