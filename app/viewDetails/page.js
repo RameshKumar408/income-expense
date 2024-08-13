@@ -22,6 +22,10 @@ import { useRouter } from "next/navigation";
 import constant from '../../constant'
 import dayjs from 'dayjs';
 
+import DoughnutChart from '../donughtChart/page'
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: theme.palette.common.black,
@@ -69,7 +73,7 @@ export default function Page() {
         return `${monthName} ${day}`; // e.g., "Jan 10" becomes "Jan 10"
     }
 
-
+    var route = useRouter()
     const [datas, setDatas] = useState()
     const [totalcount, setTotalCount] = useState("")
 
@@ -237,7 +241,7 @@ export default function Page() {
 
     return (
         <>
-            <Link href="/">
+            <Link href="/createDetail">
                 <Button variant="outlined">Back</Button>
             </Link>
             <div style={{ marginTop: "10px" }}>
@@ -281,6 +285,7 @@ export default function Page() {
                     </DemoContainer>
                 </LocalizationProvider>
             </div>
+
             <div style={{ marginTop: "10px" }}>
                 <div>
                     Total Income: {formatIndianNumber(totalcount?.totalIncome)}
@@ -292,41 +297,51 @@ export default function Page() {
                     Balance: {formatIndianNumber(totalcount?.netIncome)}
                 </div>
             </div>
+            {
+                totalcount?.totalExpense != undefined && totalcount?.totalIncome != undefined &&
+                <div>
+                    <DoughnutChart datas={[totalcount?.totalExpense ? totalcount?.totalExpense : 50, totalcount?.totalIncome ? totalcount?.totalIncome : 50]} />
+                </div>
+            }
+
+
             <div style={{ marginTop: '20px' }}>
                 <TableContainer component={Paper}>
                     <Table aria-label="customized table">
                         {/* <TableHead>
                             <TableRow>
-                                <StyledTableCell>Date</StyledTableCell>
-                                <StyledTableCell >Income</StyledTableCell>
-                                <StyledTableCell >Expense</StyledTableCell>
-                                <StyledTableCell >Action</StyledTableCell>
+                                <StyledTableCell></StyledTableCell>
+                                <StyledTableCell ></StyledTableCell>
                             </TableRow>
+                              <Button variant="outlined" onClick={() => { removeTopic(row?._id) }} >Delete</Button>
+                                        <Link href={`/editDetails/${row?._id}`}> <Button variant="outlined" >Edit</Button></Link>
                         </TableHead> */}
                         <TableBody>
-                            {datas?.length > 0 && datas?.map((row) => (
-                                <StyledTableRow key={row._id}>
-
-
+                            {datas?.length > 0 ? datas?.map((row) => (
+                                <StyledTableRow key={row._id} onClick={() => { route.push(`/editDetails/${row?._id}`) }}>
                                     <StyledTableCell >
-                                        <div style={{ fontSize: "17px" }}> {row?.Type} </div>
-                                        <div style={{ fontSize: "15px" }}>  {row?.Title}</div>
+                                        <p style={{ fontSize: "17px" }}> {row?.Type} </p>
+                                        <p style={{ fontSize: "15px" }}>  {row?.Title}</p>
                                     </StyledTableCell>
 
                                     <StyledTableCell >
                                         {
                                             row?.Type == "Income" ?
-                                                <StyledTableCell >
-                                                    <div style={{ color: "green", fontSize: "17px" }}> +{formatIndianNumber(row.Amount)}</div>
-                                                    {/* <div style={{ fontSize: "15px" }}>  {`${row.Date?.split('-')[1]}-${row.Date?.split('-')[2]}`}</div> */}
-                                                    <div style={{ fontSize: "15px" }}>  {getMonthSortNameAndTwoDigitDate(row?.TimeStamp)}</div>
-                                                </StyledTableCell>
+                                                // <StyledTableCell >
+                                                <>
+                                                    <p style={{ color: "green", fontSize: "17px" }}> +{formatIndianNumber(row.Amount)}</p>
+                                                    {/* <p style={{ fontSize: "15px" }}>  {`${row.Date?.split('-')[1]}-${row.Date?.split('-')[2]}`}</p> */}
+                                                    <p style={{ fontSize: "15px" }}>  {getMonthSortNameAndTwoDigitDate(row?.TimeStamp)}</p>
+                                                </>
+                                                // </StyledTableCell>
                                                 :
-                                                <StyledTableCell >
-                                                    <div style={{ color: "red", fontSize: "17px" }}> -{formatIndianNumber(row.Amount)}</div>
-                                                    {/* <div style={{ fontSize: "15px" }}>  {`${row.Date?.split('-')[1]}-${row.Date?.split('-')[2]}`}</div> */}
-                                                    <div style={{ fontSize: "15px" }}>   {getMonthSortNameAndTwoDigitDate(row?.TimeStamp)}</div>
-                                                </StyledTableCell>
+                                                // <StyledTableCell >
+                                                <>
+                                                    <p style={{ color: "red", fontSize: "17px" }}> -{formatIndianNumber(row.Amount)}</p>
+                                                    {/* <p style={{ fontSize: "15px" }}>  {`${row.Date?.split('-')[1]}-${row.Date?.split('-')[2]}`}</p> */}
+                                                    <p style={{ fontSize: "15px" }}>   {getMonthSortNameAndTwoDigitDate(row?.TimeStamp)}</p>
+                                                </>
+                                            // </StyledTableCell>
                                         }
                                     </StyledTableCell>
 
@@ -335,11 +350,18 @@ export default function Page() {
                                         <Link href={`/editDetails/${row?._id}`}> <Button variant="outlined" >Edit</Button></Link>
                                     </StyledTableCell> */}
                                 </StyledTableRow>
-                            ))}
+                            ))
+                                :
+                                <TableRow>
+                                    <TableCell colSpan={2} style={{ textAlign: "center" }}>
+                                        <p style={{ fontSize: "17px" }}>No data found</p>
+                                    </TableCell>
+                                </TableRow>
+                            }
                         </TableBody>
                     </Table>
                 </TableContainer>
-            </div>
+            </div >
 
         </>
 
