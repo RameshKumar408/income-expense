@@ -1,4 +1,4 @@
-// import connectMongoDB from "../../../libs/mongodb";
+import connectMongoDB from "../../../libs/mongodb";
 import Users from "../../../modules/users";
 import { NextResponse } from "next/server";
 const bcrypt = require('bcryptjs');
@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 export async function POST(request) {
     const { Name, Email, Password } = await request.json();
     console.log("🚀 ~ POST ~ Email:", Email)
-    // await connectMongoDB();
+    await connectMongoDB();
     const Already = await Users.findOne({ Email: Email });
     console.log("🚀 ~ POST ~ Already:", Already)
     if (Already) {

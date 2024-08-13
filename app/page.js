@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import constant from '@/constant';
-import dbConnect from "../libs/mongodb";
+// import dbConnect from "../libs/mongodb";
 
 
 export default function Home() {

@@ -3,9 +3,10 @@ import Users from "../../../modules/users";
 import { NextResponse } from "next/server";
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+import connectMongoDB from "../../../libs/mongodb";
 
 export async function POST(request) {
+    await connectMongoDB();
     const { Email, Password } = await request.json();
     console.log("🚀 ~ POST ~ Email:", Email)
     const Already = await Users.findOne({ Email: Email }, { Email: 1, Password: 1, Name: 1 });
