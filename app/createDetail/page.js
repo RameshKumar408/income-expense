@@ -85,6 +85,11 @@ export default function Home() {
         }
     }
 
+    const logout = async () => {
+        window.localStorage.removeItem("token")
+        router.push('/')
+    }
+
     return (
         <>
             <div >
@@ -155,6 +160,9 @@ export default function Home() {
                 <Link href="/viewDetails">
                     <Button variant="outlined">ViewDetails</Button>
                 </Link>
+            </div>
+            <div style={{ textAlign: "center", marginTop: "10px" }}>
+                <Button variant="outlined" onClick={() => { logout() }}>Logout</Button>
             </div>
         </>
     );
