@@ -19,6 +19,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import constant from '@/constant';
+import { toast } from 'react-toastify';
 
 
 export default function Home({ params }) {
@@ -56,21 +57,25 @@ export default function Home({ params }) {
     };
 
     const getDetails = async (id) => {
-        const res = await fetch(`${constant?.Live_url}/api/getelementid`, {
-            method: "POST",
-            headers: {
-                "Content-type": "application/json",
-                "authorization": window.localStorage.getItem("token")
-            },
-            body: JSON.stringify({ Id: id }),
-        });
-        var resp = await res?.json();
-        if (resp?.topics) {
-            setTopic(resp?.topics?.Title)
-            setAmount(resp?.topics?.Amount)
-            setType(resp?.topics?.Type)
-            setSelectedDate(resp?.topics?.Date)
-            setTimeStamp(resp?.topics?.TimeStamp)
+        try {
+            const res = await fetch(`${constant?.Live_url}/api/getelementid`, {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json",
+                    "authorization": window.localStorage.getItem("token")
+                },
+                body: JSON.stringify({ Id: id }),
+            });
+            var resp = await res?.json();
+            if (resp?.topics) {
+                setTopic(resp?.topics?.Title)
+                setAmount(resp?.topics?.Amount)
+                setType(resp?.topics?.Type)
+                setSelectedDate(resp?.topics?.Date)
+                setTimeStamp(resp?.topics?.TimeStamp)
+            }
+        } catch (error) {
+
         }
     }
 
@@ -102,14 +107,44 @@ export default function Home({ params }) {
                     body: JSON.stringify({ Id: params?.id, Title: topic, Amount: amount, Type: type, Date: selectedDate, TimeStamp: TimeStamp }),
                 });
                 if (res?.ok) {
-                    router.push("/viewDetails");
+                    toast.success("Updated Successfully");
+                    setTimeout(() => {
+                        router.push("/viewDetails");
+                    }, 1000);
                     // window.location.reload();
                 } else {
+                    toast.error("Something Went Wrong");
                     throw new Error("Failed to create a topic");
                 }
             }
         } catch (error) {
             console.log("🚀 ~ handleSubmit ~ error:", error)
+        }
+    }
+
+    const handleDelete = async () => {
+        try {
+            if (params?.id) {
+                const res = await fetch(`${constant?.Live_url}/api/incomes`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-type": "application/json",
+                        "authorization": window.localStorage.getItem("token")
+                    },
+                    body: JSON.stringify({ id: params?.id }),
+                });
+                if (res?.ok) {
+                    toast.success("Deleted Successfully");
+                    setTimeout(() => {
+                        router.push("/viewDetails");
+                    }, 1000);
+                } else {
+                    toast.error("Something Went Wrong");
+                    console.log("error")
+                }
+            }
+        } catch (error) {
+            console.log("🚀 ~ handleDelete ~ error:", error)
         }
     }
 
@@ -178,6 +213,10 @@ export default function Home({ params }) {
 
             <div style={{ textAlign: "center", marginTop: "10px" }}>
                 <Button variant="outlined" onClick={(e) => { handleSubmit(e) }}>Update</Button>
+            </div>
+
+            <div style={{ textAlign: "center", marginTop: "10px" }}>
+                <Button variant="outlined" onClick={() => { handleDelete() }}>Delete</Button>
             </div>
 
             <div style={{ textAlign: "center", marginTop: "10px" }}>

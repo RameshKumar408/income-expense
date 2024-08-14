@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import constant from '@/constant';
 // import dbConnect from "../libs/mongodb";
-
+import { toast } from 'react-toastify';
 
 export default function Home() {
 
@@ -47,10 +47,12 @@ export default function Home() {
           body: JSON.stringify({ Email: topic, Password: amount }),
         });
         var resps = await res?.json()
-        console.log("🚀 ~ handleSubmit ~ resps:", resps)
         if (resps?.status) {
           window.localStorage.setItem("token", resps?.result)
-          router.push("/createDetail");
+          toast.success("Logged In Successfully");
+          setTimeout(() => {
+            router.push("/createDetail");
+          }, 1000);
         } else {
           if (resps?.email) {
             setTopicError(resps?.email)

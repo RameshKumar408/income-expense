@@ -32,8 +32,14 @@ export async function GET() {
 }
 
 export async function DELETE(request) {
-    const id = request.nextUrl.searchParams.get("id");
-    await connectMongoDB();
-    await Income.findByIdAndDelete(id);
-    return NextResponse.json({ message: "Topic deleted" }, { status: 200 });
+    const headerList = headers()
+    var { success, user } = await validateToken(headerList.get("authorization"))
+    if (success) {
+        const { id } = await request.json();
+        await connectMongoDB();
+        await Income.findOneAndDelete({ _id: id, User_id: user?.userId });
+        return NextResponse.json({ message: "Topic deleted" }, { status: 200 });
+    } else {
+        return NextResponse.json({ message: "UnAuthorized" }, { status: 400 });
+    }
 }

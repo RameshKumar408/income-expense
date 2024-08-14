@@ -17,7 +17,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import constant from '@/constant';
-
+import { toast } from 'react-toastify';
 
 export default function Home() {
 
@@ -50,7 +50,10 @@ export default function Home() {
                 });
                 var resps = await res?.json()
                 if (resps?.status) {
-                    router.push("/");
+                    toast.success("Registred Successfully");
+                    setTimeout(() => {
+                        router.push("/");
+                    }, 1000);
                 } else {
                     setemailError(resps?.message)
                 }
@@ -109,6 +112,10 @@ export default function Home() {
 
             <div style={{ textAlign: "center", marginTop: "10px" }}>
                 <Button variant="outlined" onClick={(e) => { handleSubmit(e) }}>Submit</Button>
+            </div>
+
+            <div style={{ textAlign: "center", marginTop: "10px" }}>
+                <Button variant="outlined" onClick={() => { router.back() }}>Login</Button>
             </div>
         </>
     );

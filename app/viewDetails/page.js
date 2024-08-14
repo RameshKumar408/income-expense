@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 
 import constant from '../../constant'
 import dayjs from 'dayjs';
+import { toast } from 'react-toastify';
 
 import DoughnutChart from '../donughtChart/page'
 import CloseIcon from '@mui/icons-material/Close';
@@ -139,6 +140,7 @@ export default function Page() {
                 method: "POST",
                 headers: {
                     "Content-type": "application/json",
+                    authorization: `${window.localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify({ From: fromTimestamp, To: toTimestamp }),
             });
@@ -172,6 +174,7 @@ export default function Page() {
                 method: "POST",
                 headers: {
                     "Content-type": "application/json",
+                    authorization: `${window.localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify({ From: fromTimestamp, To: toTimestamp }),
             });
@@ -181,11 +184,12 @@ export default function Page() {
             }
             console.log(res, "res")
             if (res.ok) {
+                toast.success("Send Successfully");
                 console.log(await res.json())
             } else {
+                toast.error("Something Went Wrong");
                 console.log(await res.json())
             }
-
         } catch (error) {
             console.log("Error loading topics: ", error);
         }
@@ -303,7 +307,7 @@ export default function Page() {
             {
                 totalcount?.totalExpense != undefined && totalcount?.totalIncome != undefined &&
                 <div>
-                    <DoughnutChart datas={[totalcount?.totalExpense ? totalcount?.totalExpense : 50, totalcount?.totalIncome ? totalcount?.totalIncome : 50]} />
+                    <DoughnutChart datas={[totalcount?.totalExpense ? totalcount?.totalExpense : 0, totalcount?.totalIncome ? totalcount?.totalIncome : 0]} />
                 </div>
             }
 

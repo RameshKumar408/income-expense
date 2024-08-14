@@ -17,11 +17,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import constant from '@/constant';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function Home() {
-
-
     const [selectedDate, setSelectedDate] = useState();
     const [topic, setTopic] = useState('');
     const [amount, setAmount] = useState('');
@@ -74,9 +74,13 @@ export default function Home() {
                     body: JSON.stringify({ Title: topic, Amount: amount, Type: type, Date: selectedDate, TimeStamp: TimeStamp }),
                 });
                 if (res?.ok) {
-                    router.push("/");
-                    window.location.reload();
+                    // router.push("/");
+                    toast.success("Created Successfully");
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
                 } else {
+                    toast.error("Something went wrong");
                     throw new Error("Failed to create a topic");
                 }
             }
