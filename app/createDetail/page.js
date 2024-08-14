@@ -69,6 +69,7 @@ export default function Home() {
                     method: "POST",
                     headers: {
                         "Content-type": "application/json",
+                        "authorization": window.localStorage.getItem("token")
                     },
                     body: JSON.stringify({ Title: topic, Amount: amount, Type: type, Date: selectedDate, TimeStamp: TimeStamp }),
                 });

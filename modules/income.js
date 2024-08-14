@@ -6,7 +6,8 @@ const topicSchema = new Schema(
         Amount: Number,
         Type: String,
         Date: String,
-        TimeStamp: Number
+        TimeStamp: Number,
+        User_id: { type: Schema.Types.ObjectId, ref: "users" },
     },
     {
         timestamps: true,

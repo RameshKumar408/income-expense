@@ -109,20 +109,23 @@ export default function Page() {
                 method: "POST",
                 headers: {
                     "Content-type": "application/json",
+                    authorization: `${window.localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify({ From: fromTimestamp, To: toTimestamp }),
             });
-
-            if (!res.ok) {
-                throw new Error("Failed to fetch topics");
-            }
-            var top = await res.json()
-            setDatas(top?.topics)
-            if (top?.totalCount?.length > 0) {
-                setTotalCount(top?.totalCount[0])
+            console.log(res, "res")
+            if (res.status == 400) {
+                route.push('/')
             } else {
-                setTotalCount("")
+                var top = await res.json()
+                setDatas(top?.topics)
+                if (top?.totalCount?.length > 0) {
+                    setTotalCount(top?.totalCount[0])
+                } else {
+                    setTotalCount("")
+                }
             }
+
 
         } catch (error) {
             console.log("Error loading topics: ", error);

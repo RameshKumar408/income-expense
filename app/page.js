@@ -13,6 +13,16 @@ import constant from '@/constant';
 
 export default function Home() {
 
+
+
+  useEffect(() => {
+    var tokens = window.localStorage.getItem("token")
+    if (tokens) {
+      router.push("/createDetail");
+    }
+  }, [])
+
+
   const [topic, setTopic] = useState('');
   const [amount, setAmount] = useState('');
 

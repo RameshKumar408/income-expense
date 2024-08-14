@@ -60,6 +60,7 @@ export default function Home({ params }) {
             method: "POST",
             headers: {
                 "Content-type": "application/json",
+                "authorization": window.localStorage.getItem("token")
             },
             body: JSON.stringify({ Id: id }),
         });
@@ -96,6 +97,7 @@ export default function Home({ params }) {
                     method: "PUT",
                     headers: {
                         "Content-type": "application/json",
+                        "authorization": window.localStorage.getItem("token")
                     },
                     body: JSON.stringify({ Id: params?.id, Title: topic, Amount: amount, Type: type, Date: selectedDate, TimeStamp: TimeStamp }),
                 });
