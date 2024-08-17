@@ -13,7 +13,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-
+import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -84,6 +84,8 @@ export default function Page() {
     const [fromTimestamp, setFromTimestamp] = useState()
     const [toTimestamp, setToTimestamp] = useState()
 
+    const [searchtext, setsearchtext] = useState("")
+
     const handleDateChange = (date, type) => {
         var year = date?.$y
         var month = date?.$M + 1 >= 10 ? date?.$M + 1 : `0${date?.$M + 1}`
@@ -126,8 +128,6 @@ export default function Page() {
                     setTotalCount("")
                 }
             }
-
-
         } catch (error) {
             console.log("Error loading topics: ", error);
         }
@@ -246,6 +246,47 @@ export default function Page() {
         }
     };
 
+    const searchValues = async () => {
+        try {
+            try {
+                setDatas([])
+                const res = await fetch(`${constant?.Live_url}/api/getDateRange`, {
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json",
+                        authorization: `${window.localStorage.getItem("token")}`,
+                    },
+                    body: JSON.stringify({ From: fromTimestamp, To: toTimestamp, text: searchtext }),
+                });
+                console.log(res, "res")
+                if (res.status == 400) {
+                    route.push('/')
+                } else {
+                    var top = await res.json()
+                    setDatas(top?.topics)
+                    if (top?.totalCount?.length > 0) {
+                        setTotalCount(top?.totalCount[0])
+                    } else {
+                        setTotalCount("")
+                    }
+                }
+            } catch (error) {
+                console.log("Error loading topics: ", error);
+            }
+        } catch (error) {
+            console.log("🚀 ~ searchValues ~ error:", error)
+        }
+    }
+
+    useEffect(() => {
+        if (searchtext?.length >= 3) {
+            console.log("🚀 ~ useEffect ~ searchtext:", searchtext?.length)
+            searchValues()
+        } else if (!searchtext) {
+            getDetails()
+        }
+    }, [searchtext])
+
     return (
         <>
             <Link href="/createDetail">
@@ -311,6 +352,13 @@ export default function Page() {
                 </div>
             }
 
+            <div style={{ marginTop: "10px" }}>
+                <TextField id="outlined-basic" label="Search" variant="outlined" value={searchtext} onChange={(e) => { setsearchtext(e.target.value) }} />
+            </div>
+
+            <div style={{ marginTop: "10px" }}>
+                <Button variant="outlined" onClick={() => { getDetails(); setsearchtext("") }}>Search Reset</Button>
+            </div >
 
             <div style={{ marginTop: '20px' }}>
                 <TableContainer component={Paper}>
