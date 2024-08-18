@@ -16,7 +16,7 @@ import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from "next/navigation";
 
 import constant from '../../constant'
@@ -85,6 +85,7 @@ export default function Page() {
     const [toTimestamp, setToTimestamp] = useState()
 
     const [searchtext, setsearchtext] = useState("")
+    // const searchtext = useRef(null)
 
     const handleDateChange = (date, type) => {
         var year = date?.$y
@@ -248,6 +249,11 @@ export default function Page() {
 
     const searchValues = async () => {
         try {
+            if (searchValues) {
+
+            } else {
+
+            }
             try {
                 setDatas([])
                 const res = await fetch(`${constant?.Live_url}/api/getDateRange`, {
@@ -278,14 +284,6 @@ export default function Page() {
         }
     }
 
-    useEffect(() => {
-        if (searchtext?.length >= 3) {
-            console.log("🚀 ~ useEffect ~ searchtext:", searchtext?.length)
-            searchValues()
-        } else if (!searchtext) {
-            getDetails()
-        }
-    }, [searchtext])
 
     return (
         <>
@@ -354,10 +352,15 @@ export default function Page() {
 
             <div style={{ marginTop: "10px" }}>
                 <TextField id="outlined-basic" label="Search" variant="outlined" value={searchtext} onChange={(e) => { setsearchtext(e.target.value) }} />
+                {/* <TextField id="outlined-basic" label="Search" variant="outlined" inputRef={searchtext} /> */}
             </div>
 
             <div style={{ marginTop: "10px" }}>
-                <Button variant="outlined" onClick={() => { getDetails(); setsearchtext("") }}>Search Reset</Button>
+                <Button variant="outlined" onClick={() => { getDetails(); }}>Search</Button>
+            </div >
+
+            <div style={{ marginTop: "10px" }}>
+                <Button variant="outlined" onClick={() => { getDetails(); setsearchtext() }}>Search Reset</Button>
             </div >
 
             <div style={{ marginTop: '20px' }}>

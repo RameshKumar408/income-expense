@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import constant from '@/constant';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './createdeails.css'
 
 
 export default function Home() {
@@ -57,9 +58,9 @@ export default function Home() {
         try {
             e?.preventDefault();
             if ((selectedDate == "") || (selectedDate == undefined)) {
-                setSelectedDateError("Please Select A Date");
+                setSelectedDateError("Please Select Date");
             } else if (topic == "") {
-                setTopicError("Please Enter topic");
+                setTopicError("Please Enter Topic");
             } else if ((amount == "") || (amount == 0)) {
                 setAmountError("Please Enter Amount")
             } else if (type == "") {
@@ -96,77 +97,65 @@ export default function Home() {
 
     return (
         <>
-            <div >
-                <div style={{ textAlign: "center" }}>Please Select Date</div>
-                <LocalizationProvider dateAdapter={AdapterDayjs} >
-                    <DemoContainer components={['DatePicker']}>
-                        <DatePicker label="Basic date picker" onChange={(e) => { handleDateChange(e) }} />
-                    </DemoContainer>
-                </LocalizationProvider>
-                {selectedDateError ? <div style={{ textAlign: "center", color: "red" }}>{selectedDateError}</div> : <></>}
-            </div>
+            <div className='containers'>
+                <div className='coverDiv'>
+                    <div >
+                        <div style={{ textAlign: "center", fontSize: "20px" }}>Please Select Date</div>
+                        <LocalizationProvider dateAdapter={AdapterDayjs} >
+                            <DemoContainer components={['DatePicker']}>
+                                <DatePicker label="Basic date picker" onChange={(e) => { handleDateChange(e) }} sx={{ width: "100%" }} />
+                            </DemoContainer>
+                        </LocalizationProvider>
+                        {selectedDateError ? <div style={{ textAlign: "center", color: "red" }}>{selectedDateError}</div> : <></>}
+                    </div>
 
-            <div style={{ marginTop: "10px" }}>
-                <div style={{ textAlign: "center" }}>Topic</div>
-                <Box
-                    component="form"
-                    sx={{
-                        '& > :not(style)': { m: 1, width: '28ch' },
-                    }}
-                    noValidate
-                    autoComplete="off"
-                    style={{ textAlign: "center" }}
-                >
-                    <TextField id="outlined-basic" label="Topic" variant="outlined" onChange={(e) => { setTopic(e.target.value); setTopicError("") }} />
-                </Box>
-                {topicError ? <div style={{ textAlign: "center", color: "red" }}>{topicError}</div> : <></>}
-            </div>
+                    <div>
+                        <div style={{ textAlign: "center", fontSize: "20px" }}>Topic</div>
+                        <TextField id="outlined-basic" label="Topic" variant="outlined" onChange={(e) => { setTopic(e.target.value); setTopicError("") }} style={{ width: "100%" }} />
+                        {topicError ? <div style={{ textAlign: "center", color: "red", fontSize: "18px" }}>{topicError}</div> : <></>}
+                    </div>
 
-            <div>
-                <div style={{ textAlign: "center" }}>Amount</div>
-                <Box
-                    component="form"
-                    sx={{
-                        '& > :not(style)': { m: 1, width: '28ch' },
-                    }}
-                    noValidate
-                    autoComplete="off"
-                    style={{ textAlign: "center" }}
-                >
-                    <TextField type='Number' id="outlined-basic" label="Amount" variant="outlined" onChange={(e) => { setAmount(e.target.value); setAmountError() }} />
-                </Box>
-                {amountError ? <div style={{ textAlign: "center", color: "red" }}>{amountError}</div> : <></>}
-            </div>
-            <div>
-                <Box sx={{ minWidth: 120 }}>
-                    <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label">Type</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={type}
-                            label="Age"
-                            onChange={handleChange}
-                        >
-                            <MenuItem value={"Income"}>Income</MenuItem>
-                            <MenuItem value={"Expense"}>Expense</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Box>
-                {typeError ? <div style={{ textAlign: "center", color: "red" }}>{typeError}</div> : <></>}
-            </div>
+                    <div>
+                        <div style={{ textAlign: "center", fontSize: "20px" }}>Amount</div>
 
-            <div style={{ textAlign: "center", marginTop: "10px" }}>
-                <Button variant="outlined" onClick={(e) => { handleSubmit(e) }}>Submit</Button>
-            </div>
+                        <TextField type='Number' id="outlined-basic" label="Amount" variant="outlined" onChange={(e) => { setAmount(e.target.value); setAmountError() }} style={{ width: "100%" }} />
 
-            <div style={{ textAlign: "center", marginTop: "10px" }}>
-                <Link href="/viewDetails">
-                    <Button variant="outlined">ViewDetails</Button>
-                </Link>
-            </div>
-            <div style={{ textAlign: "center", marginTop: "10px" }}>
-                <Button variant="outlined" onClick={() => { logout() }}>Logout</Button>
+                        {amountError ? <div style={{ textAlign: "center", color: "red", fontSize: "18px" }}>{amountError}</div> : <></>}
+                    </div>
+                    <div style={{ marginTop: "10px" }}>
+                        <Box sx={{ minWidth: 120 }}>
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">Type</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={type}
+                                    label="Age"
+                                    onChange={handleChange}
+                                >
+                                    <MenuItem value={"Income"}>Income</MenuItem>
+                                    <MenuItem value={"Expense"}>Expense</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
+                        {typeError ? <div style={{ textAlign: "center", color: "red", fontSize: "18px" }}>{typeError}</div> : <></>}
+                    </div>
+
+                    <div className='btns'>
+                        <div style={{ textAlign: "center", marginTop: "10px" }}>
+                            <Button variant="outlined" onClick={(e) => { handleSubmit(e) }}>Submit</Button>
+                        </div>
+
+                        <div style={{ textAlign: "center", marginTop: "10px" }}>
+                            <Link href="/viewDetails">
+                                <Button variant="outlined">ViewDetails</Button>
+                            </Link>
+                        </div>
+                        <div style={{ textAlign: "center", marginTop: "10px" }}>
+                            <Button variant="outlined" onClick={() => { logout() }}>Logout</Button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </>
     );

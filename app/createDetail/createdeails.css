@@ -1,0 +1,24 @@
+.containers {
+    display: flex;
+    border: 2px solid;
+    flex-direction: column;
+    max-width: 500px;
+    padding: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 35px;
+}
+
+.coverDiv {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}

@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import constant from '@/constant';
 // import dbConnect from "../libs/mongodb";
 import { toast } from 'react-toastify';
+import './loginRegister.css'
 
 export default function Home() {
 
@@ -67,41 +68,69 @@ export default function Home() {
   }
 
   return (
+    // <>
+    //   <div style={{ marginTop: "10px" }}>
+    //     <Box
+    //       component="form"
+    //       sx={{
+    //         '& > :not(style)': { m: 1, width: '28ch' },
+    //       }}
+    //       noValidate
+    //       autoComplete="off"
+    //       style={{ textAlign: "center" }}
+    //     >
+    //       <TextField id="outlined-basic" label="Email" variant="outlined" onChange={(e) => { setTopic(e.target.value); setTopicError("") }} />
+    //     </Box>
+    //     {topicError ? <div style={{ textAlign: "center", color: "red" }}>{topicError}</div> : <></>}
+    //   </div>
+
+    //   <div>
+    //     <Box
+    //       component="form"
+    //       sx={{
+    //         '& > :not(style)': { m: 1, width: '28ch' },
+    //       }}
+    //       noValidate
+    //       autoComplete="off"
+    //       style={{ textAlign: "center" }}
+    //     >
+    //       <TextField id="outlined-basic" label="Password" variant="outlined" onChange={(e) => { setAmount(e.target.value); setAmountError() }} />
+    //     </Box>
+    //     {amountError ? <div style={{ textAlign: "center", color: "red" }}>{amountError}</div> : <></>}
+    //   </div>
+
+    //   <div style={{ textAlign: "center", marginTop: "10px" }}>
+    //     <Button variant="outlined" onClick={(e) => { handleSubmit(e) }}>Submit</Button>
+    //     <Link href={'/register'} >Register</Link>
+    //   </div>
+    // </>
     <>
-      <div style={{ marginTop: "10px" }}>
-        <Box
-          component="form"
-          sx={{
-            '& > :not(style)': { m: 1, width: '28ch' },
-          }}
-          noValidate
-          autoComplete="off"
-          style={{ textAlign: "center" }}
-        >
-          <TextField id="outlined-basic" label="Email" variant="outlined" onChange={(e) => { setTopic(e.target.value); setTopicError("") }} />
-        </Box>
-        {topicError ? <div style={{ textAlign: "center", color: "red" }}>{topicError}</div> : <></>}
-      </div>
+      <div className="content">
+        <div className="container">
+          <img className="bg-img" src="https://mariongrandvincent.github.io/HTML-Personal-website/img-codePen/bg.jpg" alt="" />
 
-      <div>
-        <Box
-          component="form"
-          sx={{
-            '& > :not(style)': { m: 1, width: '28ch' },
-          }}
-          noValidate
-          autoComplete="off"
-          style={{ textAlign: "center" }}
-        >
-          <TextField id="outlined-basic" label="Password" variant="outlined" onChange={(e) => { setAmount(e.target.value); setAmountError() }} />
-        </Box>
-        {amountError ? <div style={{ textAlign: "center", color: "red" }}>{amountError}</div> : <></>}
-      </div>
+          <div className="connexion">
+            <div className="contact-form">
+              <label>EMAIL</label>
+              <input placeholder="" type="text" style={{ color: "black" }} onChange={(e) => { setTopic(e.target.value); setTopicError("") }} />
+              {topicError ? <div style={{ textAlign: "center", color: "#db7777", fontSize: "18px", marginTop: "2%" }}>{topicError}</div> : <></>}
 
-      <div style={{ textAlign: "center", marginTop: "10px" }}>
-        <Button variant="outlined" onClick={(e) => { handleSubmit(e) }}>Submit</Button>
-        <Link href={'/register'} >Register</Link>
+              <label>PASSWORD</label>
+              <input placeholder="" type="text" style={{ color: "black" }} onChange={(e) => { setAmount(e.target.value); setAmountError() }} />
+              {amountError ? <div style={{ textAlign: "center", color: "#db7777", fontSize: "18px", marginTop: "2%" }}>{amountError}</div> : <></>}
+
+              <div className="check">
+                <input className="submit" value="SIGN IN" type="submit" onClick={(e) => { handleSubmit(e) }} />
+              </div>
+            </div>
+
+            <hr />
+            <a href="/register"><h4>Register</h4></a>
+          </div>
+        </div>
       </div>
     </>
-  );
+
+  )
+
 }
