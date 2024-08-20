@@ -249,35 +249,32 @@ export default function Page() {
 
     const searchValues = async () => {
         try {
-            if (searchValues) {
-
-            } else {
-
-            }
-            try {
-                setDatas([])
-                const res = await fetch(`${constant?.Live_url}/api/getDateRange`, {
-                    method: "POST",
-                    headers: {
-                        "Content-type": "application/json",
-                        authorization: `${window.localStorage.getItem("token")}`,
-                    },
-                    body: JSON.stringify({ From: fromTimestamp, To: toTimestamp, text: searchtext }),
-                });
-                console.log(res, "res")
-                if (res.status == 400) {
-                    route.push('/')
-                } else {
-                    var top = await res.json()
-                    setDatas(top?.topics)
-                    if (top?.totalCount?.length > 0) {
-                        setTotalCount(top?.totalCount[0])
+            if (searchtext) {
+                try {
+                    setDatas([])
+                    const res = await fetch(`${constant?.Live_url}/api/getDateRange`, {
+                        method: "POST",
+                        headers: {
+                            "Content-type": "application/json",
+                            authorization: `${window.localStorage.getItem("token")}`,
+                        },
+                        body: JSON.stringify({ From: fromTimestamp, To: toTimestamp, text: searchtext }),
+                    });
+                    console.log(res, "res")
+                    if (res.status == 400) {
+                        route.push('/')
                     } else {
-                        setTotalCount("")
+                        var top = await res.json()
+                        setDatas(top?.topics)
+                        if (top?.totalCount?.length > 0) {
+                            setTotalCount(top?.totalCount[0])
+                        } else {
+                            setTotalCount("")
+                        }
                     }
+                } catch (error) {
+                    console.log("Error loading topics: ", error);
                 }
-            } catch (error) {
-                console.log("Error loading topics: ", error);
             }
         } catch (error) {
             console.log("🚀 ~ searchValues ~ error:", error)
@@ -356,11 +353,11 @@ export default function Page() {
             </div>
 
             <div style={{ marginTop: "10px" }}>
-                <Button variant="outlined" onClick={() => { getDetails(); }}>Search</Button>
+                <Button variant="outlined" onClick={() => { searchValues(); }}>Search</Button>
             </div >
 
             <div style={{ marginTop: "10px" }}>
-                <Button variant="outlined" onClick={() => { getDetails(); setsearchtext() }}>Search Reset</Button>
+                <Button variant="outlined" onClick={() => { getDetails(); setsearchtext("") }}>Search Reset</Button>
             </div >
 
             <div style={{ marginTop: '20px' }}>
@@ -420,7 +417,6 @@ export default function Page() {
                     </Table>
                 </TableContainer>
             </div >
-
         </>
 
     )

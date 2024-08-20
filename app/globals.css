@@ -1,0 +1,5 @@
+.twt-cont {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 71px;
+}

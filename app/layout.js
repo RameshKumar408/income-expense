@@ -14,6 +14,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
+        <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
         <ToastContainer />
         {children}
       </body>
