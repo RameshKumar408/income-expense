@@ -24,8 +24,6 @@ import dayjs from 'dayjs';
 import { toast } from 'react-toastify';
 
 import DoughnutChart from '../donughtChart/page'
-import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -85,6 +83,10 @@ export default function Page() {
     const [toTimestamp, setToTimestamp] = useState()
 
     const [searchtext, setsearchtext] = useState("")
+
+    const [totalIncome, setTotalIncome] = useState(0)
+    const [totalExpense, setTotalExpense] = useState(0)
+    const [balance, setBalance] = useState(0)
     // const searchtext = useRef(null)
 
     const handleDateChange = (date, type) => {
@@ -111,13 +113,13 @@ export default function Page() {
             setDatas([])
             const res = await fetch(`${constant?.Live_url}/api/getDateRange`, {
                 method: "POST",
+                cache: 'no-store',
                 headers: {
                     "Content-type": "application/json",
                     authorization: `${window.localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify({ From: fromTimestamp, To: toTimestamp }),
             });
-            console.log(res, "res")
             if (res.status == 400) {
                 route.push('/')
             } else {
@@ -125,6 +127,9 @@ export default function Page() {
                 setDatas(top?.topics)
                 if (top?.totalCount?.length > 0) {
                     setTotalCount(top?.totalCount[0])
+                    setTotalIncome(formatIndianNumber(top?.totalCount[0]?.totalIncome))
+                    setTotalExpense(formatIndianNumber(top?.totalCount[0]?.totalExpense))
+                    setBalance(formatIndianNumber(top?.totalCount[0]?.netIncome))
                 } else {
                     setTotalCount("")
                 }
@@ -139,6 +144,7 @@ export default function Page() {
             // setDatas([])
             const res = await fetch(`${constant?.Live_url}/api/export`, {
                 method: "POST",
+                cache: 'no-store',
                 headers: {
                     "Content-type": "application/json",
                     authorization: `${window.localStorage.getItem("token")}`,
@@ -173,6 +179,7 @@ export default function Page() {
             // setDatas([])
             const res = await fetch(`${constant?.Live_url}/api/sendMail`, {
                 method: "POST",
+                cache: 'no-store',
                 headers: {
                     "Content-type": "application/json",
                     authorization: `${window.localStorage.getItem("token")}`,
@@ -241,6 +248,7 @@ export default function Page() {
     const removeTopic = async (id) => {
         const res = await fetch(`${constant?.Live_url}/api/incomes?id=${id}`, {
             method: "DELETE",
+            cache: 'no-store',
         });
         if (res?.ok) {
             getDetails()
@@ -254,6 +262,7 @@ export default function Page() {
                     setDatas([])
                     const res = await fetch(`${constant?.Live_url}/api/getDateRange`, {
                         method: "POST",
+                        cache: 'no-store',
                         headers: {
                             "Content-type": "application/json",
                             authorization: `${window.localStorage.getItem("token")}`,
@@ -328,24 +337,26 @@ export default function Page() {
                     </DemoContainer>
                 </LocalizationProvider>
             </div>
-
-            <div style={{ marginTop: "10px" }}>
+            <div style={{ marginTop: "10px", color: "black" }}>
                 <div>
-                    Total Income: {formatIndianNumber(totalcount?.totalIncome)}
+                    Total Income: {totalIncome}
                 </div>
                 <div>
-                    Total Expense: {formatIndianNumber(totalcount?.totalExpense)}
+                    Total Expense: {totalExpense}
                 </div>
                 <div>
-                    Balance: {formatIndianNumber(totalcount?.netIncome)}
+                    Balance: {balance}
                 </div>
             </div>
+
             {
                 totalcount?.totalExpense != undefined && totalcount?.totalIncome != undefined &&
                 <div>
                     <DoughnutChart datas={[totalcount?.totalExpense ? totalcount?.totalExpense : 0, totalcount?.totalIncome ? totalcount?.totalIncome : 0]} />
                 </div>
             }
+
+
 
             <div style={{ marginTop: "10px" }}>
                 <TextField id="outlined-basic" label="Search" variant="outlined" value={searchtext} onChange={(e) => { setsearchtext(e.target.value) }} />
