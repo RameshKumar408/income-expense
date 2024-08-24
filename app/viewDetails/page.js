@@ -293,20 +293,25 @@ export default function Page() {
 
     return (
         <>
-            <Link href="/createDetail">
-                <Button variant="outlined">Back</Button>
-            </Link>
-            <div style={{ marginTop: "10px" }}>
-                <Button variant="outlined" onClick={() => { getTodayTimeStamp() }}>ReSet</Button>
-            </div >
+            <div className='btns-div'>
+                <div style={{ marginTop: "10px" }}>
+                    <Link href="/createDetail">
+                        <Button variant="outlined">Back</Button>
+                    </Link>
+                </div>
+                <div style={{ marginTop: "10px" }}>
+                    <Button variant="outlined" onClick={() => { getTodayTimeStamp() }}>ReSet</Button>
+                </div >
 
-            <div style={{ marginTop: "10px" }}>
-                <Button variant="outlined" onClick={() => { Export() }}>Export</Button>
-            </div >
+                <div style={{ marginTop: "10px" }}>
+                    <Button variant="outlined" onClick={() => { Export() }}>Export</Button>
+                </div >
+            </div>
 
-            <div style={{ marginTop: "10px" }}>
+
+            {/* <div style={{ marginTop: "10px" }}>
                 <Button variant="outlined" onClick={() => { SendEmail() }}>SendEmail</Button>
-            </div >
+            </div > */}
 
             <div style={{ marginTop: "10px" }}>
                 <div>From</div>

@@ -46,8 +46,8 @@ export async function POST(request) {
                 // Send email with attachment
                 console.log(user?.email, " user?.email")
                 const mailOptions = {
-                    from: 'ckramesh0006@gmail.com',
-                    to: user?.email,
+                    from: '7a3f18002@smtp-brevo.com',
+                    to: 'kathiresan6435@gmail.com',
                     subject: 'Excel File Attachment',
                     text: 'Please find the attached Excel file.',
                     attachments: [

@@ -3,3 +3,10 @@
     flex-wrap: wrap;
     gap: 71px;
 }
+
+.btns-div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4%;
+    justify-content: center;
+}
