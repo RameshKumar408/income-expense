@@ -8,10 +8,22 @@ export async function POST(request) {
     const headerList = headers()
     var { success, user } = await validateToken(headerList.get("authorization"))
     if (success) {
-        const { Title, Amount, Type, Date, TimeStamp } = await request.json();
-        await connectMongoDB();
-        await Income.create({ Title, Amount, Type, Date, TimeStamp, User_id: user?.userId });
-        return NextResponse.json({ message: "Topic Created", status: true }, { status: 200 });
+        const { Title, Description, Amount, Type, Date, TimeStamp } = await request.json();
+        if (!Title) {
+            return NextResponse.json({ message: "Please Enter Title", status: false }, { status: 400 });
+        } else if (!Amount) {
+            return NextResponse.json({ message: "Please Enter Amount", status: false }, { status: 400 });
+        } else if (!Type) {
+            return NextResponse.json({ message: "Please Enter Type", status: false }, { status: 400 });
+        } else if (!Date) {
+            return NextResponse.json({ message: "Please Enter Date", status: false }, { status: 400 });
+        } else if (!TimeStamp) {
+            return NextResponse.json({ message: "Please Enter TimeStamp", status: false }, { status: 400 });
+        } else {
+            await connectMongoDB();
+            await Income.create({ Title, Amount, Type, Date, TimeStamp, User_id: user?.userId, Description });
+            return NextResponse.json({ message: "Topic Created", status: true }, { status: 200 });
+        }
     } else {
         return NextResponse.json({ message: "UnAuthorized" }, { status: 400 });
     }

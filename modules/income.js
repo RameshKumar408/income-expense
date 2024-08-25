@@ -7,6 +7,7 @@ const topicSchema = new Schema(
         Type: String,
         Date: String,
         TimeStamp: Number,
+        Description: String,
         User_id: { type: Schema.Types.ObjectId, ref: "users" },
     },
     {
