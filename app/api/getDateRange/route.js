@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 export async function POST(req) {
     const headerList = headers()
     var { success, user } = await validateToken(headerList.get("authorization"))
+    console.log("🚀 ~ POST ~ user:", user)
     if (success) {
         const { From, To, text } = await req?.json();
         if (!From) {
@@ -22,8 +23,8 @@ export async function POST(req) {
                     User_id: user?.userId,
                     Title: { $regex: text, $options: 'i' },
                     TimeStamp: {
-                        $gte: From, // Greater than or equal to 18
-                        $lte: To
+                        $gte: Number(From), // Greater than or equal to 18
+                        $lte: Number(To)
                     }
                 }).sort({ TimeStamp: 1 });
             } else {
@@ -44,8 +45,8 @@ export async function POST(req) {
                 {
                     $match: {
                         TimeStamp: {
-                            $gte: From, // Greater than or equal to 18
-                            $lte: To
+                            $gte: Number(From), // Greater than or equal to 18
+                            $lte: Number(To)
                         }
                     }
                 },
