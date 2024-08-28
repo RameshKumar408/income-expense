@@ -16,5 +16,5 @@ export function middleware(request) {
 }
 
 export const config = {
-    matcher: ['/api/getDateRange', '/api/export', '/api/incomes', '/api/sendMail', '/api/getelementid'], // Protect the dashboard routes
+    matcher: ['/api/getDateRange', '/api/export', '/api/incomes', '/api/sendMail', '/api/getelementid', '/api/incomes/:path*'], // Protect the dashboard routes
 };

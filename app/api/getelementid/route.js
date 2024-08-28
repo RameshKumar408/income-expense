@@ -21,11 +21,11 @@ export async function PUT(request) {
     const headerList = headers()
     var { success, user } = await validateToken(headerList.get("authorization"))
     if (success) {
-        const { Id, Title, Amount, Type, Date, TimeStamp } = await request.json();
+        const { Id, Title, Amount, Type, Date, TimeStamp, Description } = await request.json();
         await connectMongoDB();
-        await Income.findOneAndUpdate({ _id: Id, User_id: user?.userId }, { Title, Amount, Type, Date, TimeStamp });
-        return NextResponse.json({ message: "Updated Successfully" }, { status: 200 });
+        await Income.findOneAndUpdate({ _id: Id, User_id: user?.userId }, { Title, Amount, Type, Date, TimeStamp, Description });
+        return NextResponse.json({ message: "Updated Successfully", status: true }, { status: 200 });
     } else {
-        return NextResponse.json({ message: "UnAuthorized" }, { status: 400 });
+        return NextResponse.json({ message: "UnAuthorized", status: false }, { status: 400 });
     }
 }

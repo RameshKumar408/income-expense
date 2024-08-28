@@ -47,11 +47,20 @@ export async function DELETE(request) {
     const headerList = headers()
     var { success, user } = await validateToken(headerList.get("authorization"))
     if (success) {
-        const { id } = await request.json();
+        const url = new URL(request.url);
+
+        // Get the 'id' query parameter
+        const id = url.searchParams.get('id');
+        console.log("🚀 ~ DELETE ~ id:", id)
         await connectMongoDB();
-        await Income.findOneAndDelete({ _id: id, User_id: user?.userId });
-        return NextResponse.json({ message: "Topic deleted" }, { status: 200 });
+        var search = await Income.findOne({ _id: id, User_id: user?.userId })
+        if (search) {
+            await Income.findOneAndDelete({ _id: id, User_id: user?.userId });
+            return NextResponse.json({ message: "Topic deleted", status: true }, { status: 200 });
+        } else {
+            return NextResponse.json({ message: "Data Not Found", status: false }, { status: 400 });
+        }
     } else {
-        return NextResponse.json({ message: "UnAuthorized" }, { status: 400 });
+        return NextResponse.json({ message: "UnAuthorized", status: false }, { status: 400 });
     }
 }
