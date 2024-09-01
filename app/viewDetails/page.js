@@ -17,6 +17,13 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+
+import Box from '@mui/material/Box';
+
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useRouter } from "next/navigation";
 
 import constant from '../../constant'
@@ -87,6 +94,9 @@ export default function Page() {
     const [totalIncome, setTotalIncome] = useState(0)
     const [totalExpense, setTotalExpense] = useState(0)
     const [balance, setBalance] = useState(0)
+
+    const [users, setusers] = useState([])
+    const [selcUsers, setSelecUsers] = useState("")
     // const searchtext = useRef(null)
 
     const handleDateChange = (date, type) => {
@@ -130,6 +140,41 @@ export default function Page() {
                     setTotalIncome(formatIndianNumber(top?.totalCount[0]?.totalIncome))
                     setTotalExpense(formatIndianNumber(top?.totalCount[0]?.totalExpense))
                     setBalance(formatIndianNumber(top?.totalCount[0]?.netIncome))
+                } else {
+                    setTotalCount("")
+                }
+            }
+        } catch (error) {
+            console.log("Error loading topics: ", error);
+        }
+    };
+
+    const getDetailsAdmin = async () => {
+        try {
+            setDatas([])
+            setTotalCount(0)
+            setTotalIncome(0)
+            setTotalExpense(0)
+            setTotalExpense(0)
+            const res = await fetch(`${constant?.Live_url}/api/getDateRange`, {
+                method: "POST",
+                cache: 'no-store',
+                headers: {
+                    "Content-type": "application/json",
+                    authorization: `${window.localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({ From: fromTimestamp, To: toTimestamp, id: selcUsers }),
+            });
+            if (res.status == 400) {
+                route.push('/')
+            } else {
+                var top = await res.json()
+                setDatas(top?.topics)
+                if (top?.totalCount?.length > 0) {
+                    setTotalCount(top?.totalCount[0])
+                    setTotalIncome(formatIndianNumber(top?.totalCount[0]?.totalIncome))
+                    setTotalExpense(formatIndianNumber(top?.totalCount[0]?.totalExpense))
+                    setTotalExpense(formatIndianNumber(top?.totalCount[0]?.netIncome))
                 } else {
                     setTotalCount("")
                 }
@@ -240,10 +285,17 @@ export default function Page() {
     }, []);
 
     useEffect(() => {
-        if (fromTimestamp && toTimestamp) {
-            getDetails()
+        if (window.localStorage.getItem("roles") === "admin") {
+            if (fromTimestamp && toTimestamp) {
+                getDetailsAdmin()
+            }
+        } else {
+            if (fromTimestamp && toTimestamp) {
+                getDetails()
+            }
         }
-    }, [fromTimestamp, toTimestamp]);
+
+    }, [fromTimestamp, toTimestamp, selcUsers]);
 
     const removeTopic = async (id) => {
         const res = await fetch(`${constant?.Live_url}/api/incomes?id=${id}`, {
@@ -254,6 +306,37 @@ export default function Page() {
             getDetails()
         }
     };
+
+    const usersLists = async () => {
+        try {
+            const data = await fetch(`${constant?.Live_url}/api/web/usersList`, {
+                method: "GET",
+                cache: 'no-store',
+                headers: {
+                    "Content-type": "application/json",
+                    authorization: `${window.localStorage.getItem("token")}`,
+                }
+            })
+            const dts = await data.json()
+            if (dts?.result?.length > 0) {
+                setusers(dts?.result)
+                setSelecUsers(dts?.result[0]?._id)
+            }
+        } catch (error) {
+            console.log("🚀 ~ usersLists ~ error:", error)
+
+        }
+    }
+
+    useEffect(() => {
+        if (window.localStorage.getItem("roles") == "admin") {
+            usersLists()
+        }
+    }, [])
+
+    const handleChangeAcc = async (type) => {
+        setSelecUsers(type?.target.value)
+    }
 
     const searchValues = async () => {
         try {
@@ -289,7 +372,6 @@ export default function Page() {
             console.log("🚀 ~ searchValues ~ error:", error)
         }
     }
-
 
     return (
         <>
@@ -376,6 +458,34 @@ export default function Page() {
                 <Button variant="outlined" onClick={() => { getDetails(); setsearchtext("") }}>Search Reset</Button>
             </div >
 
+            {
+                window.localStorage.getItem("roles") == "admin" &&
+                <div style={{ marginTop: "10px" }}>
+                    <Box sx={{ minWidth: 120 }}>
+                        <FormControl fullWidth>
+                            <InputLabel id="demo-simple-select-label">Account</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={selcUsers}
+                                label="Age"
+                                onChange={handleChangeAcc}
+                            >
+
+                                {users?.length > 0 &&
+                                    users?.map((row, index) => {
+                                        return <MenuItem key={index} value={row?._id}>{row?.Name}</MenuItem>
+                                    })
+                                }
+
+
+                            </Select>
+                        </FormControl>
+                    </Box>
+                    {/* {accTypeError ? <div style={{ textAlign: "center", color: "red", fontSize: "18px" }}>{accTypeError}</div> : <></>} */}
+                </div>
+            }
+
             <div style={{ marginTop: '20px' }}>
                 <TableContainer component={Paper}>
                     <Table aria-label="customized table">
@@ -400,7 +510,7 @@ export default function Page() {
                                             row?.Type == "Income" ?
                                                 // <StyledTableCell >
                                                 <>
-                                                    <p style={{ color: "green", fontSize: "17px" }}> +{formatIndianNumber(row.Amount)}</p>
+                                                    <p style={{ color: "green", fontSize: "17px" }}> {formatIndianNumber(row.Amount)}</p>
                                                     {/* <p style={{ fontSize: "15px" }}>  {`${row.Date?.split('-')[1]}-${row.Date?.split('-')[2]}`}</p> */}
                                                     <p style={{ fontSize: "15px" }}>  {getMonthSortNameAndTwoDigitDate(row?.TimeStamp)}</p>
                                                 </>
@@ -408,7 +518,7 @@ export default function Page() {
                                                 :
                                                 // <StyledTableCell >
                                                 <>
-                                                    <p style={{ color: "red", fontSize: "17px" }}> -{formatIndianNumber(row.Amount)}</p>
+                                                    <p style={{ color: "red", fontSize: "17px" }}> {formatIndianNumber(row.Amount)}</p>
                                                     {/* <p style={{ fontSize: "15px" }}>  {`${row.Date?.split('-')[1]}-${row.Date?.split('-')[2]}`}</p> */}
                                                     <p style={{ fontSize: "15px" }}>   {getMonthSortNameAndTwoDigitDate(row?.TimeStamp)}</p>
                                                 </>

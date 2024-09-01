@@ -50,6 +50,9 @@ export default function Home() {
         var resps = await res?.json()
         if (resps?.status) {
           window.localStorage.setItem("token", resps?.result)
+          if (topic == "admin@admin.com") {
+            window.localStorage.setItem("roles", "admin")
+          }
           toast.success("Logged In Successfully");
           setTimeout(() => {
             router.push("/createDetail");

@@ -25,14 +25,18 @@ import './createdeails.css'
 export default function Home() {
     const [selectedDate, setSelectedDate] = useState();
     const [topic, setTopic] = useState('');
+    const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
     const [type, setType] = useState('');
     const [TimeStamp, setTimeStamp] = useState('');
+    const [accType, setAccType] = useState('')
 
     const [selectedDateError, setSelectedDateError] = useState('')
     const [topicError, setTopicError] = useState('')
+    const [descriptionError, setDescriptionError] = useState('')
     const [amountError, setAmountError] = useState('')
     const [typeError, setTypeError] = useState('')
+    const [accTypeError, setAccTypeError] = useState('')
 
     const router = useRouter();
 
@@ -40,6 +44,11 @@ export default function Home() {
         setType(event.target.value);
         setTypeError("")
     };
+
+    const handleChangeAcc = (event) => {
+        setAccType(event.target.value);
+        setAccTypeError("")
+    }
 
     const handleDateChange = (date) => {
         var year = date?.$y
@@ -61,25 +70,32 @@ export default function Home() {
                 setSelectedDateError("Please Select Date");
             } else if (topic == "") {
                 setTopicError("Please Enter Topic");
+            } else if (description == "") {
+                setDescriptionError("Please Enter Description");
             } else if ((amount == "") || (amount == 0)) {
                 setAmountError("Please Enter Amount")
             } else if (type == "") {
                 setTypeError("Please Select Type")
-            } else {
+            }
+            // else if (accType == "") {
+            //     setAccTypeError("Please Select Account Type")
+            // } 
+            else {
                 const res = await fetch(`${constant?.Live_url}/api/incomes`, {
                     method: "POST",
                     headers: {
                         "Content-type": "application/json",
                         "authorization": window.localStorage.getItem("token")
                     },
-                    body: JSON.stringify({ Title: topic, Amount: amount, Type: type, Date: selectedDate, TimeStamp: TimeStamp }),
+                    // body: JSON.stringify({ Title: topic, Amount: amount, Type: type, Description: description, Date: selectedDate, TimeStamp: TimeStamp, AccType: accType }),
+                    body: JSON.stringify({ Title: topic, Amount: amount, Type: type, Description: description, Date: selectedDate, TimeStamp: TimeStamp }),
                 });
                 if (res?.ok) {
                     // router.push("/");
                     toast.success("Created Successfully");
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    // setTimeout(() => {
+                    //     window.location.reload();
+                    // }, 1000);
                 } else {
                     toast.error("Something went wrong");
                     throw new Error("Failed to create a topic");
@@ -92,6 +108,7 @@ export default function Home() {
 
     const logout = async () => {
         window.localStorage.removeItem("token")
+        window.localStorage.removeItem("roles")
         router.push('/')
     }
 
@@ -113,6 +130,12 @@ export default function Home() {
                         <div style={{ textAlign: "center", fontSize: "20px" }}>Topic</div>
                         <TextField id="outlined-basic" label="Topic" variant="outlined" onChange={(e) => { setTopic(e.target.value); setTopicError("") }} style={{ width: "100%" }} />
                         {topicError ? <div style={{ textAlign: "center", color: "red", fontSize: "18px" }}>{topicError}</div> : <></>}
+                    </div>
+
+                    <div>
+                        <div style={{ textAlign: "center", fontSize: "20px" }}>Description</div>
+                        <TextField id="outlined-basic" label="Description" variant="outlined" onChange={(e) => { setDescription(e.target.value); setDescriptionError("") }} style={{ width: "100%" }} />
+                        {descriptionError ? <div style={{ textAlign: "center", color: "red", fontSize: "18px" }}>{descriptionError}</div> : <></>}
                     </div>
 
                     <div>
@@ -140,6 +163,26 @@ export default function Home() {
                         </Box>
                         {typeError ? <div style={{ textAlign: "center", color: "red", fontSize: "18px" }}>{typeError}</div> : <></>}
                     </div>
+
+                    {/* <div style={{ marginTop: "10px" }}>
+                        <Box sx={{ minWidth: 120 }}>
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">Account</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={accType}
+                                    label="Age"
+                                    onChange={handleChangeAcc}
+                                >
+                                    <MenuItem value={"BankAccount"}>Bank Account</MenuItem>
+                                    <MenuItem value={"UPI"}>UPI</MenuItem>
+                                    <MenuItem value={"InHand"}>In Hand</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
+                        {accTypeError ? <div style={{ textAlign: "center", color: "red", fontSize: "18px" }}>{accTypeError}</div> : <></>}
+                    </div> */}
 
                     <div className='btns'>
                         <div style={{ textAlign: "center", marginTop: "10px" }}>
