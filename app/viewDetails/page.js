@@ -1,5 +1,4 @@
-"use client"
-
+'use client'
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -90,7 +89,7 @@ export default function Page() {
     const [toTimestamp, setToTimestamp] = useState()
 
     const [searchtext, setsearchtext] = useState("")
-
+    // var ads = window?.localStorage?.getItem("roles")
     const [totalIncome, setTotalIncome] = useState(0)
     const [totalExpense, setTotalExpense] = useState(0)
     const [balance, setBalance] = useState(0)
@@ -126,7 +125,7 @@ export default function Page() {
                 cache: 'no-store',
                 headers: {
                     "Content-type": "application/json",
-                    authorization: `${window.localStorage.getItem("token")}`,
+                    authorization: `${window?.localStorage?.getItem("token")}`,
                 },
                 body: JSON.stringify({ From: fromTimestamp, To: toTimestamp }),
             });
@@ -161,7 +160,7 @@ export default function Page() {
                 cache: 'no-store',
                 headers: {
                     "Content-type": "application/json",
-                    authorization: `${window.localStorage.getItem("token")}`,
+                    authorization: `${window?.localStorage?.getItem("token")}`,
                 },
                 body: JSON.stringify({ From: fromTimestamp, To: toTimestamp, id: selcUsers }),
             });
@@ -192,7 +191,7 @@ export default function Page() {
                 cache: 'no-store',
                 headers: {
                     "Content-type": "application/json",
-                    authorization: `${window.localStorage.getItem("token")}`,
+                    authorization: `${window?.localStorage?.getItem("token")}`,
                 },
                 body: JSON.stringify({ From: fromTimestamp, To: toTimestamp }),
             });
@@ -201,14 +200,14 @@ export default function Page() {
                 throw new Error("Failed to fetch topics");
             }
             if (res.ok) {
-                const blob = await res.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'income_data.xlsx';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
+                // const blob = await res.blob();
+                // const url = URL.createObjectURL(blob);
+                // const a = document.createElement('a');
+                // a.href = url;
+                // a.download = 'income_data.xlsx';
+                // document.body.appendChild(a);
+                // a.click();
+                // a.remove();
             } else {
                 const errorData = await res.json();
                 alert(errorData.message || 'Failed to download data');
@@ -227,7 +226,7 @@ export default function Page() {
                 cache: 'no-store',
                 headers: {
                     "Content-type": "application/json",
-                    authorization: `${window.localStorage.getItem("token")}`,
+                    authorization: `${window?.localStorage?.getItem("token")}`,
                 },
                 body: JSON.stringify({ From: fromTimestamp, To: toTimestamp }),
             });
@@ -285,7 +284,8 @@ export default function Page() {
     }, []);
 
     useEffect(() => {
-        if (window.localStorage.getItem("roles") === "admin") {
+        var ad = window?.localStorage?.getItem("roles")
+        if (ad == "admin") {
             if (fromTimestamp && toTimestamp) {
                 getDetailsAdmin()
             }
@@ -314,7 +314,7 @@ export default function Page() {
                 cache: 'no-store',
                 headers: {
                     "Content-type": "application/json",
-                    authorization: `${window.localStorage.getItem("token")}`,
+                    authorization: `${window?.localStorage?.getItem("token")}`,
                 }
             })
             const dts = await data.json()
@@ -329,7 +329,8 @@ export default function Page() {
     }
 
     useEffect(() => {
-        if (window.localStorage.getItem("roles") == "admin") {
+        var dt = window?.localStorage?.getItem("roles")
+        if (dt == "admin") {
             usersLists()
         }
     }, [])
@@ -348,7 +349,7 @@ export default function Page() {
                         cache: 'no-store',
                         headers: {
                             "Content-type": "application/json",
-                            authorization: `${window.localStorage.getItem("token")}`,
+                            authorization: `${window?.localStorage?.getItem("token")}`,
                         },
                         body: JSON.stringify({ From: fromTimestamp, To: toTimestamp, text: searchtext }),
                     });
@@ -458,33 +459,32 @@ export default function Page() {
                 <Button variant="outlined" onClick={() => { getDetails(); setsearchtext("") }}>Search Reset</Button>
             </div >
 
-            {
-                window.localStorage.getItem("roles") == "admin" &&
-                <div style={{ marginTop: "10px" }}>
-                    <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">Account</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={selcUsers}
-                                label="Age"
-                                onChange={handleChangeAcc}
-                            >
 
-                                {users?.length > 0 &&
-                                    users?.map((row, index) => {
-                                        return <MenuItem key={index} value={row?._id}>{row?.Name}</MenuItem>
-                                    })
-                                }
+            <div style={{ marginTop: "10px" }}>
+                <Box sx={{ minWidth: 120 }}>
+                    <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label">Account</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={selcUsers}
+                            label="Age"
+                            onChange={handleChangeAcc}
+                        >
+
+                            {users?.length > 0 &&
+                                users?.map((row, index) => {
+                                    return <MenuItem key={index} value={row?._id}>{row?.Name}</MenuItem>
+                                })
+                            }
 
 
-                            </Select>
-                        </FormControl>
-                    </Box>
-                    {/* {accTypeError ? <div style={{ textAlign: "center", color: "red", fontSize: "18px" }}>{accTypeError}</div> : <></>} */}
-                </div>
-            }
+                        </Select>
+                    </FormControl>
+                </Box>
+                {/* {accTypeError ? <div style={{ textAlign: "center", color: "red", fontSize: "18px" }}>{accTypeError}</div> : <></>} */}
+            </div>
+
 
             <div style={{ marginTop: '20px' }}>
                 <TableContainer component={Paper}>

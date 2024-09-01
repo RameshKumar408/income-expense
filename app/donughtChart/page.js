@@ -5,7 +5,6 @@ import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
 const DoughnutChart = ({ datas }) => {
-    console.log("🚀 ~ DoughnutChart ~ datas:", datas)
     useEffect(() => {
         const ctx = document.getElementById('myDoughnutChart').getContext('2d');
         const myDoughnutChart = new Chart(ctx, {
