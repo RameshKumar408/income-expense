@@ -27,7 +27,7 @@ export async function POST(req) {
                             $gte: Number(From), // Greater than or equal to 18
                             $lte: Number(To)
                         }
-                    }).sort({ createdAt: -1 });
+                    }).sort({ TimeStamp: -1 });
                 } else {
                     console.log("logs one")
                     resp = await Income.find({
@@ -36,7 +36,7 @@ export async function POST(req) {
                             $gte: From, // Greater than or equal to 18
                             $lte: To
                         }
-                    }).sort({ createdAt: -1 }).toArray();;
+                    }).sort({ TimeStamp: -1 });
                 }
                 var payloads = [
                     {
@@ -119,7 +119,7 @@ export async function POST(req) {
                             $gte: Number(From), // Greater than or equal to 18
                             $lte: Number(To)
                         }
-                    }).sort({ createdAt: -1 });
+                    }).sort({ TimeStamp: -1 });
                 } else {
                     resp = await Income.find({
                         User_id: user?.userId,
@@ -127,7 +127,7 @@ export async function POST(req) {
                             $gte: From, // Greater than or equal to 18
                             $lte: To
                         }
-                    }).sort({ createdAt: -1 });
+                    }).sort({ TimeStamp: -1 });
                 }
                 var payloads = [
                     {
