@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const appversionSchema = new Schema(
     {
         Version: String,
-        Link: String
+        link: String
     },
 
     {
