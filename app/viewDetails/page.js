@@ -501,8 +501,9 @@ export default function Page() {
                             {datas?.length > 0 ? datas?.map((row) => (
                                 <StyledTableRow key={row._id} onClick={() => { route.push(`/editDetails/${row?._id}`) }}>
                                     <StyledTableCell >
-                                        <p style={{ fontSize: "17px" }}> {row?.Type} </p>
+                                        {/* <p style={{ fontSize: "17px" }}> {row?.Type} </p> */}
                                         <p style={{ fontSize: "15px" }}>  {row?.Title}</p>
+                                        <p style={{ fontSize: "15px" }}>Description:  {row?.Description}</p>
                                     </StyledTableCell>
 
                                     <StyledTableCell >
