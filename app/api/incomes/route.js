@@ -21,13 +21,12 @@ export async function POST(request) {
             return NextResponse.json({ message: "Please Enter TimeStamp", status: false }, { status: 400 });
         } else {
             await connectMongoDB();
-            await Income.create({ Title, Amount, Type, Date, TimeStamp, User_id: user?.userId, Description });
+            await Income.create({ Title: Title?.trimEnd(), Amount, Type, Date, TimeStamp, User_id: user?.userId, Description });
             return NextResponse.json({ message: "Topic Created", status: true }, { status: 200 });
         }
     } else {
         return NextResponse.json({ message: "UnAuthorized" }, { status: 400 });
     }
-
 }
 
 export async function GET() {

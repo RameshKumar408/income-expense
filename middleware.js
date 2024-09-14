@@ -5,12 +5,9 @@ export function middleware(request) {
     console.log("middleware")
     const headerList = headers()
     const token = headerList.get("authorization")
-    console.log(request.url, typeof (token), "url ramesh")
     if (token && token != "null") {
-        console.log("inside next")
         return NextResponse.next();
     } else {
-        console.log("inside middle")
         return NextResponse.json({ message: "UnAuthorized" }, { status: 400 });
     }
 }

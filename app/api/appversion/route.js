@@ -1,8 +1,6 @@
 import connectMongoDB from "../../../libs/mongodb";
 import Versions from "../../../modules/appversion";
 import { NextResponse } from "next/server";
-import { validateToken } from "../validateToken";
-import { headers } from 'next/headers';
 
 export async function POST(request) {
     const { Version, link } = await request.json();
