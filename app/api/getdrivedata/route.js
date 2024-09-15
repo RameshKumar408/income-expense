@@ -8,8 +8,8 @@ import { NextResponse } from "next/server";
 export async function POST(request) {
     console.log("logsss")
     const { Title } = await request.json();
-    const CLIENT_ID = "389689030947-ptjknqqo8at8ge4panv2juqadffofrdk.apps.googleusercontent.com"
-    const CLIENT_SECRET = "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"
+    const CLIENT_ID = process.env.clientId
+    const CLIENT_SECRET = process.env.CLIENT_SECRET
     const REDIRECT_URI = "http://localhost:3000/authtoken"
     const REFRESH_TOKEN = Title
     // const REFRESH_TOKEN = window.localStorage.getItem('refresh_token')
