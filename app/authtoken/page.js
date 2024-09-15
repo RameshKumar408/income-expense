@@ -7,8 +7,8 @@ export default function Home() {
     const url = new URL(window.location.href);
     const code = url.searchParams.get('code');
     const scope = url.searchParams.get('scope');
-    const clientId = '389689030947-ptjknqqo8at8ge4panv2juqadffofrdk.apps.googleusercontent.com'
-    const client_secret = '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'
+    const clientId = process.env.clientId
+    const client_secret = process.env.CLIENT_SECRET
     console.log(code, scope);
 
     const getAuthToken = async () => {
