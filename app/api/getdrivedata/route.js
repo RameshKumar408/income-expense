@@ -8,8 +8,8 @@ import { NextResponse } from "next/server";
 export async function POST(request) {
     console.log("logsss")
     const { Title } = await request.json();
-    const CLIENT_ID = process.env.clientId
-    const CLIENT_SECRET = process.env.CLIENT_SECRET
+    const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID
+    const CLIENT_SECRET = process.env.NEXT_PUBLIC_CLIENT_SECRET
     const REDIRECT_URI = "http://localhost:3000/authtoken"
     const REFRESH_TOKEN = Title
     // const REFRESH_TOKEN = window.localStorage.getItem('refresh_token')
@@ -32,6 +32,7 @@ export async function POST(request) {
             pageSize: 10,
             fields: "nextPageToken, files(id, name)"
         })
+        console.log(response, 'response')
         return NextResponse.json({ topics: response.data.files });
     } catch (error) {
         console.log("🚀 ~ getAllFiles ~ error:", error)

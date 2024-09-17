@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import constant from "@/constant";
 
 export default function Home() {
 
     const [datas, setDatas] = useState([])
-    const getAuthToken = async () => {
+    const getAuthToken = async (id) => {
         try {
             const { data } = await axios.post('http://localhost:3000/api/getdrivedata', {
-                Title: window.localStorage.getItem('refresh_token')
+                Title: id
             })
             setDatas(data?.topics)
         } catch (error) {
@@ -17,8 +18,29 @@ export default function Home() {
         }
     }
 
+    const getDetaills = async () => {
+        try {
+            const res = await fetch(`${constant?.Live_url}/api/googleDrive/apikeys`, {
+                method: "GET",
+                headers: {
+                    "Content-type": "application/json",
+                    "authorization": window.localStorage.getItem("token")
+                },
+            });
+            console.log(res, "res")
+            if (res.status == 200) {
+                var dts = await res.json()
+                console.log("🚀 ~ getDetaills ~ dts:", dts?.result)
+                getAuthToken(dts?.result?.refreshtoken)
+            }
+
+        } catch (error) {
+            console.log("🚀 ~ getAuthToken ~ error:", error)
+        }
+    }
+
     useEffect(() => {
-        getAuthToken()
+        getDetaills()
     }, [])
     return (
         <>

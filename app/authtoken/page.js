@@ -2,16 +2,14 @@
 
 import { useEffect } from "react";
 import axios from "axios";
+import constant from "@/constant";
 
 export default function Home() {
-    const url = new URL(window.location.href);
-    const code = url.searchParams.get('code');
-    const scope = url.searchParams.get('scope');
-    const clientId = process.env.clientId
-    const client_secret = process.env.CLIENT_SECRET
-    console.log(code, scope);
 
-    const getAuthToken = async () => {
+    const clientId = process.env.NEXT_PUBLIC_CLIENT_ID
+    const client_secret = process.env.NEXT_PUBLIC_CLIENT_SECRET
+
+    const getAuthToken = async (code) => {
         try {
             const { data } = await axios.post('https://oauth2.googleapis.com/token', {
                 code: code,
@@ -21,20 +19,41 @@ export default function Home() {
                 scope: '',
                 grant_type: 'authorization_code'
             })
-            window.localStorage.setItem('access_token', data.access_token)
-            window.localStorage.setItem('refresh_token', data.refresh_token)
-            window.location.href = '/datassList'
+            if (data) {
+                const res = await fetch(`${constant?.Live_url}/api/googleDrive/apikeys`, {
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json",
+                        "authorization": window.localStorage.getItem("token")
+                    },
+                    body: JSON.stringify({
+                        refreshtoken: data.refresh_token,
+                        token: data.access_token
+                    })
+                });
+                window.location.href = '/datassList'
+            }
+
         } catch (error) {
             console.log("🚀 ~ getAuthToken ~ error:", error)
         }
     }
 
-    useEffect(() => {
-        console.log(code, scope, "scope")
-        if (code) {
-            getAuthToken()
+    const autht = async () => {
+        try {
+            const url = new URL(window.location.href);
+            const code = url.searchParams.get('code');
+            if (code) {
+                getAuthToken(code)
+            }
+        } catch (error) {
+            console.log("🚀 ~ autht ~ error:", error)
         }
-    }, [code, scope])
+    }
+
+    useEffect(() => {
+        autht()
+    }, [])
     return (
         <>
             <div>ramesh</div>

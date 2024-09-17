@@ -164,29 +164,13 @@ export default function Home() {
                         {typeError ? <div style={{ textAlign: "center", color: "red", fontSize: "18px" }}>{typeError}</div> : <></>}
                     </div>
 
-                    {/* <div style={{ marginTop: "10px" }}>
-                        <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth>
-                                <InputLabel id="demo-simple-select-label">Account</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    value={accType}
-                                    label="Age"
-                                    onChange={handleChangeAcc}
-                                >
-                                    <MenuItem value={"BankAccount"}>Bank Account</MenuItem>
-                                    <MenuItem value={"UPI"}>UPI</MenuItem>
-                                    <MenuItem value={"InHand"}>In Hand</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Box>
-                        {accTypeError ? <div style={{ textAlign: "center", color: "red", fontSize: "18px" }}>{accTypeError}</div> : <></>}
-                    </div> */}
-
                     <div className='btns'>
                         <div style={{ textAlign: "center", marginTop: "10px" }}>
                             <Button variant="outlined" onClick={(e) => { handleSubmit(e) }}>Submit</Button>
+                        </div>
+
+                        <div style={{ textAlign: "center", marginTop: "10px" }} >
+                            <Button variant="outlined">google drive</Button>
                         </div>
 
                         <div style={{ textAlign: "center", marginTop: "10px" }}>
