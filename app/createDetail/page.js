@@ -112,6 +112,21 @@ export default function Home() {
         router.push('/')
     }
 
+    const [role, setRole] = useState()
+
+    const getrole = () => {
+        try {
+            setRole(window.localStorage.getItem("roles"))
+        } catch (error) {
+            console.log("🚀 ~ getrole ~ error:", error)
+
+        }
+    }
+
+    useEffect(() => {
+        getrole()
+    }, [])
+
     return (
         <>
             <div className='containers'>
@@ -168,11 +183,14 @@ export default function Home() {
                         <div style={{ textAlign: "center", marginTop: "10px" }}>
                             <Button variant="outlined" onClick={(e) => { handleSubmit(e) }}>Submit</Button>
                         </div>
-
-                        <div style={{ textAlign: "center", marginTop: "10px" }} >
-                            <Button variant="outlined">google drive</Button>
-                        </div>
-
+                        {
+                            role == "admin" &&
+                            <div style={{ textAlign: "center", marginTop: "10px" }} >
+                                <Link href="/authorize">
+                                    <Button variant="outlined" >google drive</Button>
+                                </Link>
+                            </div>
+                        }
                         <div style={{ textAlign: "center", marginTop: "10px" }}>
                             <Link href="/viewDetails">
                                 <Button variant="outlined">ViewDetails</Button>

@@ -30,9 +30,8 @@ export async function POST(request) {
     try {
         const response = await drive.files.list({
             pageSize: 10,
-            fields: "nextPageToken, files(id, name)"
+            fields: "nextPageToken, files(id, name, mimeType)",
         })
-        console.log(response, 'response')
         return NextResponse.json({ topics: response.data.files });
     } catch (error) {
         console.log("🚀 ~ getAllFiles ~ error:", error)
