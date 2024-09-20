@@ -26,12 +26,13 @@ export async function POST(request) {
     });
 
     try {
-        const response = await drive.files.list({
-            q: "mimeType != 'application/vnd.google-apps.folder'",
-            pageSize: 10,
-            fields: "nextPageToken, files(id, name, mimeType)",
-        })
-        return NextResponse.json({ topics: response.data.files });
+        const res = await drive.files.list({
+            q: "mimeType='application/vnd.google-apps.folder'",
+            fields: 'nextPageToken, files(id, name)',
+        });
+        const folders = res.data.files;
+
+        return NextResponse.json({ topics: folders });
     } catch (error) {
         console.log("🚀 ~ getAllFiles ~ error:", error)
     }

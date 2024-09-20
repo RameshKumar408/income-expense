@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(request) {
     console.log("logsss")
-    const { Title } = await request.json();
+    const { Title, id } = await request.json();
     const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID
     const CLIENT_SECRET = process.env.NEXT_PUBLIC_CLIENT_SECRET
     const REDIRECT_URI = "http://localhost:3000/authtoken"
@@ -27,7 +27,7 @@ export async function POST(request) {
 
     try {
         const response = await drive.files.list({
-            q: "mimeType != 'application/vnd.google-apps.folder'",
+            q: `'${id}' in parents and mimeType != 'application/vnd.google-apps.folder'`,
             pageSize: 10,
             fields: "nextPageToken, files(id, name, mimeType)",
         })
