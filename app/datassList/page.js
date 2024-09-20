@@ -95,35 +95,6 @@ export default function Home() {
         getDetaills()
     }, [])
 
-    const imageUrl = 'https://xdsea-prod-media-container.s3.amazonaws.com/profile/1698743028447.png'; // Replace with your PNG image URL
-
-    const handleShare = async () => {
-        try {
-            // Fetch the image as a Blob
-            console.log("clicked")
-            const response = await fetch(imageUrl);
-            console.log("🚀 ~ handleShare ~ response:", response)
-            const blob = await response.blob();
-            const file = new File([blob], 'image.png', { type: 'image/png' });
-
-            // Prepare the share data
-            const shareData = {
-                files: [file],
-                title: 'Check out this image!',
-                text: 'Here is an awesome PNG image I want to share with you!',
-            };
-
-            // Check if sharing is supported
-            if (navigator.canShare && navigator.canShare(shareData)) {
-                await navigator.share(shareData);
-                console.log('Image shared successfully!');
-            } else {
-                console.error('Sharing not supported');
-            }
-        } catch (error) {
-            console.error('Error sharing the image:', error);
-        }
-    };
 
     const [type, settype] = useState("file")
     const [name, setName] = useState('')
@@ -139,6 +110,10 @@ export default function Home() {
     const [uploadFlie, setUploadFile] = useState(false)
     const handleFilesOpen = () => setUploadFile(true);
     const handleFilesClose = () => setUploadFile(false);
+
+    const [folderFileOpen, setFolderFileOpen] = useState(false)
+    const handleFolderFilesOpen = () => setFolderFileOpen(true);
+    const handleFolderFilesClose = () => setFolderFileOpen(false);
 
     const [selcFolder, setSelcFolder] = useState("")
 
@@ -262,7 +237,7 @@ export default function Home() {
                                 }}
                                 onClick={() => console.log('shared successfully!')}
                             > */}
-                                    <RWebShare
+                                    {/* <RWebShare
                                         data={{
                                             text: 'Check out this amazing image!',
                                             url: "https://dtracer.io/wp-content/uploads/2022/06/LOGO-5-COMPLETO.png",
@@ -272,9 +247,9 @@ export default function Home() {
                                             ],
                                         }}
                                         onClick={() => console.log('Shared successfully!')}
-                                    >
-                                        <Button variant="contained">Share</Button>
-                                    </RWebShare>
+                                    > */}
+                                    <Button variant="contained">Share</Button>
+                                    {/* </RWebShare> */}
                                     <Button variant="contained" onClick={() => window.open(`https://drive.google.com/file/d/${selecData?.id}/view?usp=drivesdk`)} >view</Button>
                                     <Button variant="contained" onClick={() => { window.open(`https://drive.google.com/uc?id=${selecData?.id}&export=download`) }
                                     } >download</Button>
@@ -309,7 +284,7 @@ export default function Home() {
                             folderFiles?.length > 0 && folderFiles?.map((data, index) => {
                                 return (
                                     <div key={index}>
-                                        <div className="card" onClick={() => { setSelecData(data); handleOpen() }}>
+                                        <div className="card" onClick={() => { setSelecData(data); handleFolderFilesOpen() }}>
                                             <Image className="card2" alt={data?.name?.split(".")[1]} src={data.name?.split(".")[1] == "pdf" ? pdf : data.name?.split(".")[1] == "jpg" || data.name?.split(".")[1] == "jpeg" || data.name?.split(".")[1] == "png" ? img : file} />
                                             <div>{data?.name}</div>
                                         </div >
@@ -357,8 +332,8 @@ export default function Home() {
                     </Modal>
 
                     <Modal
-                        open={open}
-                        onClose={handleClose}
+                        open={folderFileOpen}
+                        onClose={handleFolderFilesClose}
                         aria-labelledby="modal-modal-title"
                         aria-describedby="modal-modal-description"
                     >
@@ -376,7 +351,7 @@ export default function Home() {
                                 }}
                                 onClick={() => console.log('shared successfully!')}
                             > */}
-                                    <RWebShare
+                                    {/* <RWebShare
                                         data={{
                                             text: 'Check out this amazing image!',
                                             url: "https://dtracer.io/wp-content/uploads/2022/06/LOGO-5-COMPLETO.png",
@@ -386,9 +361,9 @@ export default function Home() {
                                             ],
                                         }}
                                         onClick={() => console.log('Shared successfully!')}
-                                    >
-                                        <Button variant="contained">Share</Button>
-                                    </RWebShare>
+                                    > */}
+                                    <Button variant="contained">Share</Button>
+                                    {/* </RWebShare> */}
                                     <Button variant="contained" onClick={() => window.open(`https://drive.google.com/file/d/${selecData?.id}/view?usp=drivesdk`)} >view</Button>
                                     <Button variant="contained" onClick={() => { window.open(`https://drive.google.com/uc?id=${selecData?.id}&export=download`) }
                                     } >download</Button>
