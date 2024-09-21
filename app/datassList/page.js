@@ -149,16 +149,21 @@ export default function Home() {
         }
     }
 
-    const deleteFolder = async () => {
+    const deleteFolder = async (id) => {
         try {
             const { data } = await axios.post(`${constant?.Live_url}/api/deleteFolder`, {
                 Title: token,
-                id: selcFolder
+                id: id ? id : selcFolder
             })
             handlefoldClose()
             if (data?.topics) {
-                getFolders(token)
                 toast.success("Folder deleted successfully")
+                if (id) {
+                    handleFolderFilesClose()
+                    getFileFromFolder()
+                } else {
+                    getFolders(token)
+                }
             }
         } catch (error) {
             console.log("🚀 ~ deleteFolder ~ error:", error)
@@ -168,13 +173,22 @@ export default function Home() {
     const [fileview, setFileView] = useState(false)
     const [fileName, setFileName] = useState("")
 
+
+    const [files, setFile] = useState()
+
     const CreateFile = async () => {
         try {
-            const { data } = await axios.post(`${constant?.Live_url}/api/createFile`, {
-                Title: token,
-                Name: name
-            })
-
+            const formdata = new FormData()
+            formdata.append("file", files)
+            formdata.append("name", fileName)
+            formdata.append("Title", token)
+            formdata.append("folderId", selcFolder)
+            const { data } = await axios.post(`${constant?.Live_url}/api/uploadFile`, formdata)
+            if (data?.message) {
+                toast.success(data?.message)
+                handleFilesClose()
+                getFileFromFolder()
+            }
         } catch (error) {
             console.log("🚀 ~ createFolder ~ error:", error)
         }
@@ -360,10 +374,11 @@ export default function Home() {
                                                 new File(["https://dtracer.io/wp-content/uploads/2022/06/LOGO-5-COMPLETO.png"], 'image.png', { type: 'image/png' }) // This is just for demonstration; actual sharing of files may require Blob or File objects.
                                             ],
                                         }}
-                                        onClick={() => console.log('Shared successfully!')}
+                                        onClick={() => console.log('Shared successfully!')}  deleteFolder
                                     > */}
                                     <Button variant="contained">Share</Button>
                                     {/* </RWebShare> */}
+                                    <Button variant="contained" onClick={() => { deleteFolder(selecData?.id) }} >delete</Button>
                                     <Button variant="contained" onClick={() => window.open(`https://drive.google.com/file/d/${selecData?.id}/view?usp=drivesdk`)} >view</Button>
                                     <Button variant="contained" onClick={() => { window.open(`https://drive.google.com/uc?id=${selecData?.id}&export=download`) }
                                     } >download</Button>
@@ -381,7 +396,7 @@ export default function Home() {
                         <Box sx={style}>
                             <Typography id="modal-modal-title" variant="h6" component="h2">
                                 <div style={{ display: "flex", flexDirection: "column" }} >
-                                    <input type="file" />
+                                    <input type="file" onChange={(e) => setFile(e.target.files[0])} />
                                     <TextField id="outlined-basic" label="File Name" variant="outlined" onChange={(e) => setFileName(e.target.value)} />
                                     <Button variant="contained" onClick={() => CreateFile()} >Create</Button>
                                 </div>

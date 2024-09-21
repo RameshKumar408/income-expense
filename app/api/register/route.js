@@ -31,5 +31,4 @@ export async function POST(request) {
             return NextResponse.json({ message: "Register Successfully", status: true }, { status: 200 });
         }
     }
-
 }
