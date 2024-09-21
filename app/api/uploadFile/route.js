@@ -2,6 +2,7 @@
 
 const { google } = require('googleapis');
 import { NextResponse } from "next/server";
+const path = require('path');
 
 
 export async function POST(request) {
@@ -17,14 +18,14 @@ export async function POST(request) {
         }
 
         // Create a path for the uploaded file
-        const uploadPath = `./public/uploads/${file.name}`;
+        const uploadPath = path.join('public', 'uploads', file.name);
 
         // Convert the file to a buffer and save it
         const buffer = Buffer.from(await file.arrayBuffer());
 
         // Ensure the uploads directory exists
         const fs = require('fs');
-        fs.mkdirSync('./public/uploads', { recursive: true });
+        fs.mkdirSync(path.join('./public', 'uploads'), { recursive: true });
 
         // Write the file to the server
         fs.writeFileSync(uploadPath, buffer);
