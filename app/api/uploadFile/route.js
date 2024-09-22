@@ -3,6 +3,8 @@
 const { google } = require('googleapis');
 import { NextResponse } from "next/server";
 const path = require('path');
+import mime from 'mime';
+import { Readable } from 'stream';
 
 
 export async function POST(request) {
@@ -18,17 +20,17 @@ export async function POST(request) {
         }
 
         // Create a path for the uploaded file
-        const uploadPath = path.join('public', 'uploads', file.name);
+        // const uploadPath = path.join('public', 'uploads', file.name);
 
         // Convert the file to a buffer and save it
-        const buffer = Buffer.from(await file.arrayBuffer());
+        // const buffer = Buffer.from(await file.arrayBuffer());
 
         // Ensure the uploads directory exists
-        const fs = require('fs');
+        // const fs = require('fs');
         // fs.mkdirSync(path.join('./public', 'uploads'), { recursive: true });
 
         // Write the file to the server
-        fs.writeFileSync(uploadPath, buffer);
+        // fs.writeFileSync(uploadPath, buffer);
 
         const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID
         const CLIENT_SECRET = process.env.NEXT_PUBLIC_CLIENT_SECRET
@@ -54,18 +56,15 @@ export async function POST(request) {
             name: filename,
             parents: [folderId] // A folder ID to which file will get uploaded
         }
-
+        const fileBuffer = file.stream();
         await drive.files.create({
             resource: fileMetaData,
             media: {
-                body: fs.createReadStream(uploadPath), // files that will get uploaded
+                body: Readable.from(fileBuffer), // files that will get uploaded
                 mimeType: file?.type
             },
             fields: 'id'
         })
-        setTimeout(() => {
-            fs.unlinkSync(uploadPath);
-        }, 2000);
         // Respond with a success message
         return new Response(JSON.stringify({ message: 'File uploaded successfully' }), { status: 200 });
     } catch (error) {
