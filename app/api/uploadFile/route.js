@@ -69,6 +69,6 @@ export async function POST(request) {
         // Respond with a success message
         return new Response(JSON.stringify({ message: 'File uploaded successfully' }), { status: 200 });
     } catch (error) {
-        return new Response(JSON.stringify({ error: 'An error occurred during file upload' }), { status: 500 });
+        return new Response(JSON.stringify({ error: error }), { status: 500 });
     }
 }
