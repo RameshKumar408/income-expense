@@ -25,7 +25,7 @@ export async function POST(request) {
 
         // Ensure the uploads directory exists
         const fs = require('fs');
-        fs.mkdirSync(path.join('./public', 'uploads'), { recursive: true });
+        // fs.mkdirSync(path.join('./public', 'uploads'), { recursive: true });
 
         // Write the file to the server
         fs.writeFileSync(uploadPath, buffer);
