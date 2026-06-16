@@ -16,8 +16,9 @@ export default function Home() {
 
 
   useEffect(() => {
+    var isAdd = window.location.search.includes('add=1')
     var tokens = window.localStorage.getItem("token")
-    if (tokens) {
+    if (tokens && !isAdd) {
       router.push("/createDetail");
     }
   }, [])

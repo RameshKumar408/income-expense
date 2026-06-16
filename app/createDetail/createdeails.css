@@ -152,6 +152,41 @@
     line-height: 1.2;
 }
 
+.account-menu-divider {
+    height: 1px;
+    margin: 4px 0;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.account-menu-action {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 10px;
+    color: #ffffff;
+    background: transparent;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.account-menu-action:hover {
+    background: #222;
+}
+
+.account-menu-action.danger {
+    color: #ff4444;
+}
+
+.account-menu-action.danger:hover {
+    background: rgba(255, 68, 68, 0.1);
+}
+
 .expense-form {
     display: flex;
     flex-direction: column;
@@ -1130,7 +1165,7 @@
     }
 
     .account-pill {
-        max-width: 50%;
+        max-width: 1000%;
         padding: 8px 10px;
         font-size: 13px;
     }

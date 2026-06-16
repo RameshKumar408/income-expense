@@ -18,9 +18,12 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import constant from '@/constant';
 import { decodeToken } from '@/libs/jwt';
 import { toast } from 'react-toastify';
@@ -210,6 +213,7 @@ export default function Home() {
     const [currentUser, setCurrentUser] = useState(null)
     const [showAccountMenu, setShowAccountMenu] = useState(false)
     const accountRef = useRef(null)
+    const router = useRouter()
 
     const loadAccounts = () => {
         try {
@@ -242,6 +246,32 @@ export default function Home() {
         setShowAccountMenu(false)
         toast.success(`Switched to ${account.email}`)
         setTimeout(() => window.location.reload(), 600)
+    }
+
+    const logoutAccount = () => {
+        var activeEmail = window.localStorage.getItem('activeAccount')
+        var list = JSON.parse(window.localStorage.getItem('accounts') || '[]')
+        if (list.length > 1) {
+            var remaining = list.filter(a => a.email != activeEmail)
+            window.localStorage.setItem('accounts', JSON.stringify(remaining))
+            var next = remaining[0]
+            window.localStorage.setItem('token', next.token)
+            window.localStorage.setItem('roles', next.role)
+            window.localStorage.setItem('activeAccount', next.email)
+            setShowAccountMenu(false)
+            toast.success(`Removed account. Switched to ${next.email}`)
+            setTimeout(() => window.location.reload(), 600)
+        } else {
+            window.localStorage.setItem('accounts', JSON.stringify([]))
+            window.localStorage.removeItem("token");
+            window.localStorage.removeItem("roles");
+            window.localStorage.removeItem("activeAccount");
+            router.push('/');
+        }
+    }
+
+    const addAccount = () => {
+        router.push('/?add=1');
     }
 
     useEffect(() => {
@@ -280,6 +310,15 @@ export default function Home() {
                                             <span className='account-menu-email'>{acc.email}</span>
                                         </button>
                                     ))}
+                                    <div className='account-menu-divider' />
+                                    <button className='account-menu-action' type='button' onClick={addAccount}>
+                                        <PersonAddIcon fontSize='small' />
+                                        <span>Add account</span>
+                                    </button>
+                                    <button className='account-menu-action danger' type='button' onClick={logoutAccount}>
+                                        <LogoutIcon fontSize='small' />
+                                        <span>{accounts.length > 1 ? 'Remove account' : 'Logout'}</span>
+                                    </button>
                                 </div>
                             }
                         </div>
