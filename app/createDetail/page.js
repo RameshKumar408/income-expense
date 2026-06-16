@@ -19,9 +19,10 @@ import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import constant from '@/constant';
+import { decodeToken } from '@/libs/jwt';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import dayjs from 'dayjs';
@@ -74,14 +75,39 @@ export default function Home() {
         setSelectedDateError()
     };
 
-    const titleSuggestions = ['Snacks', 'Chit', 'Petrol', 'Palasaraku', 'Food'];
+    const [titleSuggestions, setTitleSuggestions] = useState([]);
+
+    useEffect(() => {
+        const fetchTitles = async () => {
+            try {
+                var threeMonthsAgo = dayjs().subtract(3, 'month').startOf('day').valueOf()
+                var now = dayjs().endOf('day').valueOf()
+                var res = await fetch(`${constant?.Live_url}/api/getDateRange`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json',
+                        authorization: window.localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({ From: threeMonthsAgo, To: now }),
+                })
+                var data = await res.json()
+                if (data?.topics?.length) {
+                    var unique = [...new Set(data.topics.map(t => t.Title).filter(Boolean))]
+                    setTitleSuggestions(unique)
+                }
+            } catch (error) {
+                console.log('Error fetching titles:', error)
+            }
+        }
+        fetchTitles()
+    }, [])
 
     const inputSx = {
         '& .MuiOutlinedInput-root': {
             color: '#ffffff',
             backgroundColor: '#151515',
             borderRadius: { xs: '12px', sm: '14px' },
-            fontSize: { xs: '15px', sm: '20px' },
+            fontSize: { xs: '13px', sm: '20px' },
             minHeight: { xs: '48px', sm: '66px' },
             '& fieldset': {
                 borderColor: '#666a72',
@@ -109,7 +135,7 @@ export default function Home() {
         color: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
         backgroundColor: '#050505',
         borderRadius: { xs: '12px', sm: '14px' },
-        fontSize: { xs: '15px', sm: '20px' },
+        fontSize: { xs: '13px', sm: '20px' },
         fontWeight: 700,
         minHeight: { xs: '48px', sm: '66px' },
         '& .MuiOutlinedInput-notchedOutline': {
@@ -156,11 +182,19 @@ export default function Home() {
                     body: JSON.stringify({ Title: topic, Amount: amount, Type: type, Description: description, Date: selectedDate, TimeStamp: TimeStamp }),
                 });
                 if (res?.ok) {
-                    // router.push("/");
                     toast.success("Created Successfully");
-                    // setTimeout(() => {
-                    //     window.location.reload();
-                    // }, 1000);
+                    setDateValue(dayjs());
+                    setSelectedDate(dayjs().format('YYYY-MM-DD'));
+                    setTopic('');
+                    setDescription('');
+                    setAmount('');
+                    setType('Expense');
+                    setTimeStamp(dayjs().valueOf());
+                    setSelectedDateError('');
+                    setTopicError('');
+                    setDescriptionError('');
+                    setAmountError('');
+                    setTypeError('');
                 } else {
                     toast.error("Something went wrong");
                     throw new Error("Failed to create a topic");
@@ -172,18 +206,49 @@ export default function Home() {
     }
 
     const [role, setRole] = useState()
+    const [accounts, setAccounts] = useState([])
+    const [currentUser, setCurrentUser] = useState(null)
+    const [showAccountMenu, setShowAccountMenu] = useState(false)
+    const accountRef = useRef(null)
 
-    const getrole = () => {
+    const loadAccounts = () => {
         try {
-            setRole(window.localStorage.getItem("roles"))
+            var token = window.localStorage.getItem('token')
+            var activeEmail = window.localStorage.getItem('activeAccount')
+            var list = JSON.parse(window.localStorage.getItem('accounts') || '[]')
+            setAccounts(list)
+            setRole(window.localStorage.getItem('roles'))
+            var active = list.find(a => a.email == activeEmail) || list.find(a => a.token == token) || list[0]
+            if (active) {
+                setCurrentUser(active)
+                if (active.email != activeEmail) {
+                    window.localStorage.setItem('activeAccount', active.email)
+                }
+            } else if (token) {
+                var decoded = decodeToken(token)
+                if (decoded) {
+                    setCurrentUser({ email: decoded.email, name: decoded.name, token: token, role: decoded.role })
+                }
+            }
         } catch (error) {
-            console.log("🚀 ~ getrole ~ error:", error)
-
+            console.log("🚀 ~ loadAccounts ~ error:", error)
         }
     }
 
+    const switchAccount = (account) => {
+        window.localStorage.setItem('token', account.token)
+        window.localStorage.setItem('roles', account.role)
+        window.localStorage.setItem('activeAccount', account.email)
+        setShowAccountMenu(false)
+        toast.success(`Switched to ${account.email}`)
+        setTimeout(() => window.location.reload(), 600)
+    }
+
     useEffect(() => {
-        getrole()
+        loadAccounts()
+        var handleClick = (e) => { if (accountRef.current && !accountRef.current.contains(e.target)) setShowAccountMenu(false) }
+        document.addEventListener('mousedown', handleClick)
+        return () => document.removeEventListener('mousedown', handleClick)
     }, [])
 
     return (
@@ -197,10 +262,27 @@ export default function Home() {
                             </span>
                             <h1>Expenses</h1>
                         </div>
-                        <button type='button' className='account-pill'>
-                            <span>ckramesh</span>
-                            <ExpandMoreIcon fontSize='small' />
-                        </button>
+                        <div className='account-wrapper' ref={accountRef}>
+                            <button type='button' className='account-pill' onClick={() => setShowAccountMenu(!showAccountMenu)}>
+                                <span>{currentUser?.name || 'Account'}</span>
+                                <ExpandMoreIcon fontSize='small' />
+                            </button>
+                            {showAccountMenu && accounts.length > 0 &&
+                                <div className='account-menu'>
+                                    {accounts.map((acc) => (
+                                        <button
+                                            key={acc.email}
+                                            className={`account-menu-item ${acc.email == currentUser?.email ? 'active' : ''}`}
+                                            type='button'
+                                            onClick={() => { if (acc.email != currentUser?.email) switchAccount(acc) }}
+                                        >
+                                            <span className='account-menu-name'>{acc.name}</span>
+                                            <span className='account-menu-email'>{acc.email}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            }
+                        </div>
                     </header>
 
                     <form className='expense-form' onSubmit={handleSubmit}>
@@ -233,18 +315,20 @@ export default function Home() {
                                 sx={inputSx}
                                 fullWidth
                             />
-                            <div className='suggestion-row' aria-label='Title suggestions'>
-                                {titleSuggestions.map((item) => (
-                                    <button
-                                        type='button'
-                                        className='suggestion-chip'
-                                        key={item}
-                                        onClick={() => { setTopic(item); setTopicError(""); }}
-                                    >
-                                        {item}
-                                    </button>
-                                ))}
-                            </div>
+                            {titleSuggestions.length > 0 &&
+                                <div className='suggestion-row' aria-label='Title suggestions'>
+                                    {titleSuggestions.filter(s => !topic || s.toLowerCase().includes(topic.toLowerCase())).map((item) => (
+                                        <button
+                                            type='button'
+                                            className='suggestion-chip'
+                                            key={item}
+                                            onClick={() => { setTopic(item); setTopicError(""); }}
+                                        >
+                                            {item}
+                                        </button>
+                                    ))}
+                                </div>
+                            }
                             {topicError ? <div className='field-error'>{topicError}</div> : <></>}
                         </div>
 

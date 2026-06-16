@@ -8,7 +8,7 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import CalculateIcon from '@mui/icons-material/Calculate';
 
@@ -29,6 +29,7 @@ export default function Page() {
     const [calcHistory, setCalcHistory] = useState([]);
     const [selectedRecord, setSelectedRecord] = useState(null);
     const [touchStartX, setTouchStartX] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const formatIndianNumber = (num) => {
         const value = Number(num || 0);
@@ -44,8 +45,8 @@ export default function Page() {
     const formatInputDate = (value) => dayjs(value).format('DD MMMM YYYY');
 
     const formatHistoryDate = (row) => {
-        const date = row?.createdAt ? dayjs(row.createdAt) : dayjs(row?.TimeStamp);
-        return date.isValid() ? date.format('DD-MMM-YY hh:mm A') : '';
+        const date = row?.TimeStamp ? dayjs(row.TimeStamp) : null;
+        return date?.isValid() ? date.format('DD-MMM-YY hh:mm A') : '';
     };
 
     const saveCalcHistory = (history) => {
@@ -55,6 +56,7 @@ export default function Page() {
 
     const getDetails = useCallback(async ({ text = '', requestRole = '', userId = '' } = {}) => {
         try {
+            setLoading(true);
             const fromTimestamp = dateToStart(from);
             const toTimestamp = dateToEnd(to);
             const body = {
@@ -68,6 +70,7 @@ export default function Page() {
 
             if (requestRole == 'admin') {
                 if (!userId) {
+                    setLoading(false);
                     return;
                 }
                 body.id = userId;
@@ -93,6 +96,8 @@ export default function Page() {
             setTotalCount(response?.totalCount?.[0] || null);
         } catch (error) {
             console.log('Error loading topics: ', error);
+        } finally {
+            setLoading(false);
         }
     }, [from, to, router]);
 
@@ -239,6 +244,11 @@ export default function Page() {
                         <button type='submit' aria-label='Search'>
                             <SearchIcon />
                         </button>
+                        {searchText && (
+                            <button className='history-search-clear' type='button' aria-label='Clear search' onClick={() => { setSearchText(''); getDetails({ requestRole: role, userId: selectedUser }) }}>
+                                Clear
+                            </button>
+                        )}
                     </form>
                 }
 
@@ -267,11 +277,11 @@ export default function Page() {
                         <input value={to} type='date' onChange={(e) => { setTo(e.target.value) }} />
                         <em>{formatInputDate(to)}</em>
                     </label>
-
-                    <button className='history-date-submit' type='submit' aria-label='Apply date search'>
-                        <ArrowForwardIcon />
-                    </button>
                 </form>
+
+                <button className='history-reset-btn' type='button' onClick={() => { setFrom(dayjs().startOf('month').format('YYYY-MM-DD')); setTo(dayjs().format('YYYY-MM-DD')) }}>
+                    <RestartAltIcon /> Reset
+                </button>
 
                 <div className='history-sort-row' aria-label='Sort history'>
                     <button type='button' onClick={() => { setSortKey('title') }}>
@@ -286,7 +296,9 @@ export default function Page() {
                 </div>
 
                 <section className='history-list' aria-label='History records'>
-                    {filteredDatas?.length > 0 ? filteredDatas.map((row, index) => (
+                    {loading ? (
+                        <div className='history-loader' />
+                    ) : filteredDatas?.length > 0 ? filteredDatas.map((row, index) => (
                         <button
                             className={`history-card ${index % 2 == 0 ? 'muted' : ''}`}
                             key={row?._id}

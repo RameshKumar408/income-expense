@@ -26,7 +26,7 @@ export async function POST(request) {
                 };
 
                 // Generate the token with a secret key
-                const token = jwt.sign(payload, process.env.SECRET);
+                const token = jwt.sign(payload, process.env.SECRET, { expiresIn: '1y' });
                 console.log('Password is correct');
 
                 return NextResponse.json({ message: "Login Successfully", result: token, status: true }, { status: 200 });

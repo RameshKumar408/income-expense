@@ -39,6 +39,25 @@
     letter-spacing: 0;
 }
 
+.expense-back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    color: #ffffff;
+    background: transparent;
+    cursor: pointer;
+}
+
+.expense-back-btn svg {
+    width: 30px;
+    height: 30px;
+}
+
 .expense-title-icon {
     display: inline-flex;
     align-items: center;
@@ -74,6 +93,65 @@
     white-space: nowrap;
 }
 
+.account-wrapper {
+    position: relative;
+}
+
+.account-pill-email {
+    direction: rtl;
+    text-align: left;
+}
+
+.account-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 30;
+    min-width: 220px;
+    padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 14px;
+    background: #1a1a1a;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+}
+
+.account-menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    width: 100%;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 10px;
+    color: #ffffff;
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.account-menu-item.active {
+    background: #2a2d36;
+}
+
+.account-menu-item:not(.active):hover {
+    background: #222;
+}
+
+.account-menu-name {
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.account-menu-email {
+    font-size: 12px;
+    font-weight: 600;
+    color: #8f8f93;
+    line-height: 1.2;
+}
+
 .expense-form {
     display: flex;
     flex-direction: column;
@@ -89,7 +167,7 @@
 
 .form-row {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 18px;
 }
 
@@ -411,7 +489,7 @@
 
 .history-search-form {
     display: grid;
-    grid-template-columns: 1fr 48px;
+    grid-template-columns: 1fr auto auto;
     gap: 10px;
     margin-bottom: 18px;
 }
@@ -431,8 +509,7 @@
     outline: 0;
 }
 
-.history-search-form button,
-.history-date-submit {
+.history-search-form button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -442,8 +519,15 @@
     cursor: pointer;
 }
 
-.history-search-form button svg,
-.history-date-submit svg {
+.history-search-clear {
+    font: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    white-space: nowrap;
+    padding: 0 4px;
+}
+
+.history-search-form button svg {
     width: 34px;
     height: 34px;
 }
@@ -454,7 +538,7 @@
 
 .history-date-form {
     display: grid;
-    grid-template-columns: 1fr 1fr 44px;
+    grid-template-columns: 1fr 1fr;
     align-items: end;
     gap: 18px;
     margin-bottom: 24px;
@@ -505,8 +589,24 @@
     cursor: pointer;
 }
 
-.history-date-submit {
-    height: 66px;
+.history-reset-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+    padding: 0;
+    border: 0;
+    color: #ff9b00;
+    background: transparent;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.history-reset-btn svg {
+    width: 20px;
+    height: 20px;
 }
 
 .history-sort-row {
@@ -624,6 +724,29 @@
     font-weight: 700;
 }
 
+.history-loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+}
+
+.history-loader::after {
+    content: '';
+    width: 32px;
+    height: 32px;
+    border: 3px solid #343844;
+    border-top-color: #ff9b00;
+    border-radius: 50%;
+    animation: history-spin 0.7s linear infinite;
+}
+
+@keyframes history-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .history-floating-actions {
     pointer-events: none;
     position: fixed;
@@ -637,7 +760,7 @@
     transform: translateX(-50%);
 }
 
-.history-floating-actions > * {
+.history-floating-actions>* {
     pointer-events: auto;
 }
 
@@ -997,7 +1120,7 @@
     }
 
     .expense-title-wrap h1 {
-        font-size: 30px;
+        font-size: 24px;
     }
 
     .expense-title-icon {
@@ -1007,9 +1130,9 @@
     }
 
     .account-pill {
-        max-width: 34%;
+        max-width: 50%;
         padding: 8px 10px;
-        font-size: 14px;
+        font-size: 13px;
     }
 
     .expense-form {
@@ -1021,11 +1144,7 @@
     }
 
     .form-group label {
-        font-size: 16px;
-    }
-
-    .form-row {
-        gap: 10px;
+        font-size: 14px;
     }
 
     .suggestion-row {
@@ -1035,18 +1154,18 @@
 
     .suggestion-chip {
         padding: 8px 14px;
-        font-size: 15px;
+        font-size: 13px;
     }
 
     .field-error {
-        font-size: 13px;
+        font-size: 12px;
     }
 
     .add-data-btn.MuiButton-root {
         min-height: 48px;
         margin-top: 2px;
         border-radius: 12px;
-        font-size: 16px;
+        font-size: 14px;
     }
 
     .bottom-nav {
@@ -1076,7 +1195,7 @@
     }
 
     .settings-header h1 {
-        font-size: 30px;
+        font-size: 24px;
     }
 
     .settings-title-icon {
@@ -1093,7 +1212,7 @@
         min-height: 58px;
         padding: 0 16px;
         border-radius: 12px;
-        font-size: 17px;
+        font-size: 15px;
     }
 
     .settings-action svg {
@@ -1109,7 +1228,7 @@
     .delete-data-btn.MuiButton-root {
         min-height: 48px;
         border-radius: 12px;
-        font-size: 16px;
+        font-size: 14px;
     }
 
     .history-shell {
@@ -1125,7 +1244,7 @@
     }
 
     .history-title-wrap h1 {
-        font-size: 30px;
+        font-size: 24px;
     }
 
     .history-title-icon,
@@ -1145,7 +1264,7 @@
     }
 
     .history-date-form {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 34px;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         gap: 12px;
         margin-bottom: 18px;
     }
@@ -1155,24 +1274,14 @@
     }
 
     .history-date-form label span {
-        font-size: 18px;
+        font-size: 15px;
     }
 
     .history-date-form label em {
         min-height: 52px;
         padding: 0 12px;
         border-radius: 10px;
-        font-size: 17px;
-    }
-
-    .history-date-form label input,
-    .history-date-submit {
-        height: 52px;
-    }
-
-    .history-date-submit svg {
-        width: 30px;
-        height: 30px;
+        font-size: 14px;
     }
 
     .history-sort-row {
@@ -1182,7 +1291,7 @@
 
     .history-sort-row button {
         gap: 8px;
-        font-size: 21px;
+        font-size: 17px;
     }
 
     .history-sort-row span {
@@ -1202,15 +1311,15 @@
     }
 
     .history-card strong {
-        font-size: 21px;
-    }
-
-    .history-card small {
         font-size: 17px;
     }
 
+    .history-card small {
+        font-size: 14px;
+    }
+
     .history-card b {
-        font-size: 20px;
+        font-size: 16px;
     }
 
     .history-floating-actions {
@@ -1229,11 +1338,11 @@
     }
 
     .history-balance span {
-        font-size: 15px;
+        font-size: 13px;
     }
 
     .history-balance strong {
-        font-size: 19px;
+        font-size: 16px;
     }
 
     .history-round-btn {
@@ -1262,12 +1371,12 @@
     }
 
     .expense-title-wrap h1 {
-        font-size: 27px;
+        font-size: 22px;
     }
 
     .account-pill {
-        max-width: 32%;
-        font-size: 13px;
+        max-width: 100%;
+        font-size: 12px;
     }
 
     .bottom-nav {
@@ -1282,7 +1391,7 @@
     }
 
     .expense-title-wrap h1 {
-        font-size: 24px;
+        font-size: 20px;
     }
 
     .expense-title-icon {
@@ -1292,12 +1401,9 @@
 
     .account-pill {
         padding: 7px 8px;
-        font-size: 12px;
+        font-size: 11px;
     }
 
-    .form-row {
-        grid-template-columns: 1fr;
-    }
 }
 
 @media (max-width: 520px) and (max-height: 700px) {
@@ -1311,7 +1417,7 @@
     }
 
     .expense-title-wrap h1 {
-        font-size: 28px;
+        font-size: 22px;
     }
 
     .expense-form {
@@ -1347,7 +1453,7 @@
 
     .settings-action {
         min-height: 54px;
-        font-size: 16px;
+        font-size: 14px;
     }
 
     .history-shell {
@@ -1364,21 +1470,20 @@
     }
 
     .history-date-form label span {
-        font-size: 16px;
+        font-size: 14px;
     }
 
     .history-date-form label em {
         min-height: 46px;
-        font-size: 15px;
+        font-size: 13px;
     }
 
-    .history-date-form label input,
-    .history-date-submit {
+    .history-date-form label input {
         height: 46px;
     }
 
     .history-sort-row button {
-        font-size: 18px;
+        font-size: 15px;
     }
 
     .history-card {
@@ -1387,15 +1492,15 @@
     }
 
     .history-card strong {
-        font-size: 19px;
+        font-size: 16px;
     }
 
     .history-card small {
-        font-size: 15px;
+        font-size: 13px;
     }
 
     .history-card b {
-        font-size: 18px;
+        font-size: 15px;
     }
 
     .history-floating-actions {
@@ -1408,11 +1513,11 @@
     }
 
     .history-balance span {
-        font-size: 13px;
+        font-size: 12px;
     }
 
     .history-balance strong {
-        font-size: 17px;
+        font-size: 14px;
     }
 
 }

@@ -29,12 +29,11 @@ export async function POST(req) {
                         }
                     }).sort({ TimeStamp: -1 });
                 } else {
-                    console.log("logs one")
                     resp = await Income.find({
                         User_id: id,
                         TimeStamp: {
-                            $gte: From, // Greater than or equal to 18
-                            $lte: To
+                            $gte: Number(From),
+                            $lte: Number(To)
                         }
                     }).sort({ TimeStamp: -1 });
                 }
@@ -124,8 +123,8 @@ export async function POST(req) {
                     resp = await Income.find({
                         User_id: user?.userId,
                         TimeStamp: {
-                            $gte: From, // Greater than or equal to 18
-                            $lte: To
+                            $gte: Number(From),
+                            $lte: Number(To)
                         }
                     }).sort({ TimeStamp: -1 });
                 }

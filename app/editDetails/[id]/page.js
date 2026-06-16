@@ -11,6 +11,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import CloseIcon from '@mui/icons-material/Close';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
@@ -51,7 +52,7 @@ export default function Home({ params }) {
             color: '#ffffff',
             backgroundColor: '#151515',
             borderRadius: { xs: '12px', sm: '14px' },
-            fontSize: { xs: '15px', sm: '20px' },
+            fontSize: { xs: '13px', sm: '20px' },
             minHeight: { xs: '48px', sm: '66px' },
             '& fieldset': {
                 borderColor: '#666a72',
@@ -79,7 +80,7 @@ export default function Home({ params }) {
         color: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
         backgroundColor: '#050505',
         borderRadius: { xs: '12px', sm: '14px' },
-        fontSize: { xs: '15px', sm: '20px' },
+        fontSize: { xs: '13px', sm: '20px' },
         fontWeight: 700,
         minHeight: { xs: '48px', sm: '66px' },
         '& .MuiOutlinedInput-notchedOutline': {
@@ -251,6 +252,9 @@ export default function Home({ params }) {
             <main className='expense-shell edit-shell'>
                 <header className='expense-header'>
                     <div className='expense-title-wrap'>
+                        <button className='expense-back-btn' type='button' aria-label='Go back' onClick={() => router.back()}>
+                            <ArrowBackIcon />
+                        </button>
                         <span className='expense-title-icon'>
                             <EditNoteIcon fontSize='small' />
                         </span>

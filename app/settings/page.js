@@ -17,6 +17,7 @@ export default function SettingsPage() {
     const clearSession = () => {
         window.localStorage.removeItem("token");
         window.localStorage.removeItem("roles");
+        window.localStorage.removeItem("activeAccount");
     };
 
     const logout = () => {
@@ -25,8 +26,7 @@ export default function SettingsPage() {
     };
 
     const switchAccount = () => {
-        clearSession();
-        router.push('/');
+        router.push('/createDetail');
     };
 
     useEffect(() => {

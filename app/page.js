@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import constant from '@/constant';
-// import dbConnect from "../libs/mongodb";
+import { decodeToken } from '@/libs/jwt';
 import { toast } from 'react-toastify';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import './loginRegister.css'
 
 export default function Home() {
@@ -27,6 +28,7 @@ export default function Home() {
 
   const [topicError, setTopicError] = useState('')
   const [amountError, setAmountError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   const router = useRouter();
 
@@ -47,10 +49,17 @@ export default function Home() {
         });
         var resps = await res?.json()
         if (resps?.status) {
-          window.localStorage.setItem("token", resps?.result)
-          if (topic == "admin@admin.com") {
-            window.localStorage.setItem("roles", "admin")
-          }
+          var token = resps?.result
+          var user = decodeToken(token)
+          var existing = JSON.parse(window.localStorage.getItem('accounts') || '[]')
+          var idx = existing.findIndex(a => a.email == user?.email)
+          var account = { email: user?.email, name: user?.name, token: token, role: user?.email == 'admin@admin.com' ? 'admin' : 'user' }
+          if (idx >= 0) existing[idx] = account
+          else existing.push(account)
+          window.localStorage.setItem('accounts', JSON.stringify(existing))
+          window.localStorage.setItem('activeAccount', user?.email)
+          window.localStorage.setItem("token", token)
+          window.localStorage.setItem("roles", account.role)
           toast.success("Logged In Successfully");
           setTimeout(() => {
             router.push("/createDetail");
@@ -92,12 +101,12 @@ export default function Home() {
               <input
                 value={amount}
                 placeholder="Password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 onChange={(e) => { setAmount(e.target.value); setAmountError() }}
               />
-              <span className="password-toggle" aria-hidden="true">
-                <VisibilityOffOutlinedIcon />
-              </span>
+              <button className="password-toggle" type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
+              </button>
               {amountError ? <div className="auth-error">{amountError}</div> : <></>}
             </div>
           </div>
