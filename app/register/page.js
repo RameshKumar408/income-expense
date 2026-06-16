@@ -14,10 +14,12 @@
 // import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 import { useState } from 'react';
-// import Link from 'next/link';
 import { useRouter } from "next/navigation";
+import Link from 'next/link';
 import constant from '@/constant';
 import { toast } from 'react-toastify';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import '../loginRegister.css'
 
 export default function Home() {
@@ -25,10 +27,14 @@ export default function Home() {
     const [name, setname] = useState('')
     const [email, setemail] = useState('');
     const [password, setpassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const [nameError, setnameError] = useState('')
     const [emailError, setemailError] = useState('')
     const [passwordError, setpasswordError] = useState('')
+    const [confirmPasswordError, setConfirmPasswordError] = useState('')
 
     const router = useRouter();
 
@@ -41,6 +47,10 @@ export default function Home() {
                 setemailError("Please Enter Email");
             } else if ((password == "")) {
                 setpasswordError("Please Enter Password")
+            } else if (confirmPassword == "") {
+                setConfirmPasswordError("Please Enter Confirm Password")
+            } else if (password !== confirmPassword) {
+                setConfirmPasswordError("Password does not match")
             } else {
                 const res = await fetch(`${constant?.Live_url}/api/register`, {
                     method: "POST",
@@ -65,89 +75,88 @@ export default function Home() {
     }
 
     return (
-        // <>
-        //     <div style={{ marginTop: "10px" }}>
-        //         <Box
-        //             component="form"
-        //             sx={{
-        //                 '& > :not(style)': { m: 1, width: '28ch' },
-        //             }}
-        //             noValidate
-        //             autoComplete="off"
-        //             style={{ textAlign: "center" }}
-        //         >
-        //             <TextField id="outlined-basic" label="Name" variant="outlined" onChange={(e) => { setname(e.target.value); setnameError("") }} />
-        //         </Box>
-        //         {nameError ? <div style={{ textAlign: "center", color: "red" }}>{nameError}</div> : <></>}
-        //     </div>
-
-        //     <div style={{ marginTop: "10px" }}>
-        //         <Box
-        //             component="form"
-        //             sx={{
-        //                 '& > :not(style)': { m: 1, width: '28ch' },
-        //             }}
-        //             noValidate
-        //             autoComplete="off"
-        //             style={{ textAlign: "center" }}
-        //         >
-        //             <TextField type='email' id="outlined-basic" label="Email" variant="outlined" onChange={(e) => { setemail(e.target.value); setemailError("") }} />
-        //         </Box>
-        //         {emailError ? <div style={{ textAlign: "center", color: "red" }}>{emailError}</div> : <></>}
-        //     </div>
-
-        //     <div>
-        //         <Box
-        //             component="form"
-        //             sx={{
-        //                 '& > :not(style)': { m: 1, width: '28ch' },
-        //             }}
-        //             noValidate
-        //             autoComplete="off"
-        //             style={{ textAlign: "center" }}
-        //         >
-        //             <TextField id="outlined-basic" label="Password" variant="outlined" onChange={(e) => { setpassword(e.target.value); setpasswordError() }} />
-        //         </Box>
-        //         {passwordError ? <div style={{ textAlign: "center", color: "red" }}>{passwordError}</div> : <></>}
-        //     </div>
-
-        //     <div style={{ textAlign: "center", marginTop: "10px" }}>
-        //         <Button variant="outlined" onClick={(e) => { handleSubmit(e) }}>Submit</Button>
-        //     </div>
-
-        //     <div style={{ textAlign: "center", marginTop: "10px" }}>
-        //         <Button variant="outlined" onClick={() => { router.back() }}>Login</Button>
-        //     </div>
-        // </>
-
         <>
-            <div className="content">
-                <div className="container">
-                    <img className="bg-img" src="https://mariongrandvincent.github.io/HTML-Personal-website/img-codePen/bg.jpg" alt="" />
-
-                    <div className="enregistrer">
-                        <div className="contact-form">
-                            <label>USERNAME</label>
-                            <input placeholder="" type="text" onChange={(e) => { setname(e.target.value); setnameError("") }} />
-                            {nameError ? <div style={{ textAlign: "center", color: "#db7777", fontSize: "18px", marginTop: "2%" }}>{nameError}</div> : <></>}
-
-                            <label>E-MAIL</label>
-                            <input placeholder="" type="email" onChange={(e) => { setemail(e.target.value); setemailError("") }} />
-                            {emailError ? <div style={{ textAlign: "center", color: "#db7777", fontSize: "18px", marginTop: "2%" }}>{emailError}</div> : <></>}
-
-                            <label>PASSWORD</label>
-                            <input placeholder="" type="text" onChange={(e) => { setpassword(e.target.value); setpasswordError() }} />
-                            {passwordError ? <div style={{ textAlign: "center", color: "#db7777", fontSize: "18px", marginTop: "2%" }}>{passwordError}</div> : <></>}
-
-                            <div className="check">
-                                <input className="submit" value="SIGN UP" type="submit" onClick={(e) => { handleSubmit(e) }} />
-                            </div>
+            <main className="register-page">
+                <form className="register-panel" onSubmit={handleSubmit}>
+                    <div className="register-heading">
+                        <div className="register-art" aria-hidden="true">
+                            <span className="register-art-top"></span>
+                            <span className="register-art-user"></span>
+                            <span className="register-art-check one"></span>
+                            <span className="register-art-check two"></span>
+                            <span className="register-art-line one"></span>
+                            <span className="register-art-line two"></span>
                         </div>
-                        <hr />
-                        <a href="/"><h4>login</h4></a>
+                        <h1>Register</h1>
                     </div>
-                </div>
-            </div>
+
+                    <div className="register-fields">
+                        <div className="register-field">
+                            <input
+                                value={name}
+                                placeholder="Name"
+                                type="text"
+                                onChange={(e) => { setname(e.target.value); setnameError("") }}
+                            />
+                            {nameError ? <div className="register-error">{nameError}</div> : <></>}
+                        </div>
+
+                        <div className="register-field">
+                            <input
+                                value={email}
+                                placeholder="Email"
+                                type="email"
+                                onChange={(e) => { setemail(e.target.value); setemailError("") }}
+                            />
+                            {emailError ? <div className="register-error">{emailError}</div> : <></>}
+                        </div>
+
+                        <div className="register-field password-field">
+                            <input
+                                value={password}
+                                placeholder="Password"
+                                type={showPassword ? "text" : "password"}
+                                onChange={(e) => { setpassword(e.target.value); setpasswordError(""); setConfirmPasswordError(""); }}
+                            />
+                            <button
+                                className="password-toggle"
+                                type="button"
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                onClick={() => { setShowPassword(!showPassword) }}
+                            >
+                                {showPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
+                            </button>
+                            {passwordError ? <div className="register-error">{passwordError}</div> : <></>}
+                        </div>
+
+                        <div className="register-field password-field">
+                            <input
+                                value={confirmPassword}
+                                placeholder="Confirm Password"
+                                type={showConfirmPassword ? "text" : "password"}
+                                onChange={(e) => { setConfirmPassword(e.target.value); setConfirmPasswordError(""); }}
+                            />
+                            <button
+                                className="password-toggle"
+                                type="button"
+                                aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                                onClick={() => { setShowConfirmPassword(!showConfirmPassword) }}
+                            >
+                                {showConfirmPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
+                            </button>
+                            {confirmPasswordError ? <div className="register-error">{confirmPasswordError}</div> : <></>}
+                        </div>
+                    </div>
+
+                    <button className="register-submit" type="submit">
+                        Register
+                    </button>
+
+                    <Link className="register-login-link" href="/">
+                        Login
+                    </Link>
+                </form>
+            </main>
         </>
     );
 }

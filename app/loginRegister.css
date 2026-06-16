@@ -1,7 +1,740 @@
 body {
     font-family: 'Open Sans', sans-serif;
     font-weight: 500;
-    color: #fff
+    color: #fff;
+    background: #000000;
+}
+
+.login-page {
+    position: relative;
+    isolation: isolate;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 44px 22px;
+    background: #000000;
+    color: #ffffff;
+    overflow-x: hidden;
+    pointer-events: auto;
+}
+
+.login-panel {
+    position: relative;
+    z-index: 20;
+    box-sizing: border-box;
+    width: min(100%, 420px);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 28px;
+    pointer-events: auto;
+}
+
+.login-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    margin-bottom: 28px;
+}
+
+.login-heading h1 {
+    margin: 0;
+    color: #ffffff;
+    text-shadow: none;
+    font-size: clamp(34px, 9vw, 46px);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: 0;
+}
+
+.login-avatar.MuiSvgIcon-root {
+    width: clamp(136px, 34vw, 170px);
+    height: clamp(136px, 34vw, 170px);
+    color: #f29a00;
+}
+
+.login-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.login-field {
+    position: relative;
+}
+
+.login-field input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 76px;
+    margin: 0;
+    padding: 0 40px;
+    border: 2px solid #5f6066;
+    border-radius: 14px;
+    outline: 0;
+    color: #ffffff;
+    background: #151515;
+    font: inherit;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.2;
+    opacity: 1;
+}
+
+.login-field input::placeholder {
+    color: #8f8f93;
+    opacity: 1;
+}
+
+.login-field input:focus {
+    border-color: #8b8d95;
+}
+
+.login-field.password-field input {
+    padding-right: 78px;
+}
+
+.login-field .password-toggle {
+    position: absolute;
+    top: 38px;
+    right: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 2;
+    color: #ffffff;
+    pointer-events: auto;
+    touch-action: manipulation;
+}
+
+.login-field .password-toggle svg {
+    width: 38px;
+    height: 38px;
+}
+
+.auth-error {
+    margin-top: 8px;
+    color: #ff5a5f;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.forgot-password-btn {
+    position: relative;
+    z-index: 30;
+    align-self: flex-end;
+    padding: 0;
+    border: 0;
+    color: #ffffff;
+    background: transparent;
+    font: inherit;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.1;
+    cursor: pointer;
+    pointer-events: auto;
+    touch-action: manipulation;
+}
+
+.login-submit {
+    position: relative;
+    z-index: 30;
+    min-height: 78px;
+    border: 0;
+    border-radius: 14px;
+    color: #ffffff;
+    background: linear-gradient(100deg, #ff3034 0%, #a0499c 50%, #126fe8 100%);
+    font: inherit;
+    font-size: 24px;
+    font-weight: 900;
+    cursor: pointer;
+    pointer-events: auto;
+    touch-action: manipulation;
+}
+
+.login-register-link {
+    position: relative;
+    z-index: 30;
+    align-self: center;
+    color: #ffffff;
+    font-size: 23px;
+    font-weight: 900;
+    line-height: 1;
+    text-decoration: none;
+    pointer-events: auto;
+}
+
+.login-submit:focus-visible,
+.login-register-link:focus-visible,
+.forgot-password-btn:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 4px;
+}
+
+@media (max-width: 520px) {
+    .login-page {
+        align-items: flex-start;
+        padding: 170px 20px 36px;
+    }
+
+    .login-panel {
+        max-width: 100%;
+        gap: 24px;
+    }
+
+    .login-heading {
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    .login-fields {
+        gap: 22px;
+    }
+
+    .login-field input {
+        min-height: 60px;
+        padding: 0 26px;
+        border-radius: 12px;
+        font-size: 19px;
+    }
+
+    .login-field.password-field input {
+        padding-right: 64px;
+    }
+
+    .login-field .password-toggle {
+        top: 30px;
+        right: 18px;
+        width: 38px;
+        height: 38px;
+    }
+
+    .login-field .password-toggle svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .forgot-password-btn {
+        font-size: 18px;
+        margin-top: -4px;
+    }
+
+    .login-submit {
+        min-height: 62px;
+        border-radius: 12px;
+        font-size: 20px;
+    }
+
+    .login-register-link {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 380px) {
+    .login-page {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 150px;
+    }
+
+    .login-fields {
+        gap: 18px;
+    }
+
+    .login-field input {
+        min-height: 58px;
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 520px) and (max-height: 740px) {
+    .login-page {
+        padding-top: 90px;
+        padding-bottom: 24px;
+    }
+
+    .login-panel {
+        gap: 18px;
+    }
+
+    .login-heading {
+        gap: 16px;
+        margin-bottom: 12px;
+    }
+
+    .login-heading h1 {
+        font-size: 34px;
+    }
+
+    .login-avatar.MuiSvgIcon-root {
+        width: 110px;
+        height: 110px;
+    }
+
+    .login-fields {
+        gap: 16px;
+    }
+
+    .login-field input {
+        min-height: 54px;
+        font-size: 17px;
+    }
+
+    .password-toggle {
+        top: 27px;
+    }
+
+    .forgot-password-btn {
+        font-size: 17px;
+    }
+
+    .login-submit {
+        min-height: 54px;
+        font-size: 18px;
+    }
+
+    .login-register-link {
+        font-size: 18px;
+    }
+}
+
+.register-page {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 44px 22px;
+    background: #000000;
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+.register-panel {
+    box-sizing: border-box;
+    width: min(100%, 420px);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 28px;
+}
+
+.register-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+    margin-bottom: 22px;
+}
+
+.register-heading h1 {
+    margin: 0;
+    color: #ffffff;
+    text-shadow: none;
+    font-size: clamp(34px, 9vw, 46px);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: 0;
+}
+
+.register-art {
+    position: relative;
+    box-sizing: border-box;
+    width: clamp(112px, 28vw, 150px);
+    aspect-ratio: 1.28;
+    border: 7px solid #f29a00;
+    border-radius: 14px;
+    color: #f29a00;
+}
+
+.register-art::before,
+.register-art::after {
+    content: "";
+    position: absolute;
+    top: 17px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.register-art::before {
+    right: 35px;
+}
+
+.register-art::after {
+    right: 16px;
+}
+
+.register-art-top {
+    position: absolute;
+    left: -7px;
+    right: -7px;
+    top: 27px;
+    border-top: 7px solid currentColor;
+}
+
+.register-art-user {
+    position: absolute;
+    left: 20px;
+    bottom: 23px;
+    width: 37px;
+    height: 37px;
+    border: 7px solid currentColor;
+    border-radius: 50%;
+}
+
+.register-art-user::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -39px;
+    width: 60px;
+    height: 34px;
+    border: 7px solid currentColor;
+    border-bottom: 0;
+    border-radius: 36px 36px 0 0;
+    transform: translateX(-50%);
+}
+
+.register-art-check {
+    position: absolute;
+    left: 70px;
+    width: 10px;
+    height: 20px;
+    border-right: 7px solid currentColor;
+    border-bottom: 7px solid currentColor;
+    border-radius: 4px;
+    transform: rotate(38deg);
+}
+
+.register-art-check.one {
+    top: 53px;
+}
+
+.register-art-check.two {
+    top: 86px;
+}
+
+.register-art-line {
+    position: absolute;
+    right: 17px;
+    width: 42px;
+    border-top: 7px solid currentColor;
+    border-radius: 999px;
+}
+
+.register-art-line.one {
+    top: 67px;
+}
+
+.register-art-line.two {
+    top: 101px;
+}
+
+.register-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.register-field {
+    position: relative;
+}
+
+.register-field input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 76px;
+    margin: 0;
+    padding: 0 40px;
+    border: 2px solid #5f6066;
+    border-radius: 14px;
+    outline: 0;
+    color: #ffffff;
+    background: #151515;
+    font: inherit;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.2;
+    opacity: 1;
+}
+
+.register-field input::placeholder {
+    color: #8f8f93;
+    opacity: 1;
+}
+
+.register-field input:focus {
+    border-color: #8b8d95;
+}
+
+.password-field input {
+    padding-right: 78px;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 38px;
+    right: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    color: #ffffff;
+    background: transparent;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.password-toggle svg {
+    width: 38px;
+    height: 38px;
+}
+
+.register-error {
+    margin-top: 8px;
+    color: #ff5a5f;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.register-submit {
+    min-height: 78px;
+    border: 0;
+    border-radius: 14px;
+    color: #ffffff;
+    background: linear-gradient(100deg, #ff3034 0%, #a0499c 50%, #126fe8 100%);
+    font: inherit;
+    font-size: 24px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.register-login-link {
+    align-self: center;
+    color: #ffffff;
+    font-size: 23px;
+    font-weight: 900;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.register-submit:focus-visible,
+.register-login-link:focus-visible,
+.password-toggle:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 4px;
+}
+
+@media (max-width: 520px) {
+    .register-page {
+        align-items: flex-start;
+        padding: 88px 20px 32px;
+    }
+
+    .register-panel {
+        max-width: 100%;
+        gap: 20px;
+    }
+
+    .register-heading {
+        gap: 22px;
+        margin-bottom: 6px;
+    }
+
+    .register-heading h1 {
+        font-size: 32px;
+    }
+
+    .register-fields {
+        gap: 18px;
+    }
+
+    .register-field input {
+        min-height: 58px;
+        padding: 0 26px;
+        border-radius: 12px;
+        font-size: 19px;
+    }
+
+    .password-field input {
+        padding-right: 64px;
+    }
+
+    .password-toggle {
+        top: 30px;
+        right: 18px;
+        width: 38px;
+        height: 38px;
+    }
+
+    .password-toggle svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .register-submit {
+        min-height: 60px;
+        border-radius: 12px;
+        font-size: 20px;
+    }
+
+    .register-login-link {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 380px) {
+    .register-page {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 78px;
+    }
+
+    .register-fields {
+        gap: 16px;
+    }
+
+    .register-field input {
+        min-height: 56px;
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 520px) and (max-height: 700px) {
+    .register-page {
+        padding-top: 46px;
+        padding-bottom: 24px;
+    }
+
+    .register-panel {
+        gap: 16px;
+    }
+
+    .register-heading {
+        gap: 18px;
+        margin-bottom: 2px;
+    }
+
+    .register-heading h1 {
+        font-size: 30px;
+    }
+
+    .register-art {
+        width: 92px;
+        border-width: 5px;
+        border-radius: 11px;
+    }
+
+    .register-art::before,
+    .register-art::after {
+        top: 13px;
+        width: 7px;
+        height: 7px;
+    }
+
+    .register-art::before {
+        right: 27px;
+    }
+
+    .register-art::after {
+        right: 13px;
+    }
+
+    .register-art-top {
+        left: -5px;
+        right: -5px;
+        top: 21px;
+        border-top-width: 5px;
+    }
+
+    .register-art-user {
+        left: 15px;
+        bottom: 18px;
+        width: 28px;
+        height: 28px;
+        border-width: 5px;
+    }
+
+    .register-art-user::after {
+        bottom: -30px;
+        width: 46px;
+        height: 26px;
+        border-width: 5px;
+        border-bottom: 0;
+    }
+
+    .register-art-check {
+        left: 54px;
+        width: 8px;
+        height: 15px;
+        border-right-width: 5px;
+        border-bottom-width: 5px;
+    }
+
+    .register-art-check.one {
+        top: 41px;
+    }
+
+    .register-art-check.two {
+        top: 67px;
+    }
+
+    .register-art-line {
+        right: 13px;
+        width: 32px;
+        border-top-width: 5px;
+    }
+
+    .register-art-line.one {
+        top: 51px;
+    }
+
+    .register-art-line.two {
+        top: 78px;
+    }
+
+    .register-fields {
+        gap: 14px;
+    }
+
+    .register-field input {
+        min-height: 52px;
+        font-size: 17px;
+    }
+
+    .password-toggle {
+        top: 26px;
+    }
+
+    .register-submit {
+        min-height: 54px;
+        font-size: 18px;
+    }
+
+    .register-login-link {
+        font-size: 18px;
+    }
 }
 
 .info p {
@@ -17,33 +750,33 @@ body {
     color: #55acee;
 }
 
-h1 {
+.content h1 {
     text-align: center;
     color: #666;
     text-shadow: 1px 1px 0px #FFF;
     margin: 50px 0px 0px 0px
 }
 
-h2 {
+.content h2 {
     font-size: 20px;
     font-weight: 600;
 }
 
-h3 {
+.content h3 {
     font-size: 17px;
     font-weight: 600;
 }
 
-a {
+.content a {
     text-decoration: inherit;
     color: inherit;
 }
 
-a:hover {
+.content a:hover {
     text-decoration: inherit;
 }
 
-hr {
+.content hr {
     position: relative;
     margin-top: 27%;
     border: 1px solid #fff;
@@ -60,12 +793,14 @@ hr {
     width: 100%;
     height: 900px;
     background: #f2f2f2;
-    z-index: -1;
+    z-index: 0;
+    pointer-events: auto;
 }
 
 .container {
     display: block;
     position: relative;
+    z-index: 1;
     width: 530px;
     height: 679px;
     margin: auto;
@@ -83,7 +818,7 @@ img.bg-img {
 
 
 
-a:not(.active) {
+.content a:not(.active) {
     cursor: inherit;
 }
 
@@ -122,7 +857,7 @@ a:not(.active) {
     transition: all 0.1s ease-in;
 }
 
-label {
+.content label {
     display: block;
     margin-top: 10px;
     padding: 5px 10px;
@@ -131,7 +866,7 @@ label {
     color: #fff;
 }
 
-input {
+.content input {
     display: block;
     width: 93%;
     margin: auto;
@@ -142,12 +877,12 @@ input {
     opacity: 1.15;
 }
 
-input p {
+.content input p {
     color: #fff;
     opacity: 1;
 }
 
-input.submit {
+.content input.submit {
     width: 100%;
     padding: 10px;
     font-size: 17px;
@@ -196,4 +931,81 @@ input.submit {
 .remove-section {
     position: absolute;
     left: 500px;
+}
+
+.login-field.password-field {
+    position: relative;
+}
+
+.login-field.password-field input {
+    padding-right: 78px;
+}
+
+.login-field.password-field .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 22px;
+    z-index: 40;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    color: #ffffff;
+    background: transparent;
+    transform: translateY(-50%);
+    cursor: pointer;
+    pointer-events: auto;
+    touch-action: manipulation;
+}
+
+.login-field.password-field .password-toggle svg {
+    width: 32px;
+    height: 32px;
+    pointer-events: none;
+}
+
+@media (max-width: 520px) {
+    .login-field.password-field input {
+        padding-right: 64px;
+    }
+
+    .login-field.password-field .password-toggle {
+        right: 16px;
+        width: 38px;
+        height: 38px;
+    }
+}
+
+.login-page {
+    position: relative !important;
+    z-index: 100 !important;
+    pointer-events: auto !important;
+}
+
+.login-panel {
+    position: relative !important;
+    z-index: 101 !important;
+    pointer-events: auto !important;
+}
+
+.login-panel input,
+.login-panel button,
+.login-panel a,
+.login-panel span {
+    pointer-events: auto !important;
+}
+
+.login-submit,
+.forgot-password-btn,
+.login-register-link,
+.login-field.password-field .password-toggle {
+    position: relative;
+    z-index: 102 !important;
+}
+
+.login-field.password-field .password-toggle {
+    position: absolute;
 }

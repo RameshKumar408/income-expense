@@ -1,15 +1,13 @@
 "use client"
 
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import constant from '@/constant';
 // import dbConnect from "../libs/mongodb";
 import { toast } from 'react-toastify';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import './loginRegister.css'
 
 export default function Home() {
@@ -71,67 +69,50 @@ export default function Home() {
   }
 
   return (
-    // <>
-    //   <div style={{ marginTop: "10px" }}>
-    //     <Box
-    //       component="form"
-    //       sx={{
-    //         '& > :not(style)': { m: 1, width: '28ch' },
-    //       }}
-    //       noValidate
-    //       autoComplete="off"
-    //       style={{ textAlign: "center" }}
-    //     >
-    //       <TextField id="outlined-basic" label="Email" variant="outlined" onChange={(e) => { setTopic(e.target.value); setTopicError("") }} />
-    //     </Box>
-    //     {topicError ? <div style={{ textAlign: "center", color: "red" }}>{topicError}</div> : <></>}
-    //   </div>
-
-    //   <div>
-    //     <Box
-    //       component="form"
-    //       sx={{
-    //         '& > :not(style)': { m: 1, width: '28ch' },
-    //       }}
-    //       noValidate
-    //       autoComplete="off"
-    //       style={{ textAlign: "center" }}
-    //     >
-    //       <TextField id="outlined-basic" label="Password" variant="outlined" onChange={(e) => { setAmount(e.target.value); setAmountError() }} />
-    //     </Box>
-    //     {amountError ? <div style={{ textAlign: "center", color: "red" }}>{amountError}</div> : <></>}
-    //   </div>
-
-    //   <div style={{ textAlign: "center", marginTop: "10px" }}>
-    //     <Button variant="outlined" onClick={(e) => { handleSubmit(e) }}>Submit</Button>
-    //     <Link href={'/register'} >Register</Link>
-    //   </div>
-    // </>
     <>
-      <div className="content">
-        <div className="container">
-          <img className="bg-img" src="https://mariongrandvincent.github.io/HTML-Personal-website/img-codePen/bg.jpg" alt="" />
+      <main className="login-page">
+        <form className="login-panel" noValidate>
+          <div className="login-heading">
+            <AccountCircleIcon className="login-avatar" />
+            <h1>Login</h1>
+          </div>
 
-          <div className="connexion">
-            <div className="contact-form">
-              <label>EMAIL</label>
-              <input placeholder="" type="text" style={{ color: "black" }} onChange={(e) => { setTopic(e.target.value); setTopicError("") }} />
-              {topicError ? <div style={{ textAlign: "center", color: "#db7777", fontSize: "18px", marginTop: "2%" }}>{topicError}</div> : <></>}
-
-              <label>PASSWORD</label>
-              <input placeholder="" type="text" style={{ color: "black" }} onChange={(e) => { setAmount(e.target.value); setAmountError() }} />
-              {amountError ? <div style={{ textAlign: "center", color: "#db7777", fontSize: "18px", marginTop: "2%" }}>{amountError}</div> : <></>}
-
-              <div className="check">
-                <input className="submit" value="SIGN IN" type="submit" onClick={(e) => { handleSubmit(e) }} />
-              </div>
+          <div className="login-fields">
+            <div className="login-field">
+              <input
+                value={topic}
+                placeholder="Email"
+                type="text"
+                onChange={(e) => { setTopic(e.target.value); setTopicError("") }}
+              />
+              {topicError ? <div className="auth-error">{topicError}</div> : <></>}
             </div>
 
-            <hr />
-            <a href="/register"><h4>Register</h4></a>
+            <div className="login-field password-field">
+              <input
+                value={amount}
+                placeholder="Password"
+                type="password"
+                onChange={(e) => { setAmount(e.target.value); setAmountError() }}
+              />
+              <span className="password-toggle" aria-hidden="true">
+                <VisibilityOffOutlinedIcon />
+              </span>
+              {amountError ? <div className="auth-error">{amountError}</div> : <></>}
+            </div>
           </div>
-        </div>
-      </div>
+
+          <span className="forgot-password-btn">Forgot password ?</span>
+
+          <button className="login-submit" type="button" onClick={(e) => { handleSubmit(e) }}>
+            Login
+          </button>
+
+          <Link className="login-register-link" href="/register">
+            Register
+          </Link>
+        </form>
+      </main>
     </>
 
   )

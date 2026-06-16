@@ -1,62 +1,148 @@
 "use client"
 
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-
-import dayjs, { Dayjs } from 'dayjs';
-
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import CloseIcon from '@mui/icons-material/Close';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
+import SearchIcon from '@mui/icons-material/Search';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
-import { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import constant from '@/constant';
 import { toast } from 'react-toastify';
 
-
 export default function Home({ params }) {
-
-    const [selectedDate, setSelectedDate] = useState();
+    const isMobile = useMediaQuery('(max-width:520px)', { noSsr: true });
+    const isShortMobile = useMediaQuery('(max-width:520px) and (max-height:700px)', { noSsr: true });
+    const [dateValue, setDateValue] = useState(dayjs());
+    const [selectedDate, setSelectedDate] = useState('');
     const [topic, setTopic] = useState('');
+    const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
-    const [type, setType] = useState('');
+    const [type, setType] = useState('Expense');
     const [TimeStamp, setTimeStamp] = useState('');
+    const [role, setRole] = useState();
 
-    const [selectedDateError, setSelectedDateError] = useState('')
-    const [topicError, setTopicError] = useState('')
-    const [amountError, setAmountError] = useState('')
-    const [typeError, setTypeError] = useState('')
+    const [selectedDateError, setSelectedDateError] = useState('');
+    const [topicError, setTopicError] = useState('');
+    const [descriptionError, setDescriptionError] = useState('');
+    const [amountError, setAmountError] = useState('');
+    const [typeError, setTypeError] = useState('');
 
     const router = useRouter();
 
+    const inputSx = {
+        '& .MuiOutlinedInput-root': {
+            color: '#ffffff',
+            backgroundColor: '#151515',
+            borderRadius: { xs: '12px', sm: '14px' },
+            fontSize: { xs: '15px', sm: '20px' },
+            minHeight: { xs: '48px', sm: '66px' },
+            '& fieldset': {
+                borderColor: '#666a72',
+                borderWidth: '1.5px',
+            },
+            '&:hover fieldset': {
+                borderColor: '#8a8f99',
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: '#2366d6',
+                borderWidth: '1.5px',
+            },
+        },
+        '& .MuiInputBase-input': {
+            color: '#ffffff',
+            padding: { xs: '11px 13px', sm: '18px 20px' },
+        },
+        '& .MuiInputBase-input::placeholder': {
+            color: '#8c8c8c',
+            opacity: 1,
+        },
+    };
+
+    const selectSx = {
+        color: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
+        backgroundColor: '#050505',
+        borderRadius: { xs: '12px', sm: '14px' },
+        fontSize: { xs: '15px', sm: '20px' },
+        fontWeight: 700,
+        minHeight: { xs: '48px', sm: '66px' },
+        '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
+            borderWidth: '1.5px',
+        },
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: type == 'Expense' ? '#ff575a' : '#45df82',
+        },
+        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
+            borderWidth: '1.5px',
+        },
+        '& .MuiSvgIcon-root': {
+            color: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
+        },
+    };
+
     const handleChange = (event) => {
         setType(event.target.value);
-        setTypeError("")
+        setTypeError('');
     };
 
     const handleDateChange = (date) => {
-        var year = date?.$y
-        var month = date?.$M + 1 >= 10 ? date?.$M + 1 : `0${date?.$M + 1}`
-        var dates = date?.$D >= 10 ? date?.$D : `0${date?.$D}`
-        setSelectedDate(`${year}-${month}-${dates}`);
+        if (!date || !date.isValid()) {
+            setDateValue(null);
+            setSelectedDate('');
+            setTimeStamp('');
+            setSelectedDateError('Please Select Date');
+            return;
+        }
 
-        const dateString = `${year}-${month}-${dates}`;
-        const dateObject = new Date(dateString);
-        const timestamp = dateObject.getTime();
-        setTimeStamp(timestamp)
-
-        setSelectedDateError()
+        setDateValue(date);
+        const formattedDate = date.format('YYYY-MM-DD');
+        setSelectedDate(formattedDate);
+        setTimeStamp(date.valueOf());
+        setSelectedDateError('');
     };
 
-    const getDetails = async (id) => {
+    const getPickerDateFromRecord = useCallback((item) => {
+        const datePart = item?.Date ? dayjs(item.Date) : null;
+        const timestampValue = Number(item?.TimeStamp);
+        const timePart = Number.isFinite(timestampValue) ? dayjs(timestampValue) : null;
+
+        if (datePart?.isValid()) {
+            if (timePart?.isValid()) {
+                return datePart
+                    .hour(timePart.hour())
+                    .minute(timePart.minute())
+                    .second(timePart.second())
+                    .millisecond(timePart.millisecond());
+            }
+            return datePart;
+        }
+
+        if (timePart?.isValid()) {
+            return timePart;
+        }
+
+        return dayjs();
+    }, []);
+
+    const getDetails = useCallback(async (id) => {
         try {
             const res = await fetch(`${constant?.Live_url}/api/getelementid`, {
                 method: "POST",
@@ -66,37 +152,49 @@ export default function Home({ params }) {
                 },
                 body: JSON.stringify({ Id: id }),
             });
-            var resp = await res?.json();
+
+            if (res.status == 400) {
+                router.push('/');
+                return;
+            }
+
+            const resp = await res?.json();
             if (resp?.topics) {
-                setTopic(resp?.topics?.Title)
-                setAmount(resp?.topics?.Amount)
-                setType(resp?.topics?.Type)
-                setSelectedDate(resp?.topics?.Date)
-                setTimeStamp(resp?.topics?.TimeStamp)
+                const item = resp.topics;
+                setTopic(item?.Title || '');
+                setDescription(item?.Description || '');
+                setAmount(item?.Amount || '');
+                setType(item?.Type || 'Expense');
+                const loadedDate = getPickerDateFromRecord(item);
+                setDateValue(loadedDate);
+                setSelectedDate(loadedDate.format('YYYY-MM-DD'));
+                setTimeStamp(loadedDate.valueOf());
             }
         } catch (error) {
-
+            console.log("getDetails error:", error);
         }
-    }
+    }, [router, getPickerDateFromRecord]);
 
     useEffect(() => {
+        setRole(window.localStorage.getItem("roles"));
         if (params?.id) {
-            getDetails(params?.id)
+            getDetails(params.id);
         }
-
-    }, [params])
+    }, [params?.id, getDetails]);
 
     const handleSubmit = async (e) => {
         try {
             e?.preventDefault();
-            if ((selectedDate == "") || (selectedDate == undefined)) {
-                setSelectedDateError("Please Select A Date");
+            if (!selectedDate) {
+                setSelectedDateError("Please Select Date");
             } else if (topic == "") {
-                setTopicError("Please Enter topic");
+                setTopicError("Please Enter Topic");
+            } else if (description == "") {
+                setDescriptionError("Please Enter Description");
             } else if ((amount == "") || (amount == 0)) {
-                setAmountError("Please Enter Amount")
+                setAmountError("Please Enter Amount");
             } else if (type == "") {
-                setTypeError("Please Select Type")
+                setTypeError("Please Select Type");
             } else {
                 const res = await fetch(`${constant?.Live_url}/api/getelementid`, {
                     method: "PUT",
@@ -104,126 +202,185 @@ export default function Home({ params }) {
                         "Content-type": "application/json",
                         "authorization": window.localStorage.getItem("token")
                     },
-                    body: JSON.stringify({ Id: params?.id, Title: topic, Amount: amount, Type: type, Date: selectedDate, TimeStamp: TimeStamp }),
+                    body: JSON.stringify({
+                        Id: params?.id,
+                        Title: topic,
+                        Amount: Number(amount),
+                        Type: type,
+                        Description: description,
+                        Date: selectedDate,
+                        TimeStamp,
+                    }),
                 });
                 if (res?.ok) {
                     toast.success("Updated Successfully");
-                    setTimeout(() => {
-                        router.push("/viewDetails");
-                    }, 1000);
-                    // window.location.reload();
+                    router.push("/viewDetails");
                 } else {
                     toast.error("Something Went Wrong");
-                    throw new Error("Failed to create a topic");
                 }
             }
         } catch (error) {
-            console.log("🚀 ~ handleSubmit ~ error:", error)
+            console.log("handleSubmit error:", error);
         }
-    }
+    };
 
     const handleDelete = async () => {
         try {
             if (params?.id) {
-                const res = await fetch(`${constant?.Live_url}/api/incomes`, {
+                const res = await fetch(`${constant?.Live_url}/api/incomes?id=${params.id}`, {
                     method: "DELETE",
                     headers: {
                         "Content-type": "application/json",
                         "authorization": window.localStorage.getItem("token")
                     },
-                    body: JSON.stringify({ id: params?.id }),
                 });
                 if (res?.ok) {
                     toast.success("Deleted Successfully");
-                    setTimeout(() => {
-                        router.push("/viewDetails");
-                    }, 1000);
+                    router.push("/viewDetails");
                 } else {
                     toast.error("Something Went Wrong");
-                    console.log("error")
                 }
             }
         } catch (error) {
-            console.log("🚀 ~ handleDelete ~ error:", error)
+            console.log("handleDelete error:", error);
         }
-    }
+    };
 
     return (
-        <>
-            <div style={{ textAlign: "center" }}>Edit Details</div>
-            <div >
-                <div style={{ textAlign: "center" }}>Please Select Date</div>
-                <LocalizationProvider dateAdapter={AdapterDayjs} >
-                    <DemoContainer components={['DatePicker']}>
-                        <DatePicker label="Basic date picker" value={dayjs(selectedDate)} onChange={(e) => { handleDateChange(e) }} />
-                    </DemoContainer>
-                </LocalizationProvider>
-                {selectedDateError ? <div style={{ textAlign: "center", color: "red" }}>{selectedDateError}</div> : <></>}
-            </div>
+        <div className='create-detail-page'>
+            <main className='expense-shell edit-shell'>
+                <header className='expense-header'>
+                    <div className='expense-title-wrap'>
+                        <span className='expense-title-icon'>
+                            <EditNoteIcon fontSize='small' />
+                        </span>
+                        <h1>Edit</h1>
+                    </div>
+                </header>
 
-            <div style={{ marginTop: "10px" }}>
-                <div style={{ textAlign: "center" }}>Topic</div>
-                <Box
-                    component="form"
-                    sx={{
-                        '& > :not(style)': { m: 1, width: '28ch' },
-                    }}
-                    noValidate
-                    autoComplete="off"
-                    style={{ textAlign: "center" }}
-                >
-                    <TextField id="outlined-basic" label="Topic" value={topic} variant="outlined" onChange={(e) => { setTopic(e.target.value); setTopicError("") }} />
-                </Box>
-                {topicError ? <div style={{ textAlign: "center", color: "red" }}>{topicError}</div> : <></>}
-            </div>
+                <form className='expense-form' onSubmit={handleSubmit}>
+                    <div className='form-group'>
+                        <label>Date<span>*</span></label>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DateTimePicker
+                                value={dateValue}
+                                onChange={(e) => { handleDateChange(e) }}
+                                format={isMobile ? 'DD MMM hh:mm A' : 'dddd (DD MMMM YYYY hh:mm A)'}
+                                slotProps={{
+                                    textField: {
+                                        fullWidth: true,
+                                        placeholder: 'Today',
+                                        sx: inputSx,
+                                    }
+                                }}
+                            />
+                        </LocalizationProvider>
+                        {selectedDateError ? <div className='field-error'>{selectedDateError}</div> : <></>}
+                    </div>
 
-            <div>
-                <div style={{ textAlign: "center" }}>Amount</div>
-                <Box
-                    component="form"
-                    sx={{
-                        '& > :not(style)': { m: 1, width: '28ch' },
-                    }}
-                    noValidate
-                    autoComplete="off"
-                    style={{ textAlign: "center" }}
-                >
-                    <TextField type='Number' id="outlined-basic" label="Amount" value={amount} variant="outlined" onChange={(e) => { setAmount(e.target.value); setAmountError() }} />
-                </Box>
-                {amountError ? <div style={{ textAlign: "center", color: "red" }}>{amountError}</div> : <></>}
-            </div>
-            <div>
-                <Box sx={{ minWidth: 120 }}>
-                    <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label">Type</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={type}
-                            label="Age"
-                            onChange={handleChange}
-                        >
-                            <MenuItem value={"Income"}>Income</MenuItem>
-                            <MenuItem value={"Expense"}>Expense</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Box>
-                {typeError ? <div style={{ textAlign: "center", color: "red" }}>{typeError}</div> : <></>}
-            </div>
+                    <div className='form-group'>
+                        <label>Title<span>*</span></label>
+                        <TextField
+                            value={topic}
+                            placeholder='Title'
+                            variant='outlined'
+                            onChange={(e) => { setTopic(e.target.value); setTopicError("") }}
+                            sx={inputSx}
+                            fullWidth
+                        />
+                        {topicError ? <div className='field-error'>{topicError}</div> : <></>}
+                    </div>
 
-            <div style={{ textAlign: "center", marginTop: "10px" }}>
-                <Button variant="outlined" onClick={(e) => { handleSubmit(e) }}>Update</Button>
-            </div>
+                    <div className='form-group'>
+                        <label>Description</label>
+                        <TextField
+                            value={description}
+                            placeholder='Description'
+                            variant='outlined'
+                            multiline
+                            minRows={isShortMobile ? 2 : isMobile ? 3 : 4}
+                            onChange={(e) => { setDescription(e.target.value); setDescriptionError("") }}
+                            sx={inputSx}
+                            fullWidth
+                        />
+                        {descriptionError ? <div className='field-error'>{descriptionError}</div> : <></>}
+                    </div>
 
-            <div style={{ textAlign: "center", marginTop: "10px" }}>
-                <Button variant="outlined" onClick={() => { handleDelete() }}>Delete</Button>
-            </div>
+                    <div className='form-row'>
+                        <div className='form-group'>
+                            <label>Amount<span>*</span></label>
+                            <TextField
+                                value={amount}
+                                type='number'
+                                placeholder='Amount'
+                                variant='outlined'
+                                onChange={(e) => { setAmount(e.target.value); setAmountError("") }}
+                                sx={inputSx}
+                                fullWidth
+                            />
+                            {amountError ? <div className='field-error'>{amountError}</div> : <></>}
+                        </div>
 
-            <div style={{ textAlign: "center", marginTop: "10px" }}>
-                <Link href="/viewDetails">
-                    <Button variant="outlined">Back</Button>
-                </Link>
-            </div>
-        </>
+                        <div className='form-group'>
+                            <label>Type<span>*</span></label>
+                            <Box sx={{ minWidth: 0 }}>
+                                <FormControl fullWidth>
+                                    <InputLabel id='edit-type-select-label' sx={{ display: 'none' }}>Type</InputLabel>
+                                    <Select
+                                        labelId='edit-type-select-label'
+                                        id='edit-type-select'
+                                        value={type}
+                                        displayEmpty
+                                        onChange={handleChange}
+                                        sx={selectSx}
+                                        IconComponent={CloseIcon}
+                                        MenuProps={{
+                                            PaperProps: {
+                                                sx: {
+                                                    backgroundColor: '#151515',
+                                                    color: '#ffffff',
+                                                    border: '1px solid #343844',
+                                                }
+                                            }
+                                        }}
+                                    >
+                                        <MenuItem value={"Income"}>Income</MenuItem>
+                                        <MenuItem value={"Expense"}>Expense</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Box>
+                            {typeError ? <div className='field-error'>{typeError}</div> : <></>}
+                        </div>
+                    </div>
+
+                    <div className='edit-action-row'>
+                        <Button className='add-data-btn edit-update-btn' variant='contained' type='submit'>
+                            Update
+                        </Button>
+                        <Button className='delete-data-btn' variant='contained' type='button' onClick={handleDelete}>
+                            <DeleteOutlineIcon />
+                            Delete
+                        </Button>
+                    </div>
+                </form>
+
+                <nav className='bottom-nav' aria-label='Main actions'>
+                    <Link className='bottom-nav-item' href='/createDetail' aria-label='Create details'>
+                        <HomeOutlinedIcon />
+                    </Link>
+                    {role == "admin" &&
+                        <Link className='bottom-nav-item' href='/authorize' aria-label='Google drive'>
+                            <ExploreOutlinedIcon />
+                        </Link>
+                    }
+                    <Link className='bottom-nav-item active' href='/viewDetails' aria-label='History'>
+                        <SearchIcon />
+                    </Link>
+                    <Link className='bottom-nav-item' href='/settings' aria-label='Settings'>
+                        <SettingsIcon />
+                    </Link>
+                </nav>
+            </main>
+        </div>
     );
 }
