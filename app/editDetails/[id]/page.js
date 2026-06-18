@@ -196,9 +196,11 @@ export default function Home({ params }) {
                 setSelectedDateError("Please Select Date");
             } else if (topic == "") {
                 setTopicError("Please Enter Topic");
-            } else if (description == "") {
-                setDescriptionError("Please Enter Description");
-            } else if ((amount == "") || (amount == 0)) {
+            } 
+            // else if (description == "") {
+            //     setDescriptionError("Please Enter Description");
+            // }
+             else if ((amount == "") || (amount == 0)) {
                 setAmountError("Please Enter Amount");
             } else if (type == "") {
                 setTypeError("Please Select Type");
