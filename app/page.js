@@ -10,10 +10,12 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import './loginRegister.css'
+import { useLoader } from '@/app/context/LoaderContext'
 
 export default function Home() {
 
 
+  const { showLoader, hideLoader } = useLoader()
 
   useEffect(() => {
     var isAdd = window.location.search.includes('add=1')
@@ -41,12 +43,18 @@ export default function Home() {
       } else if ((amount == "")) {
         setAmountError("Please Enter Password")
       } else {
+        var email = topic.trim().toLowerCase()
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          setTopicError("Please Enter Valid Email");
+          return
+        }
+        showLoader()
         const res = await fetch(`${constant?.Live_url}/api/login`, {
           method: "POST",
           headers: {
             "Content-type": "application/json",
           },
-          body: JSON.stringify({ Email: topic, Password: amount }),
+          body: JSON.stringify({ Email: email, Password: amount }),
         });
         var resps = await res?.json()
         if (resps?.status) {
@@ -66,6 +74,7 @@ export default function Home() {
             router.push("/createDetail");
           }, 1000);
         } else {
+          hideLoader()
           if (resps?.email) {
             setTopicError(resps?.email)
           } else {
@@ -74,6 +83,7 @@ export default function Home() {
         }
       }
     } catch (error) {
+      hideLoader()
       console.log("🚀 ~ handleSubmit ~ error:", error)
     }
   }
@@ -92,7 +102,7 @@ export default function Home() {
               <input
                 value={topic}
                 placeholder="Email"
-                type="text"
+                type="email"
                 onChange={(e) => { setTopic(e.target.value); setTopicError("") }}
               />
               {topicError ? <div className="auth-error">{topicError}</div> : <></>}

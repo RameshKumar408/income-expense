@@ -18,6 +18,7 @@ import { RWebShare } from "react-web-share";
 import folder from '../../public/folder.jpg'
 import TextField from '@mui/material/TextField';
 import { toast } from "react-toastify";
+import { useLoader } from '@/app/context/LoaderContext';
 
 const style = {
     position: 'absolute',
@@ -35,6 +36,7 @@ const style = {
 
 export default function Home() {
 
+    const { showLoader, hideLoader } = useLoader()
     const [datas, setDatas] = useState([])
 
     const [fold, setFold] = useState([])
@@ -45,17 +47,21 @@ export default function Home() {
 
     const getAuthToken = async (id) => {
         try {
+            showLoader()
             const { data } = await axios.post(`${constant?.Live_url}/api/getdrivedata`, {
                 Title: id
             })
             setDatas(data?.topics)
         } catch (error) {
             console.log("🚀 ~ getAuthToken ~ error:", error)
+        } finally {
+            hideLoader()
         }
     }
 
     const getDetaills = async () => {
         try {
+            showLoader()
             const res = await fetch(`${constant?.Live_url}/api/googleDrive/apikeys`, {
                 method: "GET",
                 headers: {
@@ -72,17 +78,22 @@ export default function Home() {
 
         } catch (error) {
             console.log("🚀 ~ getAuthToken ~ error:", error)
+        } finally {
+            hideLoader()
         }
     }
 
     const getFolders = async (id) => {
         try {
+            showLoader()
             const { data } = await axios.post(`${constant?.Live_url}/api/getFolders`, {
                 Title: id
             })
             setFold(data?.topics)
         } catch (error) {
             console.log("🚀 ~ getFolders ~ error:", error)
+        } finally {
+            hideLoader()
         }
     }
 
@@ -120,6 +131,7 @@ export default function Home() {
 
     const createFolder = async (id) => {
         try {
+            showLoader()
             const { data } = await axios.post(`${constant?.Live_url}/api/createFolder`, {
                 Title: token,
                 Name: name
@@ -131,11 +143,14 @@ export default function Home() {
             }
         } catch (error) {
             console.log("🚀 ~ createFolder ~ error:", error)
+        } finally {
+            hideLoader()
         }
     }
 
     const getFileFromFolder = async (id) => {
         try {
+            showLoader()
             const { data } = await axios.post(`${constant?.Live_url}/api/fileFromFolder`, {
                 Title: token,
                 id: selcFolder
@@ -147,11 +162,14 @@ export default function Home() {
             }
         } catch (error) {
             console.log("🚀 ~ getFileFromFolder ~ error:", error)
+        } finally {
+            hideLoader()
         }
     }
 
     const deleteFolder = async (id) => {
         try {
+            showLoader()
             const { data } = await axios.post(`${constant?.Live_url}/api/deleteFolder`, {
                 Title: token,
                 id: id ? id : selcFolder
@@ -168,6 +186,8 @@ export default function Home() {
             }
         } catch (error) {
             console.log("🚀 ~ deleteFolder ~ error:", error)
+        } finally {
+            hideLoader()
         }
     }
 
@@ -179,6 +199,7 @@ export default function Home() {
 
     const CreateFile = async () => {
         try {
+            showLoader()
             const formdata = new FormData()
             formdata.append("file", files)
             formdata.append("name", fileName)
@@ -192,6 +213,8 @@ export default function Home() {
             }
         } catch (error) {
             console.log("🚀 ~ createFolder ~ error:", error)
+        } finally {
+            hideLoader()
         }
     }
 

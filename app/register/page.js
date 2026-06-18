@@ -21,6 +21,7 @@ import { toast } from 'react-toastify';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import '../loginRegister.css'
+import { useLoader } from '@/app/context/LoaderContext'
 
 export default function Home() {
 
@@ -37,6 +38,7 @@ export default function Home() {
     const [confirmPasswordError, setConfirmPasswordError] = useState('')
 
     const router = useRouter();
+    const { showLoader, hideLoader } = useLoader();
 
     const handleSubmit = async (e) => {
         try {
@@ -52,12 +54,18 @@ export default function Home() {
             } else if (password !== confirmPassword) {
                 setConfirmPasswordError("Password does not match")
             } else {
+                var sanitizedEmail = email.trim().toLowerCase()
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedEmail)) {
+                    setemailError("Please Enter Valid Email");
+                    return
+                }
+                showLoader()
                 const res = await fetch(`${constant?.Live_url}/api/register`, {
                     method: "POST",
                     headers: {
                         "Content-type": "application/json",
                     },
-                    body: JSON.stringify({ Name: name, Email: email, Password: password }),
+                    body: JSON.stringify({ Name: name, Email: sanitizedEmail, Password: password }),
                 });
                 var resps = await res?.json()
                 if (resps?.status) {
@@ -66,10 +74,12 @@ export default function Home() {
                         router.push("/");
                     }, 1000);
                 } else {
+                    hideLoader()
                     setemailError(resps?.message)
                 }
             }
         } catch (error) {
+            hideLoader()
             console.log("🚀 ~ handleSubmit ~ error:", error)
         }
     }

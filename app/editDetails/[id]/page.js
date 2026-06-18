@@ -26,6 +26,7 @@ import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import constant from '@/constant';
 import { toast } from 'react-toastify';
+import { useLoader } from '@/app/context/LoaderContext';
 
 export default function Home({ params }) {
     const isMobile = useMediaQuery('(max-width:520px)', { noSsr: true });
@@ -46,13 +47,14 @@ export default function Home({ params }) {
     const [typeError, setTypeError] = useState('');
 
     const router = useRouter();
+    const { showLoader, hideLoader } = useLoader();
 
     const inputSx = {
         '& .MuiOutlinedInput-root': {
             color: '#ffffff',
             backgroundColor: '#151515',
             borderRadius: { xs: '12px', sm: '14px' },
-            fontSize: { xs: '13px', sm: '20px' },
+            fontSize: { xs: '16px', sm: '20px' },
             minHeight: { xs: '48px', sm: '66px' },
             '& fieldset': {
                 borderColor: '#666a72',
@@ -80,7 +82,7 @@ export default function Home({ params }) {
         color: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
         backgroundColor: '#050505',
         borderRadius: { xs: '12px', sm: '14px' },
-        fontSize: { xs: '13px', sm: '20px' },
+        fontSize: { xs: '16px', sm: '20px' },
         fontWeight: 700,
         minHeight: { xs: '48px', sm: '66px' },
         '& .MuiOutlinedInput-notchedOutline': {
@@ -145,6 +147,7 @@ export default function Home({ params }) {
 
     const getDetails = useCallback(async (id) => {
         try {
+            showLoader()
             const res = await fetch(`${constant?.Live_url}/api/getelementid`, {
                 method: "POST",
                 headers: {
@@ -155,6 +158,7 @@ export default function Home({ params }) {
             });
 
             if (res.status == 400) {
+                hideLoader()
                 router.push('/');
                 return;
             }
@@ -173,8 +177,10 @@ export default function Home({ params }) {
             }
         } catch (error) {
             console.log("getDetails error:", error);
+        } finally {
+            hideLoader()
         }
-    }, [router, getPickerDateFromRecord]);
+    }, [router, getPickerDateFromRecord, showLoader, hideLoader]);
 
     useEffect(() => {
         setRole(window.localStorage.getItem("roles"));
@@ -197,6 +203,7 @@ export default function Home({ params }) {
             } else if (type == "") {
                 setTypeError("Please Select Type");
             } else {
+                showLoader()
                 const res = await fetch(`${constant?.Live_url}/api/getelementid`, {
                     method: "PUT",
                     headers: {
@@ -214,13 +221,17 @@ export default function Home({ params }) {
                     }),
                 });
                 if (res?.ok) {
+                    hideLoader()
                     toast.success("Updated Successfully");
                     router.push("/viewDetails");
+
                 } else {
+                    hideLoader()
                     toast.error("Something Went Wrong");
                 }
             }
         } catch (error) {
+            hideLoader()
             console.log("handleSubmit error:", error);
         }
     };
@@ -228,6 +239,7 @@ export default function Home({ params }) {
     const handleDelete = async () => {
         try {
             if (params?.id) {
+                showLoader()
                 const res = await fetch(`${constant?.Live_url}/api/incomes?id=${params.id}`, {
                     method: "DELETE",
                     headers: {
@@ -236,13 +248,16 @@ export default function Home({ params }) {
                     },
                 });
                 if (res?.ok) {
+                    hideLoader()
                     toast.success("Deleted Successfully");
                     router.push("/viewDetails");
                 } else {
+                    hideLoader()
                     toast.error("Something Went Wrong");
                 }
             }
         } catch (error) {
+            hideLoader()
             console.log("handleDelete error:", error);
         }
     };

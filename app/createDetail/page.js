@@ -27,6 +27,7 @@ import { useRouter } from 'next/navigation';
 import constant from '@/constant';
 import { decodeToken } from '@/libs/jwt';
 import { toast } from 'react-toastify';
+import { useLoader } from '@/app/context/LoaderContext';
 import 'react-toastify/dist/ReactToastify.css';
 import dayjs from 'dayjs';
 
@@ -110,7 +111,7 @@ export default function Home() {
             color: '#ffffff',
             backgroundColor: '#151515',
             borderRadius: { xs: '12px', sm: '14px' },
-            fontSize: { xs: '13px', sm: '20px' },
+            fontSize: { xs: '16px', sm: '20px' },
             minHeight: { xs: '48px', sm: '66px' },
             '& fieldset': {
                 borderColor: '#666a72',
@@ -164,8 +165,6 @@ export default function Home() {
                 setSelectedDateError("Please Select Date");
             } else if (topic == "") {
                 setTopicError("Please Enter Topic");
-            } else if (description == "") {
-                setDescriptionError("Please Enter Description");
             } else if ((amount == "") || (amount == 0)) {
                 setAmountError("Please Enter Amount")
             } else if (type == "") {
@@ -175,6 +174,7 @@ export default function Home() {
             //     setAccTypeError("Please Select Account Type")
             // } 
             else {
+                showLoader()
                 const res = await fetch(`${constant?.Live_url}/api/incomes`, {
                     method: "POST",
                     headers: {
@@ -198,12 +198,15 @@ export default function Home() {
                     setDescriptionError('');
                     setAmountError('');
                     setTypeError('');
+                    hideLoader()
                 } else {
+                    hideLoader()
                     toast.error("Something went wrong");
                     throw new Error("Failed to create a topic");
                 }
             }
         } catch (error) {
+            hideLoader()
             console.log("🚀 ~ handleSubmit ~ error:", error)
         }
     }
@@ -214,6 +217,7 @@ export default function Home() {
     const [showAccountMenu, setShowAccountMenu] = useState(false)
     const accountRef = useRef(null)
     const router = useRouter()
+    const { showLoader, hideLoader } = useLoader()
 
     const loadAccounts = () => {
         try {

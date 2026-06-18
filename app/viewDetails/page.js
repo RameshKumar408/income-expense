@@ -11,6 +11,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import CalculateIcon from '@mui/icons-material/Calculate';
+import { useLoader } from '@/app/context/LoaderContext';
 
 export default function Page() {
     const router = useRouter();
@@ -30,6 +31,7 @@ export default function Page() {
     const [selectedRecord, setSelectedRecord] = useState(null);
     const [touchStartX, setTouchStartX] = useState(null);
     const [loading, setLoading] = useState(false);
+    const { showLoader, hideLoader } = useLoader();
 
     const formatIndianNumber = (num) => {
         const value = Number(num || 0);
@@ -71,11 +73,13 @@ export default function Page() {
             if (requestRole == 'admin') {
                 if (!userId) {
                     setLoading(false);
+                    hideLoader()
                     return;
                 }
                 body.id = userId;
             }
 
+            showLoader()
             const res = await fetch(`/api/getDateRange`, {
                 method: 'POST',
                 cache: 'no-store',
@@ -98,11 +102,13 @@ export default function Page() {
             console.log('Error loading topics: ', error);
         } finally {
             setLoading(false);
+            hideLoader()
         }
-    }, [from, to, router]);
+    }, [from, to, router, showLoader, hideLoader]);
 
     const usersLists = useCallback(async (currentText = '') => {
         try {
+            showLoader()
             const data = await fetch(`/api/web/usersList`, {
                 method: 'GET',
                 cache: 'no-store',
@@ -119,8 +125,10 @@ export default function Page() {
             }
         } catch (error) {
             console.log('usersLists error: ', error);
+        } finally {
+            hideLoader()
         }
-    }, [getDetails]);
+    }, [getDetails, showLoader, hideLoader]);
 
     const filteredDatas = useMemo(() => {
         const list = [...(datas || [])];

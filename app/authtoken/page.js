@@ -3,14 +3,17 @@
 import { useEffect } from "react";
 import axios from "axios";
 import constant from "@/constant";
+import { useLoader } from '@/app/context/LoaderContext';
 
 export default function Home() {
 
     const clientId = process.env.NEXT_PUBLIC_CLIENT_ID
     const client_secret = process.env.NEXT_PUBLIC_CLIENT_SECRET
+    const { showLoader, hideLoader } = useLoader()
 
     const getAuthToken = async (code) => {
         try {
+            showLoader()
             const { data } = await axios.post('https://oauth2.googleapis.com/token', {
                 code: code,
                 redirect_uri: 'http://localhost:3000/authtoken',
@@ -35,6 +38,7 @@ export default function Home() {
             }
 
         } catch (error) {
+            hideLoader()
             console.log("🚀 ~ getAuthToken ~ error:", error)
         }
     }
