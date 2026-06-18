@@ -58,6 +58,7 @@ export default function Home() {
         });
         var resps = await res?.json()
         if (resps?.status) {
+          hideLoader()
           var token = resps?.result
           var user = decodeToken(token)
           var existing = JSON.parse(window.localStorage.getItem('accounts') || '[]')

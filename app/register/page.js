@@ -69,6 +69,7 @@ export default function Home() {
                 });
                 var resps = await res?.json()
                 if (resps?.status) {
+                    hideLoader()
                     toast.success("Registred Successfully");
                     setTimeout(() => {
                         router.push("/");
