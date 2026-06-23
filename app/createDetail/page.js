@@ -11,6 +11,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import AddCardIcon from '@mui/icons-material/AddCard';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
@@ -133,7 +135,38 @@ export default function Home() {
             color: '#8c8c8c',
             opacity: 1,
         },
+        '& input[type=number]': {
+            MozAppearance: 'textfield',
+        },
+        '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button': {
+            WebkitAppearance: 'none',
+            margin: 0,
+        },
+        '& .clear-field-button': {
+            color: '#8c8c8c',
+            marginRight: { xs: '-4px', sm: '2px' },
+            '&:hover': {
+                color: '#ffffff',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            },
+        },
     };
+
+    const clearButton = (label, onClear) => (
+        <InputAdornment position='end'>
+            <IconButton
+                className='clear-field-button'
+                type='button'
+                size='small'
+                aria-label={`Clear ${label}`}
+                title={`Clear ${label}`}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={onClear}
+            >
+                <CloseIcon fontSize='small' />
+            </IconButton>
+        </InputAdornment>
+    );
 
     const selectSx = {
         color: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
@@ -357,6 +390,11 @@ export default function Home() {
                                 onChange={(e) => { setTopic(e.target.value); setTopicError("") }}
                                 sx={inputSx}
                                 fullWidth
+                                InputProps={{
+                                    endAdornment: topic
+                                        ? clearButton('title', () => { setTopic(''); setTopicError(''); })
+                                        : null,
+                                }}
                             />
                             {titleSuggestions.length > 0 &&
                                 <div className='suggestion-row' aria-label='Title suggestions'>
@@ -386,6 +424,11 @@ export default function Home() {
                                 onChange={(e) => { setDescription(e.target.value); setDescriptionError("") }}
                                 sx={inputSx}
                                 fullWidth
+                                InputProps={{
+                                    endAdornment: description
+                                        ? clearButton('description', () => { setDescription(''); setDescriptionError(''); })
+                                        : null,
+                                }}
                             />
                             {descriptionError ? <div className='field-error'>{descriptionError}</div> : <></>}
                         </div>
@@ -401,6 +444,11 @@ export default function Home() {
                                     onChange={(e) => { setAmount(e.target.value); setAmountError() }}
                                     sx={inputSx}
                                     fullWidth
+                                    InputProps={{
+                                        endAdornment: amount
+                                            ? clearButton('amount', () => { setAmount(''); setAmountError(''); })
+                                            : null,
+                                    }}
                                 />
                                 {amountError ? <div className='field-error'>{amountError}</div> : <></>}
                             </div>

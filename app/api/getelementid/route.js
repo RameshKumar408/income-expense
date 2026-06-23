@@ -10,10 +10,16 @@ export async function POST(request) {
     if (success) {
         const { Id } = await request.json();
         await connectMongoDB();
-        const topics = await Income.findOne({ _id: Id, User_id: user?.userId });
+        const query = user?.email == "admin@admin.com"
+            ? { _id: Id }
+            : { _id: Id, User_id: user?.userId };
+        const topics = await Income.findOne(query);
+        if (!topics) {
+            return NextResponse.json({ message: "Record Not Found" }, { status: 404 });
+        }
         return NextResponse.json({ topics }, { status: 200 });
     } else {
-        return NextResponse.json({ message: "UnAuthorized" }, { status: 400 });
+        return NextResponse.json({ message: "UnAuthorized" }, { status: 401 });
     }
 }
 
@@ -23,9 +29,19 @@ export async function PUT(request) {
     if (success) {
         const { Id, Title, Amount, Type, Date, TimeStamp, Description } = await request.json();
         await connectMongoDB();
-        await Income.findOneAndUpdate({ _id: Id, User_id: user?.userId }, { Title, Amount, Type, Date, TimeStamp, Description });
+        const query = user?.email == "admin@admin.com"
+            ? { _id: Id }
+            : { _id: Id, User_id: user?.userId };
+        const topics = await Income.findOneAndUpdate(
+            query,
+            { Title, Amount, Type, Date, TimeStamp, Description },
+            { new: true }
+        );
+        if (!topics) {
+            return NextResponse.json({ message: "Record Not Found", status: false }, { status: 404 });
+        }
         return NextResponse.json({ message: "Updated Successfully", status: true }, { status: 200 });
     } else {
-        return NextResponse.json({ message: "UnAuthorized", status: false }, { status: 400 });
+        return NextResponse.json({ message: "UnAuthorized", status: false }, { status: 401 });
     }
 }

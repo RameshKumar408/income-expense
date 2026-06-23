@@ -11,6 +11,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import CloseIcon from '@mui/icons-material/Close';
@@ -24,7 +26,6 @@ import dayjs from 'dayjs';
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
-import constant from '@/constant';
 import { toast } from 'react-toastify';
 import { useLoader } from '@/app/context/LoaderContext';
 
@@ -76,7 +77,38 @@ export default function Home({ params }) {
             color: '#8c8c8c',
             opacity: 1,
         },
+        '& input[type=number]': {
+            MozAppearance: 'textfield',
+        },
+        '& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button': {
+            WebkitAppearance: 'none',
+            margin: 0,
+        },
+        '& .clear-field-button': {
+            color: '#8c8c8c',
+            marginRight: { xs: '-4px', sm: '2px' },
+            '&:hover': {
+                color: '#ffffff',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            },
+        },
     };
+
+    const clearButton = (label, onClear) => (
+        <InputAdornment position='end'>
+            <IconButton
+                className='clear-field-button'
+                type='button'
+                size='small'
+                aria-label={`Clear ${label}`}
+                title={`Clear ${label}`}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={onClear}
+            >
+                <CloseIcon fontSize='small' />
+            </IconButton>
+        </InputAdornment>
+    );
 
     const selectSx = {
         color: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
@@ -148,8 +180,9 @@ export default function Home({ params }) {
     const getDetails = useCallback(async (id) => {
         try {
             showLoader()
-            const res = await fetch(`${constant?.Live_url}/api/getelementid`, {
+            const res = await fetch('/api/getelementid', {
                 method: "POST",
+                cache: 'no-store',
                 headers: {
                     "Content-type": "application/json",
                     "authorization": window.localStorage.getItem("token")
@@ -157,24 +190,27 @@ export default function Home({ params }) {
                 body: JSON.stringify({ Id: id }),
             });
 
-            if (res.status == 400) {
-                hideLoader()
+            if (res.status == 401) {
                 router.push('/');
                 return;
             }
 
             const resp = await res?.json();
-            if (resp?.topics) {
-                const item = resp.topics;
-                setTopic(item?.Title || '');
-                setDescription(item?.Description || '');
-                setAmount(item?.Amount || '');
-                setType(item?.Type || 'Expense');
-                const loadedDate = getPickerDateFromRecord(item);
-                setDateValue(loadedDate);
-                setSelectedDate(loadedDate.format('YYYY-MM-DD'));
-                setTimeStamp(loadedDate.valueOf());
+            if (!res.ok || !resp?.topics) {
+                toast.error(resp?.message || 'Record not found');
+                router.push('/viewDetails');
+                return;
             }
+
+            const item = resp.topics;
+            setTopic(item.Title ?? '');
+            setDescription(item.Description ?? '');
+            setAmount(item.Amount ?? '');
+            setType(item.Type ?? 'Expense');
+            const loadedDate = getPickerDateFromRecord(item);
+            setDateValue(loadedDate);
+            setSelectedDate(loadedDate.format('YYYY-MM-DD'));
+            setTimeStamp(loadedDate.valueOf());
         } catch (error) {
             console.log("getDetails error:", error);
         } finally {
@@ -206,7 +242,7 @@ export default function Home({ params }) {
                 setTypeError("Please Select Type");
             } else {
                 showLoader()
-                const res = await fetch(`${constant?.Live_url}/api/getelementid`, {
+                const res = await fetch('/api/getelementid', {
                     method: "PUT",
                     headers: {
                         "Content-type": "application/json",
@@ -308,6 +344,11 @@ export default function Home({ params }) {
                             onChange={(e) => { setTopic(e.target.value); setTopicError("") }}
                             sx={inputSx}
                             fullWidth
+                            InputProps={{
+                                endAdornment: topic
+                                    ? clearButton('title', () => { setTopic(''); setTopicError(''); })
+                                    : null,
+                            }}
                         />
                         {topicError ? <div className='field-error'>{topicError}</div> : <></>}
                     </div>
@@ -323,6 +364,11 @@ export default function Home({ params }) {
                             onChange={(e) => { setDescription(e.target.value); setDescriptionError("") }}
                             sx={inputSx}
                             fullWidth
+                            InputProps={{
+                                endAdornment: description
+                                    ? clearButton('description', () => { setDescription(''); setDescriptionError(''); })
+                                    : null,
+                            }}
                         />
                         {descriptionError ? <div className='field-error'>{descriptionError}</div> : <></>}
                     </div>
@@ -338,6 +384,11 @@ export default function Home({ params }) {
                                 onChange={(e) => { setAmount(e.target.value); setAmountError("") }}
                                 sx={inputSx}
                                 fullWidth
+                                InputProps={{
+                                    endAdornment: amount !== ''
+                                        ? clearButton('amount', () => { setAmount(''); setAmountError(''); })
+                                        : null,
+                                }}
                             />
                             {amountError ? <div className='field-error'>{amountError}</div> : <></>}
                         </div>
