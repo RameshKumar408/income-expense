@@ -98,7 +98,22 @@ export default function Home() {
                 })
                 var data = await res.json()
                 if (data?.topics?.length) {
-                    var unique = [...new Set(data.topics.map(t => t.Title).filter(Boolean))]
+                    var seenTitles = new Set()
+                    var unique = data.topics.reduce((list, item) => {
+                        var normalizedTitle = item?.Title?.trim()
+                        if (!normalizedTitle) {
+                            return list
+                        }
+
+                        var dedupeKey = normalizedTitle.toLowerCase()
+                        if (seenTitles.has(dedupeKey)) {
+                            return list
+                        }
+
+                        seenTitles.add(dedupeKey)
+                        list.push(normalizedTitle)
+                        return list
+                    }, [])
                     setTitleSuggestions(unique)
                 }
             } catch (error) {

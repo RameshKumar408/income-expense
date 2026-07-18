@@ -278,7 +278,7 @@ export default function Home({ params }) {
         try {
             if (params?.id) {
                 showLoader()
-                const res = await fetch(`${constant?.Live_url}/api/incomes?id=${params.id}`, {
+                const res = await fetch(`/api/incomes?id=${params.id}`, {
                     method: "DELETE",
                     headers: {
                         "Content-type": "application/json",
