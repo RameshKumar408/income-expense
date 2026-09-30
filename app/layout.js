@@ -12,7 +12,15 @@ export const metadata = {
   description: "Track your income and expenses",
   icons: {
     icon: '/logo.svg',
+    apple: '/apple-touch-icon.png',
   },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({ children }) {
@@ -20,7 +28,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
-        <ToastContainer />
+        <ToastContainer closeOnClick theme="dark" />
         <AppWrapper>{children}</AppWrapper>
       </body>
     </html>

@@ -58,7 +58,6 @@ export default function Home() {
         });
         var resps = await res?.json()
         if (resps?.status) {
-          hideLoader()
           var token = resps?.result
           var user = decodeToken(token)
           var existing = JSON.parse(window.localStorage.getItem('accounts') || '[]')
@@ -71,9 +70,8 @@ export default function Home() {
           window.localStorage.setItem("token", token)
           window.localStorage.setItem("roles", account.role)
           toast.success("Logged In Successfully");
-          setTimeout(() => {
-            router.push("/createDetail");
-          }, 1000);
+          router.push("/createDetail");
+          hideLoader();
         } else {
           hideLoader()
           if (resps?.email) {

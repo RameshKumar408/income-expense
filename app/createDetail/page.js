@@ -86,40 +86,53 @@ export default function Home() {
     useEffect(() => {
         const fetchTitles = async () => {
             try {
-                var threeMonthsAgo = dayjs().subtract(3, 'month').startOf('day').valueOf()
-                var now = dayjs().endOf('day').valueOf()
-                var res = await fetch(`${constant?.Live_url}/api/getDateRange`, {
+                let newstartdate = new Date(
+                    dayjs().subtract(2, 'month').date(1).startOf('day')
+                );
+                let startTimeStamp = newstartdate.getTime();
+                let newenddate = new Date(dayjs().endOf('day'));
+                let endTimeStamp = newenddate.getTime();
+
+                let params = {
+                    From: startTimeStamp.toString(),
+                    To: endTimeStamp.toString(),
+                };
+
+                let res = await fetch(`${constant?.Live_url}/api/getDateRange`, {
                     method: 'POST',
                     headers: {
                         'Content-type': 'application/json',
                         authorization: window.localStorage.getItem('token')
                     },
-                    body: JSON.stringify({ From: threeMonthsAgo, To: now }),
-                })
-                var data = await res.json()
-                if (data?.topics?.length) {
-                    var seenTitles = new Set()
-                    var unique = data.topics.reduce((list, item) => {
-                        var normalizedTitle = item?.Title?.trim()
-                        if (!normalizedTitle) {
-                            return list
-                        }
+                    body: JSON.stringify(params),
+                });
 
-                        var dedupeKey = normalizedTitle.toLowerCase()
-                        if (seenTitles.has(dedupeKey)) {
-                            return list
-                        }
+                let resData = await res.json();
+                let data = resData.topics;
 
-                        seenTitles.add(dedupeKey)
-                        list.push(normalizedTitle)
-                        return list
-                    }, [])
-                    setTitleSuggestions(unique)
+                if (data && data?.length > 0) {
+                    let items = data.map((item) => {
+                        return item.Title;
+                    });
+                    const frequency = items.reduce((acc, item) => {
+                        if (!item) return acc;
+                        const key = item.trim().toLowerCase();
+                        acc[key] = (acc[key] || 0) + 1;
+                        return acc;
+                    }, {});
+
+                    // Sort by frequency (descending) and extract only the top 80 names
+                    const topNames = Object.entries(frequency)
+                        .sort((a, b) => b[1] - a[1])
+                        .slice(0, 80)
+                        .map(([name]) => name.charAt(0).toUpperCase() + name.slice(1));
+
+                    setTitleSuggestions(topNames);
                 }
             } catch (error) {
-                console.log('Error fetching titles:', error)
+                console.log('err', error);
             }
-        }
+        };
         fetchTitles()
     }, [])
 

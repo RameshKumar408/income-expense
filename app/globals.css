@@ -2,6 +2,8 @@ html,
 body {
     min-height: 100%;
     margin: 0;
+    background-color: #000000;
+    color-scheme: dark;
 }
 
 .twt-cont {
@@ -88,4 +90,28 @@ body {
     50% {
         transform: scale(1.2, 1);
     }
+}
+
+:root {
+    --bg-main: #030305;
+    --bg-card: #141414;
+    --bg-card-elevated: #151515;
+    --bg-input: #050505;
+    --bg-pure-black: #000000;
+    --bg-dark-gray: #111111;
+    --text-primary: #ffffff;
+    --text-secondary: #a9abb2;
+    --text-placeholder: #8c8c8c;
+    --accent-expense: #ff3b3f;
+    --accent-expense-alt: #ff3034;
+    --accent-expense-hover: #e62f33;
+    --accent-income: #2fd06f;
+    --accent-income-hover: #45df82;
+    --accent-warning: #ff9900;
+    --border-subtle: #343844;
+    --border-input: #666a72;
+    --border-input-hover: #8a8f99;
+    --brand-gradient-start: #1d4ed8;
+    --brand-gradient-mid: #3b82f6;
+    --brand-gradient-end: #8b5cf6;
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
@@ -11,6 +11,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import CalculateIcon from '@mui/icons-material/Calculate';
+import CloseIcon from '@mui/icons-material/Close';
 import { useLoader } from '@/app/context/LoaderContext';
 
 export default function Page() {
@@ -31,6 +32,9 @@ export default function Page() {
     const [selectedRecord, setSelectedRecord] = useState(null);
     const [touchStartX, setTouchStartX] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [showHeader, setShowHeader] = useState(true);
+    const lastScrollYRef = useRef(0);
+    const isInteracting = useRef(false);
     const { showLoader, hideLoader } = useLoader();
 
     const formatIndianNumber = (num) => {
@@ -73,13 +77,11 @@ export default function Page() {
             if (requestRole == 'admin') {
                 if (!userId) {
                     setLoading(false);
-                    hideLoader()
                     return;
                 }
                 body.id = userId;
             }
 
-            showLoader()
             const res = await fetch(`/api/getDateRange`, {
                 method: 'POST',
                 cache: 'no-store',
@@ -102,13 +104,11 @@ export default function Page() {
             console.log('Error loading topics: ', error);
         } finally {
             setLoading(false);
-            hideLoader()
         }
-    }, [from, to, router, showLoader, hideLoader]);
+    }, [from, to, router]);
 
     const usersLists = useCallback(async (currentText = '') => {
         try {
-            showLoader()
             const data = await fetch(`/api/web/usersList`, {
                 method: 'GET',
                 cache: 'no-store',
@@ -125,10 +125,8 @@ export default function Page() {
             }
         } catch (error) {
             console.log('usersLists error: ', error);
-        } finally {
-            hideLoader()
         }
-    }, [getDetails, showLoader, hideLoader]);
+    }, [getDetails]);
 
     const filteredDatas = useMemo(() => {
         const list = [...(datas || [])];
@@ -155,6 +153,39 @@ export default function Page() {
             }
         }
     }, []);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (typeof window !== 'undefined') {
+                const currentScrollY = window.scrollY;
+                
+                if (loading) {
+                    if (!showHeader) setShowHeader(true);
+                    lastScrollYRef.current = currentScrollY;
+                    return;
+                }
+
+                // Prevent hiding if user is interacting with the header or has focus inside it (specifically an input)
+                const headerEl = document.getElementById('history-sticky-header');
+                const isFocused = headerEl && headerEl.contains(document.activeElement) && document.activeElement.tagName === 'INPUT';
+                
+                if (isInteracting.current || isFocused) {
+                    lastScrollYRef.current = currentScrollY;
+                    return;
+                }
+
+                if (currentScrollY > lastScrollYRef.current && currentScrollY - lastScrollYRef.current > 15 && currentScrollY > 50) {
+                    setShowHeader(false);
+                    lastScrollYRef.current = currentScrollY;
+                } else if (currentScrollY < lastScrollYRef.current && lastScrollYRef.current - currentScrollY > 15) {
+                    setShowHeader(true);
+                    lastScrollYRef.current = currentScrollY;
+                }
+            }
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [loading, showHeader]);
 
     useEffect(() => {
         if (role == 'admin') {
@@ -224,91 +255,130 @@ export default function Page() {
     return (
         <div className='history-page'>
             <main className='history-shell'>
-                <header className='history-header'>
-                    <div className='history-title-wrap'>
-                        <span className='history-title-icon'>
-                            <AccountBalanceWalletIcon />
-                        </span>
-                        <h1>History</h1>
-                    </div>
-                    <button
-                        className='history-search-toggle'
-                        type='button'
-                        aria-label='Search history'
-                        onClick={() => { setShowSearch(!showSearch) }}
-                    >
-                        <SearchIcon />
-                    </button>
-                </header>
-
-                {showSearch &&
-                    <form className='history-search-form' onSubmit={submitSearch}>
-                        <input
-                            value={searchText}
-                            placeholder='Search title'
-                            type='search'
-                            onChange={(e) => { setSearchText(e.target.value) }}
-                        />
-                        <button type='submit' aria-label='Search'>
-                            <SearchIcon />
-                        </button>
-                        {searchText && (
-                            <button className='history-search-clear' type='button' aria-label='Clear search' onClick={() => { setSearchText(''); getDetails({ requestRole: role, userId: selectedUser }) }}>
-                                Clear
+                <div 
+                    id='history-sticky-header'
+                    className={`history-sticky-wrapper ${showHeader ? '' : 'hidden'}`}
+                    onPointerDown={() => {
+                        isInteracting.current = true;
+                        setTimeout(() => { isInteracting.current = false; }, 800);
+                    }}
+                >
+                    <header className='history-header' style={{ position: 'relative' }}>
+                        <div style={{ display: 'flex', width: '100%', alignItems: 'center', transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s', opacity: showSearch ? 0 : 1, transform: showSearch ? 'translateX(-20px)' : 'translateX(0)', pointerEvents: showSearch ? 'none' : 'auto' }}>
+                            <div className='history-title-wrap'>
+                                <span className='history-title-icon'>
+                                    <AccountBalanceWalletIcon />
+                                </span>
+                                <h1>History</h1>
+                            </div>
+                            <button
+                                className='history-search-toggle'
+                                type='button'
+                                aria-label='Search history'
+                                onClick={() => { setShowSearch(true) }}
+                                style={{ marginLeft: 'auto' }}
+                            >
+                                <SearchIcon />
                             </button>
-                        )}
+                        </div>
+                        
+                        <form className='history-search-form' onSubmit={submitSearch} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', margin: 0, display: 'flex', alignItems: 'center', gap: '12px', transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s', opacity: showSearch ? 1 : 0, transform: showSearch ? 'translateX(0)' : 'translateX(20px)', pointerEvents: showSearch ? 'auto' : 'none' }}>
+                            <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', height: '100%' }}>
+                                <input
+                                    value={searchText}
+                                    placeholder='Search title'
+                                    type='search'
+                                    onChange={(e) => { setSearchText(e.target.value) }}
+                                    style={{ width: '100%', height: '100%', paddingRight: '48px' }}
+                                    autoFocus={showSearch}
+                                />
+                                <button 
+                                    type='submit' 
+                                    aria-label='Search' 
+                                    style={{ position: 'absolute', right: '4px', height: '100%', aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 0, color: 'var(--text-secondary)', cursor: 'pointer' }}
+                                >
+                                    <SearchIcon />
+                                </button>
+                            </div>
+                            <button
+                                className='history-search-toggle'
+                                type='button'
+                                aria-label='Close search'
+                                onClick={() => { 
+                                    setShowSearch(false); 
+                                    setSearchText(''); 
+                                    isInteracting.current = true;
+                                    setTimeout(() => { isInteracting.current = false; }, 800);
+                                    getDetails({ requestRole: role, userId: selectedUser }); 
+                                }}
+                                style={{ color: 'var(--accent-expense)', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                                <CloseIcon />
+                            </button>
+                        </form>
+                    </header>
+
+                    {role == 'admin' &&
+                        <select
+                            className='history-account-select'
+                            value={selectedUser}
+                            onChange={(e) => { setSelectedUser(e.target.value) }}
+                            aria-label='Select account'
+                        >
+                            {users?.map((user) => (
+                                <option key={user?._id} value={user?._id}>{user?.Name}</option>
+                            ))}
+                        </select>
+                    }
+
+                    <form className='history-date-form' onSubmit={submitSearch}>
+                        <label>
+                            <span>Start date<b>*</b></span>
+                            <input value={from} type='date' onClick={(e) => { e.target.showPicker && e.target.showPicker() }} onChange={(e) => { setFrom(e.target.value) }} />
+                            <em>{formatInputDate(from)}</em>
+                        </label>
+
+                        <label>
+                            <span>End date<b>*</b></span>
+                            <input value={to} type='date' onClick={(e) => { e.target.showPicker && e.target.showPicker() }} onChange={(e) => { setTo(e.target.value) }} />
+                            <em>{formatInputDate(to)}</em>
+                        </label>
                     </form>
-                }
 
-                {role == 'admin' &&
-                    <select
-                        className='history-account-select'
-                        value={selectedUser}
-                        onChange={(e) => { setSelectedUser(e.target.value) }}
-                        aria-label='Select account'
-                    >
-                        {users?.map((user) => (
-                            <option key={user?._id} value={user?._id}>{user?.Name}</option>
-                        ))}
-                    </select>
-                }
-
-                <form className='history-date-form' onSubmit={submitSearch}>
-                    <label>
-                        <span>Start date<b>*</b></span>
-                        <input value={from} type='date' onChange={(e) => { setFrom(e.target.value) }} />
-                        <em>{formatInputDate(from)}</em>
-                    </label>
-
-                    <label>
-                        <span>End date<b>*</b></span>
-                        <input value={to} type='date' onChange={(e) => { setTo(e.target.value) }} />
-                        <em>{formatInputDate(to)}</em>
-                    </label>
-                </form>
-
-                <button className='history-reset-btn' type='button' onClick={() => { setFrom(dayjs().startOf('month').format('YYYY-MM-DD')); setTo(dayjs().format('YYYY-MM-DD')) }}>
-                    <RestartAltIcon /> Reset
-                </button>
-
-                <div className='history-sort-row' aria-label='Sort history'>
-                    <button type='button' onClick={() => { setSortKey('title') }}>
-                        Title <span className={sortKey == 'title' ? 'active' : ''}></span>
+                    <button className='history-reset-btn' type='button' onClick={() => { setFrom(dayjs().startOf('month').format('YYYY-MM-DD')); setTo(dayjs().format('YYYY-MM-DD')) }}>
+                        <RestartAltIcon /> Reset
                     </button>
-                    <button type='button' onClick={() => { setSortKey('date') }}>
-                        Date <span className={sortKey == 'date' ? 'active' : ''}></span>
-                    </button>
-                    <button type='button' onClick={() => { setSortKey('amount') }}>
-                        Amount <span className={sortKey == 'amount' ? 'active' : ''}></span>
-                    </button>
+
+                    <div className='history-sort-row' aria-label='Sort history'>
+                        <button type='button' onClick={() => { setSortKey('title') }}>
+                            Title <span className={sortKey == 'title' ? 'active' : ''}></span>
+                        </button>
+                        <button type='button' onClick={() => { setSortKey('date') }}>
+                            Date <span className={sortKey == 'date' ? 'active' : ''}></span>
+                        </button>
+                        <button type='button' onClick={() => { setSortKey('amount') }}>
+                            Amount <span className={sortKey == 'amount' ? 'active' : ''}></span>
+                        </button>
+                    </div>
                 </div>
 
                 <section className='history-list' aria-label='History records'>
                     {loading ? (
-                        <div className='history-loader' />
+                        <div className="skeleton-container">
+                            {[1, 2, 3, 4, 5, 6].map(i => (
+                                <div key={i} className='history-skeleton-card'>
+                                    <div className="skeleton-text-group">
+                                        <div className="skeleton-title" />
+                                        <div className="skeleton-date" />
+                                    </div>
+                                    <div className="skeleton-amount" />
+                                </div>
+                            ))}
+                        </div>
                     ) : filteredDatas?.length > 0 ? filteredDatas.map((row, index) => (
                         <button
-                            className={`history-card ${index % 2 == 0 ? 'muted' : ''}`}
+                            className={`history-card animate-stagger`}
+                            style={{ animationDelay: `${index * 0.05}s` }}
                             key={row?._id}
                             type='button'
                             onClick={() => { setSelectedRecord(row) }}
@@ -406,8 +476,7 @@ export default function Page() {
                                     ₹{formatIndianNumber(selectedRecord?.Amount)}
                                 </strong>
                             </div>
-
-                            <p>{selectedRecord?.Description || 'No description'}</p>
+                            <p style={{ whiteSpace: 'pre-wrap' }}>{selectedRecord?.Description || 'No description'}</p>
 
                             <button className='record-detail-edit' type='button' onClick={() => { router.push(`/editDetails/${selectedRecord?._id}`) }}>
                                 Edit
