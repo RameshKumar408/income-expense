@@ -147,7 +147,7 @@ export default function Analytics() {
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px' }}>
                         <div className='history-card' style={{ flexDirection: 'column', alignItems: 'flex-start', minHeight: 'auto', gap: '20px' }}>
-                            <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: 0 }}>This Month's Overview</h2>
+                            <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: 0 }}>This Month Overview</h2>
                             <div style={{ display: 'flex', gap: '20px', width: '100%' }}>
                                 <div style={{ flex: 1 }}>
                                     <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', margin: '0 0 4px' }}>Total Income</p>
