@@ -35,6 +35,11 @@ export default function Page() {
     const [showHeader, setShowHeader] = useState(true);
     const lastScrollYRef = useRef(0);
     const isInteracting = useRef(false);
+    
+    // Pull-to-refresh state
+    const pullStartY = useRef(null);
+    const [pullDistance, setPullDistance] = useState(0);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const { showLoader, hideLoader } = useLoader();
 
     const formatIndianNumber = (num) => {
@@ -193,6 +198,39 @@ export default function Page() {
         }
     }, [role, usersLists]);
 
+    // Intersection Observer for scroll animations
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const rect = entry.boundingClientRect;
+                const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                    entry.target.classList.remove('out-view-top', 'out-view-bottom');
+                } else {
+                    entry.target.classList.remove('in-view');
+                    // Check if it's above or below viewport
+                    if (rect.top < windowHeight / 2) {
+                        entry.target.classList.add('out-view-top');
+                        entry.target.classList.remove('out-view-bottom');
+                    } else {
+                        entry.target.classList.add('out-view-bottom');
+                        entry.target.classList.remove('out-view-top');
+                    }
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: '-5% 0px -5% 0px'
+        });
+
+        const elements = document.querySelectorAll('.scroll-animate');
+        elements.forEach(el => observer.observe(el));
+
+        return () => observer.disconnect();
+    }, [filteredDatas]);
+
     useEffect(() => {
         if (role == 'admin' && !selectedUser) {
             return;
@@ -252,8 +290,74 @@ export default function Page() {
         setTouchStartX(null);
     };
 
+    const handlePullStart = (e) => {
+        if (window.scrollY <= 5 && !loading && !isRefreshing) {
+            pullStartY.current = e.touches[0].clientY;
+        } else {
+            pullStartY.current = null;
+        }
+    };
+
+    const handlePullMove = (e) => {
+        if (pullStartY.current !== null) {
+            const currentY = e.touches[0].clientY;
+            const diff = currentY - pullStartY.current;
+            if (diff > 0) {
+                const distance = Math.min(diff * 0.4, 80);
+                setPullDistance(distance);
+                // Prevent native pull to refresh if possible, though React passive listeners might not let this work entirely
+            }
+        }
+    };
+
+    const handlePullEnd = async () => {
+        if (pullDistance >= 60 && !isRefreshing) {
+            setIsRefreshing(true);
+            setPullDistance(60);
+            if (navigator.vibrate) navigator.vibrate(50);
+            
+            await getDetails({ requestRole: role, userId: selectedUser });
+            
+            setIsRefreshing(false);
+            setPullDistance(0);
+        } else {
+            setPullDistance(0);
+        }
+        pullStartY.current = null;
+    };
+
     return (
-        <div className='history-page'>
+        <div 
+            className='history-page'
+            onTouchStart={handlePullStart}
+            onTouchMove={handlePullMove}
+            onTouchEnd={handlePullEnd}
+        >
+            <style>{`
+                @keyframes ptr-spin { 100% { transform: rotate(360deg); } }
+                .ptr-spinning { animation: ptr-spin 1s linear infinite; }
+            `}</style>
+            
+            <div style={{
+                height: `${pullDistance}px`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+                transition: isRefreshing || pullDistance === 0 ? 'height 0.3s ease' : 'none',
+                color: 'var(--text-secondary)'
+            }}>
+                {pullDistance > 10 && (
+                    <div style={{ 
+                        transform: `rotate(${isRefreshing ? 0 : pullDistance * 4}deg)`,
+                    }}>
+                        <svg className={isRefreshing ? 'ptr-spinning' : ''} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: Math.min(pullDistance / 60, 1) }}>
+                            <path d="M21.5 2v6h-6M2.13 15.57a9 9 0 1 0 3.87-11.1l5.5 5.5" />
+                        </svg>
+                    </div>
+                )}
+            </div>
+
             <main className='history-shell'>
                 <div 
                     id='history-sticky-header'
@@ -377,8 +481,7 @@ export default function Page() {
                         </div>
                     ) : filteredDatas?.length > 0 ? filteredDatas.map((row, index) => (
                         <button
-                            className={`history-card animate-stagger`}
-                            style={{ animationDelay: `${index * 0.05}s` }}
+                            className={`history-card scroll-animate`}
                             key={row?._id}
                             type='button'
                             onClick={() => { setSelectedRecord(row) }}
