@@ -11,7 +11,7 @@ export const metadata = {
   title: "Expenses Tracker",
   description: "Track your income and expenses",
   icons: {
-    icon: '/logo.svg',
+    icon: '/icon.png',
     apple: '/apple-touch-icon.png',
   },
 };

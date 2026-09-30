@@ -8,6 +8,7 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
+import PieChartIcon from '@mui/icons-material/PieChart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
@@ -51,7 +52,7 @@ export default function SettingsPage() {
             <main className='expense-shell settings-shell'>
                 <header className='settings-header'>
                     <span className='settings-title-icon'>
-                        <SettingsIcon />
+                        <img src="/icon.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', mixBlendMode: 'screen', transform: 'scale(1.3)' }} />
                     </span>
                     <h1>Settings</h1>
                 </header>
@@ -79,6 +80,9 @@ export default function SettingsPage() {
                     }
                     <Link className='bottom-nav-item' href='/viewDetails' aria-label='History'>
                         <SearchIcon />
+                    </Link>
+                    <Link className='bottom-nav-item' href='/details' aria-label='Analytics'>
+                        <PieChartIcon />
                     </Link>
                     <Link className='bottom-nav-item active' href='/settings' aria-label='Settings'>
                         <SettingsIcon />

@@ -8,11 +8,54 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import PieChartIcon from '@mui/icons-material/PieChart';
+
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import CloseIcon from '@mui/icons-material/Close';
 import { useLoader } from '@/app/context/LoaderContext';
+
+const AnimatedNumber = ({ value }) => {
+    const [displayValue, setDisplayValue] = useState(0);
+    const displayValueRef = useRef(0);
+
+    useEffect(() => {
+        let startTime;
+        const duration = 500; // 1.2s animation
+        const startValue = displayValueRef.current;
+        const endValue = Number(value) || 0;
+
+        if (startValue === endValue) return;
+
+        let animationFrame;
+        const animate = (currentTime) => {
+            if (!startTime) startTime = currentTime;
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+
+            // Easing function: easeOutQuart
+            const easeOut = 1 - Math.pow(1 - progress, 4);
+            const currentVal = startValue + (endValue - startValue) * easeOut;
+
+            setDisplayValue(currentVal);
+            displayValueRef.current = currentVal;
+
+            if (progress < 1) {
+                animationFrame = requestAnimationFrame(animate);
+            } else {
+                setDisplayValue(endValue);
+                displayValueRef.current = endValue;
+            }
+        };
+
+        animationFrame = requestAnimationFrame(animate);
+        return () => cancelAnimationFrame(animationFrame);
+    }, [value]);
+
+    return Number(displayValue).toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+};
 
 export default function Page() {
     const router = useRouter();
@@ -35,7 +78,7 @@ export default function Page() {
     const [showHeader, setShowHeader] = useState(true);
     const lastScrollYRef = useRef(0);
     const isInteracting = useRef(false);
-    
+
     // Pull-to-refresh state
     const pullStartY = useRef(null);
     const [pullDistance, setPullDistance] = useState(0);
@@ -163,7 +206,7 @@ export default function Page() {
         const handleScroll = () => {
             if (typeof window !== 'undefined') {
                 const currentScrollY = window.scrollY;
-                
+
                 if (loading) {
                     if (!showHeader) setShowHeader(true);
                     lastScrollYRef.current = currentScrollY;
@@ -173,7 +216,7 @@ export default function Page() {
                 // Prevent hiding if user is interacting with the header or has focus inside it (specifically an input)
                 const headerEl = document.getElementById('history-sticky-header');
                 const isFocused = headerEl && headerEl.contains(document.activeElement) && document.activeElement.tagName === 'INPUT';
-                
+
                 if (isInteracting.current || isFocused) {
                     lastScrollYRef.current = currentScrollY;
                     return;
@@ -204,7 +247,7 @@ export default function Page() {
             entries.forEach(entry => {
                 const rect = entry.boundingClientRect;
                 const windowHeight = window.innerHeight || document.documentElement.clientHeight;
-                
+
                 if (entry.isIntersecting) {
                     entry.target.classList.add('in-view');
                     entry.target.classList.remove('out-view-top', 'out-view-bottom');
@@ -315,9 +358,9 @@ export default function Page() {
             setIsRefreshing(true);
             setPullDistance(60);
             if (navigator.vibrate) navigator.vibrate(50);
-            
+
             await getDetails({ requestRole: role, userId: selectedUser });
-            
+
             setIsRefreshing(false);
             setPullDistance(0);
         } else {
@@ -327,7 +370,7 @@ export default function Page() {
     };
 
     return (
-        <div 
+        <div
             className='history-page'
             onTouchStart={handlePullStart}
             onTouchMove={handlePullMove}
@@ -337,7 +380,7 @@ export default function Page() {
                 @keyframes ptr-spin { 100% { transform: rotate(360deg); } }
                 .ptr-spinning { animation: ptr-spin 1s linear infinite; }
             `}</style>
-            
+
             <div style={{
                 height: `${pullDistance}px`,
                 display: 'flex',
@@ -348,7 +391,7 @@ export default function Page() {
                 color: 'var(--text-secondary)'
             }}>
                 {pullDistance > 10 && (
-                    <div style={{ 
+                    <div style={{
                         transform: `rotate(${isRefreshing ? 0 : pullDistance * 4}deg)`,
                     }}>
                         <svg className={isRefreshing ? 'ptr-spinning' : ''} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: Math.min(pullDistance / 60, 1) }}>
@@ -359,7 +402,7 @@ export default function Page() {
             </div>
 
             <main className='history-shell'>
-                <div 
+                <div
                     id='history-sticky-header'
                     className={`history-sticky-wrapper ${showHeader ? '' : 'hidden'}`}
                     onPointerDown={() => {
@@ -371,7 +414,7 @@ export default function Page() {
                         <div style={{ display: 'flex', width: '100%', alignItems: 'center', transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s', opacity: showSearch ? 0 : 1, transform: showSearch ? 'translateX(-20px)' : 'translateX(0)', pointerEvents: showSearch ? 'none' : 'auto' }}>
                             <div className='history-title-wrap'>
                                 <span className='history-title-icon'>
-                                    <AccountBalanceWalletIcon />
+                                    <img src="/icon.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', mixBlendMode: 'screen', transform: 'scale(1.3)' }} />
                                 </span>
                                 <h1>History</h1>
                             </div>
@@ -385,7 +428,7 @@ export default function Page() {
                                 <SearchIcon />
                             </button>
                         </div>
-                        
+
                         <form className='history-search-form' onSubmit={submitSearch} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', margin: 0, display: 'flex', alignItems: 'center', gap: '12px', transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s', opacity: showSearch ? 1 : 0, transform: showSearch ? 'translateX(0)' : 'translateX(20px)', pointerEvents: showSearch ? 'auto' : 'none' }}>
                             <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', height: '100%' }}>
                                 <input
@@ -396,9 +439,9 @@ export default function Page() {
                                     style={{ width: '100%', height: '100%', paddingRight: '48px' }}
                                     autoFocus={showSearch}
                                 />
-                                <button 
-                                    type='submit' 
-                                    aria-label='Search' 
+                                <button
+                                    type='submit'
+                                    aria-label='Search'
                                     style={{ position: 'absolute', right: '4px', height: '100%', aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 0, color: 'var(--text-secondary)', cursor: 'pointer' }}
                                 >
                                     <SearchIcon />
@@ -408,12 +451,12 @@ export default function Page() {
                                 className='history-search-toggle'
                                 type='button'
                                 aria-label='Close search'
-                                onClick={() => { 
-                                    setShowSearch(false); 
-                                    setSearchText(''); 
+                                onClick={() => {
+                                    setShowSearch(false);
+                                    setSearchText('');
                                     isInteracting.current = true;
                                     setTimeout(() => { isInteracting.current = false; }, 800);
-                                    getDetails({ requestRole: role, userId: selectedUser }); 
+                                    getDetails({ requestRole: role, userId: selectedUser });
                                 }}
                                 style={{ color: 'var(--accent-expense)', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             >
@@ -448,10 +491,6 @@ export default function Page() {
                             <em>{formatInputDate(to)}</em>
                         </label>
                     </form>
-
-                    <button className='history-reset-btn' type='button' onClick={() => { setFrom(dayjs().startOf('month').format('YYYY-MM-DD')); setTo(dayjs().format('YYYY-MM-DD')) }}>
-                        <RestartAltIcon /> Reset
-                    </button>
 
                     <div className='history-sort-row' aria-label='Sort history'>
                         <button type='button' onClick={() => { setSortKey('title') }}>
@@ -505,7 +544,7 @@ export default function Page() {
                 <div className='history-floating-actions'>
                     <div className='history-balance'>
                         <span>Total balance</span>
-                        <strong>₹{formatIndianNumber(totalBalance)}</strong>
+                        <strong>₹<AnimatedNumber value={totalBalance} /></strong>
                     </div>
                     <button
                         className='history-round-btn'
@@ -599,6 +638,9 @@ export default function Page() {
                     }
                     <Link className='bottom-nav-item active history-center-nav' href='/viewDetails' aria-label='History'>
                         <SearchIcon />
+                    </Link>
+                    <Link className='bottom-nav-item' href='/details' aria-label='Analytics'>
+                        <PieChartIcon />
                     </Link>
                     <Link className='bottom-nav-item' href='/settings' aria-label='Settings'>
                         <SettingsIcon />

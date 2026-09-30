@@ -20,6 +20,7 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
+import PieChartIcon from '@mui/icons-material/PieChart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
@@ -353,7 +354,7 @@ export default function Home() {
                     <header className='expense-header'>
                         <div className='expense-title-wrap'>
                             <span className='expense-title-icon'>
-                                <AddCardIcon fontSize='small' />
+                                <img src="/icon.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', mixBlendMode: 'screen', transform: 'scale(1.3)' }} />
                             </span>
                             <h1>Expenses</h1>
                         </div>
@@ -529,6 +530,9 @@ export default function Home() {
                         }
                         <Link className='bottom-nav-item' href='/viewDetails' aria-label='History'>
                             <SearchIcon />
+                        </Link>
+                        <Link className='bottom-nav-item' href='/details' aria-label='Analytics'>
+                            <PieChartIcon />
                         </Link>
                         <Link className='bottom-nav-item' href='/settings' aria-label='Settings'>
                             <SettingsIcon />
