@@ -69,6 +69,10 @@ export default function SettingsPage() {
                     </button>
                 </section>
 
+                <div style={{ textAlign: 'right', marginTop: '12px', marginRight: '4px', color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: '500' }}>
+                    Version 1.01
+                </div>
+
                 <nav className='bottom-nav' aria-label='Main actions'>
                     <Link className='bottom-nav-item' href='/createDetail' aria-label='Create details'>
                         <HomeOutlinedIcon />
@@ -81,7 +85,7 @@ export default function SettingsPage() {
                     <Link className='bottom-nav-item' href='/viewDetails' aria-label='History'>
                         <SearchIcon />
                     </Link>
-{/* <Link className='bottom-nav-item' href='/details' aria-label='Analytics'>
+                    {/* <Link className='bottom-nav-item' href='/details' aria-label='Analytics'>
                         <PieChartIcon />
                     </Link> */}
                     <Link className='bottom-nav-item active' href='/settings' aria-label='Settings'>

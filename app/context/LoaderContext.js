@@ -32,10 +32,14 @@ export function LoaderProvider({ children }) {
           {initialLoading ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
                 <img src="/icon.png" alt="Splash Logo" style={{ width: '120px', height: '120px', objectFit: 'contain' }} />
-                <div className='loader' style={{ transform: 'scale(0.8)' }} />
+                <div className='skype-loader' style={{ transform: 'scale(0.8)' }}>
+                  <div className="dot"></div><div className="dot"></div><div className="dot"></div><div className="dot"></div><div className="dot"></div>
+                </div>
             </div>
           ) : (
-            <div className='loader' />
+            <div className='skype-loader'>
+              <div className="dot"></div><div className="dot"></div><div className="dot"></div><div className="dot"></div><div className="dot"></div>
+            </div>
           )}
         </div>
       )}
