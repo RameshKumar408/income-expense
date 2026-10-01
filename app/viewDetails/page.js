@@ -546,14 +546,24 @@ export default function Page() {
                         <span>Total balance</span>
                         <strong>₹<AnimatedNumber value={totalBalance} /></strong>
                     </div>
-                    <button
-                        className='history-round-btn'
-                        type='button'
-                        aria-label='Open calculator'
-                        onClick={() => { setShowCalculator(true) }}
-                    >
-                        <CalculateIcon />
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button
+                            className='history-round-btn'
+                            type='button'
+                            aria-label='View Analytics'
+                            onClick={() => { router.push('/details') }}
+                        >
+                            <PieChartIcon />
+                        </button>
+                        <button
+                            className='history-round-btn'
+                            type='button'
+                            aria-label='Open calculator'
+                            onClick={() => { setShowCalculator(true) }}
+                        >
+                            <CalculateIcon />
+                        </button>
+                    </div>
                 </div>
 
                 {showCalculator &&

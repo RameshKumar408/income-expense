@@ -9,6 +9,7 @@ import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PieChartIcon from '@mui/icons-material/PieChart';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title as ChartTitle } from 'chart.js';
 import { Pie, Bar } from 'react-chartjs-2';
 
@@ -129,13 +130,22 @@ export default function Analytics() {
     return (
         <div className='create-detail-page'>
             <main className='history-shell'>
-                <header className='history-header'>
-                    <div className='history-title-wrap'>
+                <header className='history-header' style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center' }}>
+                    <button
+                        type="button"
+                        onClick={() => router.back()}
+                        style={{ justifySelf: 'start', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0' }}
+                        aria-label="Go back"
+                    >
+                        <ArrowBackIcon />
+                    </button>
+                    <div className='history-title-wrap' style={{ margin: 0, justifySelf: 'center' }}>
                         <span className='history-title-icon'>
                             <img src="/icon.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', mixBlendMode: 'screen', transform: 'scale(1.3)' }} />
                         </span>
                         <h1>Analytics</h1>
                     </div>
+                    <div />
                 </header>
 
                 {loading ? (
