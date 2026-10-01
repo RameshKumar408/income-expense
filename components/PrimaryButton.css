@@ -4,10 +4,10 @@
     border-radius: 16px;
     border: 0;
     color: #1a1000;
-    background: linear-gradient(90deg, var(--brand-gradient-end) 0%, var(--brand-gradient-start) 50%, var(--brand-gradient-end) 100%);
+    background: linear-gradient(90deg, var(--brand-gradient-end) 0%, var(--brand-gradient-mid) 50%, var(--brand-gradient-end) 100%);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.2),
-        0 12px 24px rgba(212, 160, 23, 0.3);
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        0 16px 32px rgba(212, 160, 23, 0.4);
     font-family: inherit;
     font-size: 16px;
     font-weight: 800;
@@ -20,9 +20,9 @@
 }
 
 .global-primary-btn:hover {
-    background: linear-gradient(90deg, var(--brand-gradient-end) 0%, var(--brand-gradient-mid) 50%, var(--brand-gradient-end) 100%);
+    background: linear-gradient(90deg, var(--brand-gradient-end) 0%, var(--brand-gradient-start) 50%, var(--brand-gradient-end) 100%);
     transform: translateY(-2px);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.3),
-        0 16px 32px rgba(212, 160, 23, 0.4);
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 12px 24px rgba(212, 160, 23, 0.3);
 }

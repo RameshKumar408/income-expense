@@ -190,6 +190,17 @@ export default function Analytics() {
     }
     const dailyAvg = totalExpense / daysDiff;
 
+    const glassStyle = {
+        background: 'rgba(35, 35, 40, 0.4)', /* Slightly lighter base so it stands out from pitch black */
+        backdropFilter: 'blur(24px) saturate(150%)',
+        WebkitBackdropFilter: 'blur(24px) saturate(150%)',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+        borderLeft: '1px solid rgba(255, 255, 255, 0.15)',
+        borderRadius: '16px',
+        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.5)'
+    };
+
     return (
         <div className='create-detail-page'>
             <GlowingBubbles />
@@ -220,7 +231,7 @@ export default function Analytics() {
                     </div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px' }}>
-                        <div className='history-card' style={{ flexDirection: 'column', alignItems: 'flex-start', minHeight: 'auto', gap: '20px' }}>
+                        <div className='analytics-card' style={{ ...glassStyle, flexDirection: 'column', alignItems: 'flex-start', minHeight: 'auto', gap: '20px' }}>
                             <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: 0 }}>Overview</h2>
                             <div style={{ display: 'flex', gap: '20px', width: '100%' }}>
                                 <div style={{ flex: 1 }}>
@@ -238,7 +249,7 @@ export default function Analytics() {
                             </div>
                         </div>
 
-                        <div className='history-card' style={{ flexDirection: 'column', alignItems: 'flex-start', minHeight: '300px', cursor: 'default' }}>
+                        <div className='analytics-card' style={{ ...glassStyle, flexDirection: 'column', alignItems: 'flex-start', minHeight: '300px', cursor: 'default' }}>
                             <h2 style={{ fontSize: '18px', margin: '0 0 20px', color: 'rgba(255,255,255,0.8)' }}>Expense Breakdown</h2>
                             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '30px' }}>
                                 {Object.keys(categoryTotals).length > 0 ? (
@@ -266,14 +277,14 @@ export default function Analytics() {
                             </div>
                         </div>
 
-                        <div className='history-card' style={{ flexDirection: 'column', alignItems: 'flex-start', minHeight: '300px', cursor: 'default' }}>
+                        <div className='analytics-card' style={{ ...glassStyle, flexDirection: 'column', alignItems: 'flex-start', minHeight: '300px', cursor: 'default' }}>
                             <h2 style={{ fontSize: '18px', margin: '0 0 20px', color: 'rgba(255,255,255,0.8)' }}>Cash Flow</h2>
                             <div style={{ width: '100%', flex: 1, minHeight: '200px' }}>
                                 <Bar data={barData} options={{ ...chartOptions, maintainAspectRatio: false }} />
                             </div>
                         </div>
 
-                        <div className='history-card' style={{ flexDirection: 'column', alignItems: 'flex-start', minHeight: '300px', cursor: 'default' }}>
+                        <div className='analytics-card' style={{ ...glassStyle, flexDirection: 'column', alignItems: 'flex-start', minHeight: '300px', cursor: 'default' }}>
                             <h2 style={{ fontSize: '18px', margin: '0 0 20px', color: 'rgba(255,255,255,0.8)' }}>Daily Spend Trend</h2>
                             <div style={{ width: '100%', flex: 1, minHeight: '200px' }}>
                                 {sortedDailyKeys.length > 0 ? (
