@@ -81,9 +81,9 @@ export default function SettingsPage() {
                     <Link className='bottom-nav-item' href='/viewDetails' aria-label='History'>
                         <SearchIcon />
                     </Link>
-                    <Link className='bottom-nav-item' href='/details' aria-label='Analytics'>
+{/* <Link className='bottom-nav-item' href='/details' aria-label='Analytics'>
                         <PieChartIcon />
-                    </Link>
+                    </Link> */}
                     <Link className='bottom-nav-item active' href='/settings' aria-label='Settings'>
                         <SettingsIcon />
                     </Link>

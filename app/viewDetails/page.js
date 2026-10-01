@@ -639,9 +639,9 @@ export default function Page() {
                     <Link className='bottom-nav-item active history-center-nav' href='/viewDetails' aria-label='History'>
                         <SearchIcon />
                     </Link>
-                    <Link className='bottom-nav-item' href='/details' aria-label='Analytics'>
+{/* <Link className='bottom-nav-item' href='/details' aria-label='Analytics'>
                         <PieChartIcon />
-                    </Link>
+                    </Link> */}
                     <Link className='bottom-nav-item' href='/settings' aria-label='Settings'>
                         <SettingsIcon />
                     </Link>
