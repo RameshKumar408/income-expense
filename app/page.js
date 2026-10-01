@@ -11,6 +11,7 @@ import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import './loginRegister.css'
 import { useLoader } from '@/app/context/LoaderContext'
+import PrimaryButton from '@/components/PrimaryButton'
 
 export default function Home() {
 
@@ -123,9 +124,9 @@ export default function Home() {
 
           <span className="forgot-password-btn">Forgot password ?</span>
 
-          <button className="login-submit" type="button" onClick={(e) => { handleSubmit(e) }}>
+          <PrimaryButton type="button" onClick={(e) => { handleSubmit(e) }}>
             Login
-          </button>
+          </PrimaryButton>
 
           <Link className="login-register-link" href="/register">
             Register

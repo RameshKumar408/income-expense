@@ -57,7 +57,7 @@ export default function SettingsPage() {
                     <h1>Settings</h1>
                 </header>
 
-                <section className='settings-actions' aria-label='Account settings'>
+                <section className='settings-actions' aria-label='Account settings' style={{ marginBottom: '24px' }}>
                     <button className='settings-action danger' type='button' onClick={logout}>
                         <LogoutIcon />
                         <span>{accounts.length > 1 ? 'Remove account' : 'Logout'}</span>
@@ -70,7 +70,7 @@ export default function SettingsPage() {
                 </section>
 
                 <div style={{ textAlign: 'right', marginTop: '12px', marginRight: '4px', color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontWeight: '500' }}>
-                    Version 1.02
+                    Version 1.03
                 </div>
 
                 <nav className='bottom-nav' aria-label='Main actions'>

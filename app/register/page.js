@@ -22,6 +22,7 @@ import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import '../loginRegister.css'
 import { useLoader } from '@/app/context/LoaderContext'
+import PrimaryButton from '@/components/PrimaryButton'
 
 export default function Home() {
 
@@ -159,9 +160,9 @@ export default function Home() {
                         </div>
                     </div>
 
-                    <button className="register-submit" type="submit">
+                    <PrimaryButton type="submit">
                         Register
-                    </button>
+                    </PrimaryButton>
 
                     <Link className="register-login-link" href="/">
                         Login

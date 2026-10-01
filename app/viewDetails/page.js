@@ -14,6 +14,8 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import CloseIcon from '@mui/icons-material/Close';
 import { useLoader } from '@/app/context/LoaderContext';
+import PrimaryButton from '@/components/PrimaryButton';
+import GlowingBubbles from '@/components/GlowingBubbles';
 
 const AnimatedNumber = ({ value }) => {
     const [displayValue, setDisplayValue] = useState(0);
@@ -376,6 +378,7 @@ export default function Page() {
             onTouchMove={handlePullMove}
             onTouchEnd={handlePullEnd}
         >
+            <GlowingBubbles />
             <style>{`
                 @keyframes ptr-spin { 100% { transform: rotate(360deg); } }
                 .ptr-spinning { animation: ptr-spin 1s linear infinite; }
@@ -630,9 +633,9 @@ export default function Page() {
                             </div>
                             <p style={{ whiteSpace: 'pre-wrap' }}>{selectedRecord?.Description || 'No description'}</p>
 
-                            <button className='record-detail-edit' type='button' onClick={() => { router.push(`/editDetails/${selectedRecord?._id}`) }}>
+                            <PrimaryButton type='button' onClick={() => { router.push(`/editDetails/${selectedRecord?._id}`) }}>
                                 Edit
-                            </button>
+                            </PrimaryButton>
                         </section>
                     </div>
                 }

@@ -6,6 +6,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import PrimaryButton from '@/components/PrimaryButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -13,6 +14,7 @@ import Select from '@mui/material/Select';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
+import GlowingBubbles from '@/components/GlowingBubbles';
 import AddCardIcon from '@mui/icons-material/AddCard';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
@@ -350,6 +352,7 @@ export default function Home() {
     return (
         <>
             <div className='create-detail-page'>
+                <GlowingBubbles />
                 <main className='expense-shell'>
                     <header className='expense-header'>
                         <div className='expense-title-wrap'>
@@ -514,9 +517,9 @@ export default function Home() {
                             </div>
                         </div>
 
-                        <Button className='add-data-btn' variant='contained' type='submit'>
+                        <PrimaryButton type='submit'>
                             Add Data
-                        </Button>
+                        </PrimaryButton>
                     </form>
 
                     <nav className='bottom-nav' aria-label='Main actions'>

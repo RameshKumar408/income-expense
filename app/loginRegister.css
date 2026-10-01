@@ -22,41 +22,6 @@ body {
     pointer-events: auto;
 }
 
-/* Dark Liquid Background Blobs */
-.login-page::before, .register-page::before,
-.login-page::after, .register-page::after {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.6;
-    animation: floatBlob 15s infinite alternate ease-in-out;
-}
-
-.login-page::before, .register-page::before {
-    width: 50vw;
-    height: 50vw;
-    background: radial-gradient(circle, rgba(45,25,120,0.8) 0%, rgba(10,5,30,0) 70%);
-    top: -10%;
-    left: -10%;
-}
-
-.login-page::after, .register-page::after {
-    width: 60vw;
-    height: 60vw;
-    background: radial-gradient(circle, rgba(15,65,135,0.7) 0%, rgba(5,15,35,0) 70%);
-    bottom: -15%;
-    right: -10%;
-    animation-delay: -5s;
-    animation-duration: 20s;
-}
-
-@keyframes floatBlob {
-    0% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(5%, 10%) scale(1.1); }
-    100% { transform: translate(-5%, -5%) scale(0.9); }
-}
 
 .login-panel, .register-panel {
     position: relative;
@@ -199,16 +164,16 @@ body {
 .login-submit, .register-submit {
     position: relative;
     z-index: 30;
-    min-height: 72px;
+    min-height: 56px;
     border: 0;
     border-radius: 16px;
-    color: var(--text-primary);
-    background: linear-gradient(135deg, var(--brand-gradient-start) 0%, var(--brand-gradient-mid) 50%, var(--brand-gradient-end) 100%);
+    color: #1a1000;
+    background: linear-gradient(90deg, var(--brand-gradient-end) 0%, var(--brand-gradient-start) 50%, var(--brand-gradient-end) 100%);
     box-shadow: 
         inset 0 1px 0 rgba(255, 255, 255, 0.2),
-        0 12px 24px rgba(29, 78, 216, 0.3);
+        0 12px 24px rgba(212, 160, 23, 0.3);
     font: inherit;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 800;
     cursor: pointer;
     pointer-events: auto;
@@ -219,7 +184,7 @@ body {
     transform: translateY(-2px);
     box-shadow: 
         inset 0 1px 0 rgba(255, 255, 255, 0.3),
-        0 16px 32px rgba(29, 78, 216, 0.4);
+        0 16px 32px rgba(212, 160, 23, 0.4);
 }
 
 .login-register-link {
@@ -555,13 +520,16 @@ body {
 }
 
 .register-submit {
-    min-height: 78px;
+    min-height: 56px;
     border: 0;
-    border-radius: 14px;
-    color: var(--text-primary);
-    background: linear-gradient(100deg, var(--accent-expense-alt) 0%, #a0499c 50%, #126fe8 100%);
+    border-radius: 16px;
+    color: #1a1000;
+    background: linear-gradient(90deg, var(--brand-gradient-end) 0%, var(--brand-gradient-start) 50%, var(--brand-gradient-end) 100%);
+    box-shadow: 
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 12px 24px rgba(212, 160, 23, 0.3);
     font: inherit;
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 900;
     cursor: pointer;
 }

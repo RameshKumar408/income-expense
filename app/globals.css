@@ -89,25 +89,31 @@ body {
 }
 
 :root {
-    --bg-main: #030305;
-    --bg-card: #141414;
-    --bg-card-elevated: #151515;
+    --bg-main: #000000;
+    --bg-card: #080808;
+    --bg-card-elevated: #0a0a0a;
     --bg-input: #050505;
     --bg-pure-black: #000000;
-    --bg-dark-gray: #111111;
-    --text-primary: #ffffff;
-    --text-secondary: #a9abb2;
-    --text-placeholder: #8c8c8c;
-    --accent-expense: #ff3b3f;
-    --accent-expense-alt: #ff3034;
-    --accent-expense-hover: #e62f33;
-    --accent-income: #2fd06f;
-    --accent-income-hover: #45df82;
-    --accent-warning: #ff9900;
-    --border-subtle: #343844;
-    --border-input: #666a72;
-    --border-input-hover: #8a8f99;
-    --brand-gradient-start: #1d4ed8;
-    --brand-gradient-mid: #3b82f6;
-    --brand-gradient-end: #8b5cf6;
+    --bg-dark-gray: #050505;
+    
+    --text-primary: #fcfcfc;
+    --text-secondary: #d4a017; /* Amber Gold */
+    --text-placeholder: #7c7365;
+    
+    --accent-expense: #ff455b;
+    --accent-expense-alt: #ff3043;
+    --accent-expense-hover: #e03248;
+    
+    --accent-income: #d4a017; /* Amber Gold */
+    --accent-income-hover: #805200; /* Deep Amber */
+    
+    --accent-warning: #ffd88a; /* Warm Gold Highlight */
+    
+    --border-subtle: rgba(212, 160, 23, 0.15); /* Gold tinted border using D4A017 */
+    --border-input: rgba(212, 160, 23, 0.25);
+    --border-input-hover: rgba(212, 160, 23, 0.5);
+    
+    --brand-gradient-start: #ffd88a; /* Warm Gold (Highlight) */
+    --brand-gradient-mid: #d4a017;   /* Amber Gold (Main) */
+    --brand-gradient-end: #805200;   /* Deep Amber (Shadow) */
 }
