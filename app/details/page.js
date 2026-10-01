@@ -10,10 +10,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title as ChartTitle } from 'chart.js';
-import { Pie, Bar } from 'react-chartjs-2';
+import dynamic from 'next/dynamic';
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, ChartTitle);
+const Pie = dynamic(() => import('../../components/Charts').then((mod) => mod.Pie), { ssr: false });
+const Bar = dynamic(() => import('../../components/Charts').then((mod) => mod.Bar), { ssr: false });
 
 export default function Analytics() {
     const router = useRouter();
@@ -32,8 +32,22 @@ export default function Analytics() {
     const getData = useCallback(async () => {
         try {
             setLoading(true);
-            const fromTimestamp = dayjs().startOf('month').valueOf();
-            const toTimestamp = dayjs().endOf('month').valueOf();
+            let queryFrom = null;
+            let queryTo = null;
+            
+            if (typeof window !== 'undefined') {
+                const searchParams = new URLSearchParams(window.location.search);
+                queryFrom = searchParams.get('from');
+                queryTo = searchParams.get('to');
+            }
+            
+            const fromTimestamp = queryFrom 
+                ? dayjs(queryFrom).startOf('day').valueOf() 
+                : dayjs().startOf('month').valueOf();
+            const toTimestamp = queryTo 
+                ? dayjs(queryTo).endOf('day').valueOf() 
+                : dayjs().endOf('month').valueOf();
+
             const body = { 
                 From: fromTimestamp, 
                 To: toTimestamp 

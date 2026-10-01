@@ -551,7 +551,7 @@ export default function Page() {
                             className='history-round-btn'
                             type='button'
                             aria-label='View Analytics'
-                            onClick={() => { router.push('/details') }}
+                            onClick={() => { router.push(`/details?from=${from}&to=${to}`) }}
                         >
                             <PieChartIcon />
                         </button>
