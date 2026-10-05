@@ -290,7 +290,8 @@
     overflow-x: auto;
     padding: 4px 0 2px;
     scrollbar-width: none;
-    flex: 1; /* Allow to take remaining space */
+    flex: 1;
+    /* Allow to take remaining space */
 }
 
 .suggestion-row.expanded {
@@ -989,7 +990,7 @@
     pointer-events: none;
     position: fixed;
     left: 50%;
-    bottom: calc(max(32px, env(safe-area-inset-bottom, 32px)) + 104px);
+    bottom: calc(max(32px, env(safe-area-inset-bottom, 32px)) + 114px);
     z-index: 18;
     display: grid;
     grid-template-columns: minmax(0, 1fr) 70px;
@@ -1575,7 +1576,7 @@
     }
 
     .history-floating-actions {
-        bottom: calc(max(32px, env(safe-area-inset-bottom, 32px)) + 68px);
+        bottom: calc(max(32px, env(safe-area-inset-bottom, 32px)) + 88px);
         grid-template-columns: 1fr 58px;
         width: min(calc(100% - 28px), 420px);
     }
@@ -1874,6 +1875,7 @@
 
     .history-shell,
     .expense-shell {
+        width: 100%;
         max-width: 1200px;
         margin: 0 auto;
         padding: 40px;
@@ -2031,6 +2033,9 @@
         right: 40px;
         bottom: 40px;
         transform: none;
+        display: flex;
+        width: auto;
+        gap: 16px;
         flex-direction: row-reverse;
         /* Button on right, text on left */
     }
