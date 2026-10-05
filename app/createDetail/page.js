@@ -51,24 +51,17 @@ export default function Home() {
     const [amount, setAmount] = useState('');
     const [type, setType] = useState('Expense');
     const [TimeStamp, setTimeStamp] = useState(dayjs().valueOf());
-    const [accType, setAccType] = useState('')
 
     const [selectedDateError, setSelectedDateError] = useState('')
     const [topicError, setTopicError] = useState('')
     const [descriptionError, setDescriptionError] = useState('')
     const [amountError, setAmountError] = useState('')
     const [typeError, setTypeError] = useState('')
-    const [accTypeError, setAccTypeError] = useState('')
 
     const handleChange = (event) => {
         setType(event.target.value);
         setTypeError("")
     };
-
-    const handleChangeAcc = (event) => {
-        setAccType(event.target.value);
-        setAccTypeError("")
-    }
 
     const handleDateChange = (date) => {
         if (!date || !date.isValid()) {
@@ -256,9 +249,6 @@ export default function Home() {
             } else if (type == "") {
                 setTypeError("Please Select Type")
             }
-            // else if (accType == "") {
-            //     setAccTypeError("Please Select Account Type")
-            // } 
             else {
                 showLoader()
                 const res = await fetch(`${constant?.Live_url}/api/incomes`, {
@@ -330,11 +320,11 @@ export default function Home() {
     }
 
     const switchAccount = (account) => {
+        window.sessionStorage.setItem('pendingToast', `Switched to ${account.email}`)
         window.localStorage.setItem('token', account.token)
         window.localStorage.setItem('roles', account.role)
         window.localStorage.setItem('activeAccount', account.email)
         setShowAccountMenu(false)
-        window.sessionStorage.setItem('pendingToast', `Switched to ${account.email}`)
         window.location.reload()
     }
 
@@ -496,11 +486,11 @@ export default function Home() {
                                             });
                                         })()}
                                     </div>
-                                    <IconButton 
+                                    <IconButton
                                         onClick={() => setIsSuggestionsExpanded(!isSuggestionsExpanded)}
-                                        sx={{ 
-                                            flexShrink: 0, 
-                                            color: '#d4a017', 
+                                        sx={{
+                                            flexShrink: 0,
+                                            color: '#d4a017',
                                             backgroundColor: 'rgba(0, 0, 0, 0.2)',
                                             border: '1px solid rgba(212, 160, 23, 0.3)',
                                             marginTop: '4px',
