@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import constant from '@/constant';
 import { decodeToken } from '@/libs/jwt';
 import { toast } from 'react-toastify';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import './loginRegister.css'
@@ -93,7 +93,7 @@ export default function Home() {
       <main className="login-page">
         <form className="login-panel" noValidate>
           <div className="login-heading">
-            <AccountCircleIcon className="login-avatar" />
+            <img src="/apple-touch-icon.png" alt="Logo" className="login-avatar-img" />
             <h1>Login</h1>
           </div>
 

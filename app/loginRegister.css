@@ -62,10 +62,11 @@ body {
     letter-spacing: 0;
 }
 
-.login-avatar.MuiSvgIcon-root {
-    width: clamp(136px, 34vw, 170px);
-    height: clamp(136px, 34vw, 170px);
-    color: #f29a00;
+.login-avatar-img {
+    width: clamp(120px, 30vw, 160px);
+    height: clamp(120px, 30vw, 160px);
+    object-fit: contain;
+    border-radius: 28px;
 }
 
 .login-fields {
@@ -358,9 +359,9 @@ body {
     box-sizing: border-box;
     width: clamp(112px, 28vw, 150px);
     aspect-ratio: 1.28;
-    border: 7px solid #f29a00;
+    border: 7px solid var(--text-secondary);
     border-radius: 14px;
-    color: #f29a00;
+    color: var(--text-secondary);
 }
 
 .register-art::before,
