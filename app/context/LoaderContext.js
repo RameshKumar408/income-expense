@@ -39,7 +39,7 @@ export function LoaderProvider({ children }) {
     <LoaderContext.Provider value={value}>
       {children}
       {(loading > 0 || initialLoading) && (
-        <div className='app-loader-overlay' style={{ background: initialLoading ? '#000000' : 'rgba(0, 0, 0, 0.72)', zIndex: 999999 }}>
+        <div className='app-loader-overlay' style={{ background: initialLoading ? '#000000' : 'rgba(0, 0, 0, 0.72)', zIndex: 99999 }}>
           {initialLoading ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
                 <img src="/icon.png" alt="Splash Logo" style={{ width: '120px', height: '120px', objectFit: 'contain' }} />

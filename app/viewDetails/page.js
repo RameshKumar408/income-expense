@@ -72,6 +72,17 @@ export default function Page() {
     const [to, setTo] = useState(dayjs().format('YYYY-MM-DD'));
     const [searchText, setSearchText] = useState('');
     const [showSearch, setShowSearch] = useState(false);
+    const searchInputRef = useRef(null);
+
+    useEffect(() => {
+        if (showSearch && searchInputRef.current) {
+            // Wait for 400ms transition to complete before focusing
+            const timeout = setTimeout(() => {
+                searchInputRef.current.focus();
+            }, 400);
+            return () => clearTimeout(timeout);
+        }
+    }, [showSearch]);
     const [role, setRole] = useState('');
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState('');
@@ -444,7 +455,7 @@ export default function Page() {
                                     placeholder='Search title'
                                     type='search'
                                     onChange={(e) => { setSearchText(e.target.value) }}
-                                    autoFocus={showSearch}
+                                    inputRef={searchInputRef}
                                     fullWidth
                                     InputProps={{
                                         sx: { minHeight: '100%', height: '100%', borderRadius: '100px' },

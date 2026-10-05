@@ -27,8 +27,8 @@ export default function SettingsPage() {
             window.localStorage.setItem('token', next.token)
             window.localStorage.setItem('roles', next.role)
             window.localStorage.setItem('activeAccount', next.email)
-            toast.success(`Removed account. Switched to ${next.email}`)
-            setTimeout(() => window.location.reload(), 600)
+            window.sessionStorage.setItem('pendingToast', `Removed account. Switched to ${next.email}`)
+            window.location.reload()
         } else {
             window.localStorage.setItem('accounts', JSON.stringify([]))
             window.localStorage.removeItem("token");

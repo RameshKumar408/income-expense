@@ -38,7 +38,6 @@ import constant from '@/constant';
 import { decodeToken } from '@/libs/jwt';
 import { toast } from 'react-toastify';
 import { useLoader } from '@/app/context/LoaderContext';
-import 'react-toastify/dist/ReactToastify.css';
 import dayjs from 'dayjs';
 
 
@@ -90,6 +89,7 @@ export default function Home() {
     };
 
     const [titleSuggestions, setTitleSuggestions] = useState([]);
+    const [isSuggestionsExpanded, setIsSuggestionsExpanded] = useState(false);
 
     useEffect(() => {
         const fetchTitles = async () => {
@@ -333,8 +333,8 @@ export default function Home() {
         window.localStorage.setItem('roles', account.role)
         window.localStorage.setItem('activeAccount', account.email)
         setShowAccountMenu(false)
-        toast.success(`Switched to ${account.email}`)
-        setTimeout(() => window.location.reload(), 600)
+        window.sessionStorage.setItem('pendingToast', `Switched to ${account.email}`)
+        window.location.reload()
     }
 
     const logoutAccount = () => {
@@ -348,8 +348,8 @@ export default function Home() {
             window.localStorage.setItem('roles', next.role)
             window.localStorage.setItem('activeAccount', next.email)
             setShowAccountMenu(false)
-            toast.success(`Removed account. Switched to ${next.email}`)
-            setTimeout(() => window.location.reload(), 600)
+            window.sessionStorage.setItem('pendingToast', `Removed account. Switched to ${next.email}`)
+            window.location.reload()
         } else {
             window.localStorage.setItem('accounts', JSON.stringify([]))
             window.localStorage.removeItem("token");
@@ -399,7 +399,7 @@ export default function Home() {
                                                 type='button'
                                                 onClick={() => { if (!isActive) switchAccount(acc) }}
                                             >
-                                                <div className='account-menu-avatar'>{acc.name?.substring(0, 2).toUpperCase() || 'AK'}</div>
+                                                <div className='account-menu-avatar'>{acc.name?.substring(0, 1).toUpperCase() || 'AK'}</div>
                                                 <div className='account-menu-info'>
                                                     <span className='account-menu-name'>{acc.name}</span>
                                                     <span className='account-menu-email'>{acc.accountType || 'Personal Account'}</span>
@@ -413,10 +413,7 @@ export default function Home() {
                                         <AddCircleOutlineIcon fontSize='small' />
                                         <span>Add Account</span>
                                     </button>
-                                    <button className='account-menu-action' type='button' onClick={() => router.push('/settings')}>
-                                        <SettingsOutlinedIcon fontSize='small' />
-                                        <span>Account Settings</span>
-                                    </button>
+
                                     <button className='account-menu-action' type='button' onClick={logoutAccount}>
                                         <LogoutOutlinedIcon fontSize='small' />
                                         <span>Sign Out</span>
@@ -461,17 +458,46 @@ export default function Home() {
                                 }}
                             />
                             {titleSuggestions.length > 0 &&
-                                <div className='suggestion-row' aria-label='Title suggestions'>
-                                    {titleSuggestions.filter(s => !topic || s.toLowerCase().includes(topic.toLowerCase())).map((item) => (
-                                        <button
-                                            type='button'
-                                            className='suggestion-chip'
-                                            key={item}
-                                            onClick={() => { setTopic(item); setTopicError(""); }}
-                                        >
-                                            {item}
-                                        </button>
-                                    ))}
+                                <div className='suggestion-row-wrapper' style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', width: '100%' }}>
+                                    <div className={`suggestion-row ${isSuggestionsExpanded ? 'expanded' : ''}`} aria-label='Title suggestions'>
+                                        {(() => {
+                                            const isExactMatch = titleSuggestions.some(s => s.toLowerCase() === (topic || '').toLowerCase());
+                                            const displayed = isExactMatch
+                                                ? titleSuggestions
+                                                : titleSuggestions.filter(s => !topic || s.toLowerCase().includes(topic.toLowerCase()));
+
+                                            return displayed.map((item) => {
+                                                const isActive = item.toLowerCase() === (topic || '').toLowerCase();
+                                                return (
+                                                    <button
+                                                        type='button'
+                                                        className={`suggestion-chip ${isActive ? 'active' : ''}`}
+                                                        key={item}
+                                                        onClick={() => { setTopic(item); setTopicError(""); }}
+                                                    >
+                                                        {item}
+                                                    </button>
+                                                );
+                                            });
+                                        })()}
+                                    </div>
+                                    <IconButton 
+                                        onClick={() => setIsSuggestionsExpanded(!isSuggestionsExpanded)}
+                                        sx={{ 
+                                            flexShrink: 0, 
+                                            color: '#d4a017', 
+                                            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                                            border: '1px solid rgba(212, 160, 23, 0.3)',
+                                            marginTop: '4px',
+                                            padding: '8px',
+                                            '&:hover': {
+                                                backgroundColor: 'rgba(212, 160, 23, 0.1)',
+                                                borderColor: 'rgba(212, 160, 23, 0.5)'
+                                            }
+                                        }}
+                                    >
+                                        {isSuggestionsExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                                    </IconButton>
                                 </div>
                             }
                             {topicError ? <div className='field-error'>{topicError}</div> : <></>}

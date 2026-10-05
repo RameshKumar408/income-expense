@@ -25,7 +25,7 @@ export default function LiquidTextField(props) {
                 boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 0 20px rgba(212, 160, 23, 0.2)',
             },
             '&.Mui-focused fieldset': {
-                borderColor: 'rgba(212, 160, 23, 0.8)',
+                borderColor: 'rgba(212, 160, 23, 1)',
                 borderWidth: '1.5px',
             },
         },

@@ -42,7 +42,12 @@ export default function RootLayout({ children }) {
         <meta name="theme-color" content="#000000" />
       </head>
       <body className={inter.className}>
-        <ToastContainer closeOnClick theme="dark" />
+        <ToastContainer 
+          closeOnClick 
+          theme="dark" 
+          toastClassName="liquid-toast-container"
+          bodyClassName="liquid-toast-body"
+        />
         <AppWrapper>{children}</AppWrapper>
       </body>
     </html>

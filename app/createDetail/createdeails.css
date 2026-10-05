@@ -98,6 +98,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    max-width: 160px;
+    /* Allow it to truncate gracefully before hiding completely */
 }
 
 .account-avatar {
@@ -288,6 +290,12 @@
     overflow-x: auto;
     padding: 4px 0 2px;
     scrollbar-width: none;
+    flex: 1; /* Allow to take remaining space */
+}
+
+.suggestion-row.expanded {
+    flex-wrap: wrap;
+    overflow-x: visible;
 }
 
 .suggestion-row::-webkit-scrollbar {
@@ -296,11 +304,12 @@
 
 .suggestion-chip {
     flex: 0 0 auto;
-    border: 0;
+    border: 1;
     border-radius: 999px;
     padding: 13px 24px;
     color: var(--text-primary);
-    background: linear-gradient(145deg, #242833, #151820);
+    background: rgba(0, 0, 0, 0.2);
+    border-color: #d4a017;
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.08),
         0 10px 24px rgba(0, 0, 0, 0.26);
@@ -308,6 +317,19 @@
     font-size: 22px;
     font-weight: 700;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.suggestion-chip:hover {
+    background: linear-gradient(145deg, #2d3240, #1a1e28);
+}
+
+.suggestion-chip.active {
+    background: linear-gradient(145deg, #d4a017, #ffd88a);
+    color: #1a1000;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 10px 24px rgba(212, 160, 23, 0.3);
 }
 
 .suggestion-chip:focus-visible,
@@ -1360,8 +1382,9 @@
 
     .account-pill {
         max-width: 1000%;
-        padding: 8px 10px;
+        padding: 6px 12px 6px 6px;
         font-size: 13px;
+        gap: 4px;
     }
 
     .expense-form {
@@ -1398,20 +1421,20 @@
     }
 
     .bottom-nav {
-        width: min(calc(100% - 24px), 360px);
-        min-height: 58px;
-        padding: 6px 10px;
+        width: min(calc(100% - 24px), 380px);
+        min-height: 68px;
+        padding: 8px 14px;
         bottom: max(32px, env(safe-area-inset-bottom, 32px));
     }
 
     .bottom-nav-item {
-        width: 44px;
-        height: 44px;
+        width: 52px;
+        height: 52px;
     }
 
     .bottom-nav-item svg {
-        width: 25px;
-        height: 25px;
+        width: 28px;
+        height: 28px;
     }
 
     .settings-shell {
@@ -2034,5 +2057,12 @@
         display: flex;
         flex-wrap: wrap;
         gap: 12px;
+    }
+}
+
+/* Hide text only on extremely small screens to prevent overlap */
+@media (max-width: 390px) {
+    .account-pill span {
+        display: none;
     }
 }
