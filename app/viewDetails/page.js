@@ -14,6 +14,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
 
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import CalculateIcon from '@mui/icons-material/Calculate';
@@ -547,12 +548,66 @@ export default function Page() {
                     <form className='history-date-form' onSubmit={submitSearch}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <span style={{ fontSize: '13px', fontWeight: 800, color: '#fff' }}>Start date<b style={{ color: '#ff3b3f' }}>*</b></span>
-                            <LiquidTextField value={from} type='date' onClick={(e) => { e.target.showPicker && e.target.showPicker() }} onChange={(e) => { setFrom(e.target.value) }} fullWidth />
+                            <LiquidTextField
+                                value={from}
+                                type='date'
+                                onClick={(e) => { e.target.showPicker && e.target.showPicker() }}
+                                onChange={(e) => { setFrom(e.target.value) }}
+                                fullWidth
+                                sx={{
+                                    '& input[type=date]': {
+                                        textAlign: 'left',
+                                        paddingRight: '36px',
+                                        WebkitAppearance: 'none',
+                                    },
+                                    '& input[type=date]::-webkit-date-and-time-value': {
+                                        textAlign: 'left',
+                                    },
+                                    '& input[type=date]::-webkit-calendar-picker-indicator': {
+                                        display: 'none',
+                                        WebkitAppearance: 'none',
+                                    }
+                                }}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end" sx={{ pointerEvents: 'none' }}>
+                                            <CalendarTodayOutlinedIcon sx={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.75)' }} />
+                                        </InputAdornment>
+                                    )
+                                }}
+                            />
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <span style={{ fontSize: '13px', fontWeight: 800, color: '#fff' }}>End date<b style={{ color: '#ff3b3f' }}>*</b></span>
-                            <LiquidTextField value={to} type='date' onClick={(e) => { e.target.showPicker && e.target.showPicker() }} onChange={(e) => { setTo(e.target.value) }} fullWidth />
+                            <LiquidTextField
+                                value={to}
+                                type='date'
+                                onClick={(e) => { e.target.showPicker && e.target.showPicker() }}
+                                onChange={(e) => { setTo(e.target.value) }}
+                                fullWidth
+                                sx={{
+                                    '& input[type=date]': {
+                                        textAlign: 'left',
+                                        paddingRight: '36px',
+                                        WebkitAppearance: 'none',
+                                    },
+                                    '& input[type=date]::-webkit-date-and-time-value': {
+                                        textAlign: 'left',
+                                    },
+                                    '& input[type=date]::-webkit-calendar-picker-indicator': {
+                                        display: 'none',
+                                        WebkitAppearance: 'none',
+                                    }
+                                }}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end" sx={{ pointerEvents: 'none' }}>
+                                            <CalendarTodayOutlinedIcon sx={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.75)' }} />
+                                        </InputAdornment>
+                                    )
+                                }}
+                            />
                         </div>
                     </form>
 
