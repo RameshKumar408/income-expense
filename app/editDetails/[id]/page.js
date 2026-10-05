@@ -4,7 +4,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
+import LiquidTextField from '@/components/LiquidTextField';
+import GlowingBubbles from '@/components/GlowingBubbles';
 import Button from '@mui/material/Button';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -59,19 +60,27 @@ export default function Home({ params }) {
     const inputSx = {
         '& .MuiOutlinedInput-root': {
             color: '#ffffff',
-            backgroundColor: '#151515',
+            backgroundColor: 'rgba(255, 255, 255, 0.03)',
+            backdropFilter: 'blur(16px) saturate(150%)',
+            WebkitBackdropFilter: 'blur(16px) saturate(150%)',
+            boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.4)',
             borderRadius: { xs: '12px', sm: '14px' },
             fontSize: { xs: '16px', sm: '20px' },
             minHeight: { xs: '48px', sm: '66px' },
+            transition: 'all 0.3s ease',
             '& fieldset': {
-                borderColor: '#666a72',
+                borderColor: 'rgba(212, 160, 23, 0.35)',
                 borderWidth: '1.5px',
             },
             '&:hover fieldset': {
-                borderColor: '#8a8f99',
+                borderColor: 'rgba(212, 160, 23, 0.35)',
+            },
+            '&.Mui-focused': {
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 0 20px rgba(212, 160, 23, 0.2)',
             },
             '&.Mui-focused fieldset': {
-                borderColor: '#2366d6',
+                borderColor: 'rgba(212, 160, 23, 0.6)',
                 borderWidth: '1.5px',
             },
         },
@@ -118,17 +127,25 @@ export default function Home({ params }) {
 
     const selectSx = {
         color: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
-        backgroundColor: '#050505',
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
+        backdropFilter: 'blur(16px) saturate(150%)',
+        WebkitBackdropFilter: 'blur(16px) saturate(150%)',
+        boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.4)',
         borderRadius: { xs: '12px', sm: '14px' },
-        fontSize: { xs: '16px', sm: '20px' },
+        fontSize: { xs: '13px', sm: '20px' },
         fontWeight: 700,
         minHeight: { xs: '48px', sm: '66px' },
+        transition: 'all 0.3s ease',
         '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
+            borderColor: type == 'Expense' ? 'rgba(255, 59, 63, 0.5)' : 'rgba(47, 208, 111, 0.5)',
             borderWidth: '1.5px',
         },
         '&:hover .MuiOutlinedInput-notchedOutline': {
             borderColor: type == 'Expense' ? '#ff575a' : '#45df82',
+        },
+        '&.Mui-focused': {
+            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            boxShadow: `inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 0 20px ${type == 'Expense' ? 'rgba(255, 59, 63, 0.2)' : 'rgba(47, 208, 111, 0.2)'}`,
         },
         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
             borderColor: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
@@ -308,6 +325,7 @@ export default function Home({ params }) {
 
     return (
         <div className='create-detail-page'>
+            <GlowingBubbles />
             <main className='expense-shell edit-shell'>
                 <header className='expense-header'>
                     <div className='expense-title-wrap'>
@@ -315,7 +333,7 @@ export default function Home({ params }) {
                             <ArrowBackIcon />
                         </button>
                         <span className='expense-title-icon'>
-                            <EditNoteIcon fontSize='small' />
+                            <img src="/icon.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', mixBlendMode: 'screen', transform: 'scale(1.3)' }} />
                         </span>
                         <h1>Edit</h1>
                     </div>
@@ -343,12 +361,12 @@ export default function Home({ params }) {
 
                     <div className='form-group'>
                         <label>Title<span>*</span></label>
-                        <TextField
+                        <LiquidTextField
                             value={topic}
                             placeholder='Title'
                             variant='outlined'
                             onChange={(e) => { setTopic(e.target.value); setTopicError("") }}
-                            sx={inputSx}
+                            
                             fullWidth
                             InputProps={{
                                 endAdornment: topic
@@ -361,14 +379,14 @@ export default function Home({ params }) {
 
                     <div className='form-group'>
                         <label>Description</label>
-                        <TextField
+                        <LiquidTextField
                             value={description}
                             placeholder='Description'
                             variant='outlined'
                             multiline
                             minRows={isShortMobile ? 2 : isMobile ? 3 : 4}
                             onChange={(e) => { setDescription(e.target.value); setDescriptionError("") }}
-                            sx={inputSx}
+                            
                             fullWidth
                             InputProps={{
                                 endAdornment: description
@@ -382,13 +400,13 @@ export default function Home({ params }) {
                     <div className='form-row'>
                         <div className='form-group'>
                             <label>Amount<span>*</span></label>
-                            <TextField
+                            <LiquidTextField
                                 value={amount}
                                 type='number'
                                 placeholder='Amount'
                                 variant='outlined'
                                 onChange={(e) => { setAmount(e.target.value); setAmountError("") }}
-                                sx={inputSx}
+                                
                                 fullWidth
                                 InputProps={{
                                     endAdornment: amount !== ''

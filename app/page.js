@@ -12,6 +12,9 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import './loginRegister.css'
 import { useLoader } from '@/app/context/LoaderContext'
 import PrimaryButton from '@/components/PrimaryButton'
+import LiquidTextField from '@/components/LiquidTextField'
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
 
 export default function Home() {
 
@@ -98,26 +101,39 @@ export default function Home() {
           </div>
 
           <div className="login-fields">
-            <div className="login-field">
-              <input
+            <div className="auth-input-wrapper">
+              <LiquidTextField
                 value={topic}
                 placeholder="Email"
                 type="email"
                 onChange={(e) => { setTopic(e.target.value); setTopicError("") }}
+                fullWidth
               />
               {topicError ? <div className="auth-error">{topicError}</div> : <></>}
             </div>
 
-            <div className="login-field password-field">
-              <input
+            <div className="auth-input-wrapper">
+              <LiquidTextField
                 value={amount}
                 placeholder="Password"
                 type={showPassword ? 'text' : 'password'}
                 onChange={(e) => { setAmount(e.target.value); setAmountError() }}
+                fullWidth
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                        sx={{ color: 'rgba(255,255,255,0.7)' }}
+                      >
+                        {showPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
-              <button className="password-toggle" type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
-              </button>
               {amountError ? <div className="auth-error">{amountError}</div> : <></>}
             </div>
           </div>

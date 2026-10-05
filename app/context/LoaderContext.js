@@ -16,6 +16,17 @@ export function LoaderProvider({ children }) {
     return () => clearTimeout(timer)
   }, [])
 
+  useEffect(() => {
+    if (loading > 0 || initialLoading) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [loading, initialLoading]);
+
   const showLoader = useCallback(() => setLoading(p => p + 1), [])
   const hideLoader = useCallback(() => {
     setLoading(p => Math.max(0, p - 1))

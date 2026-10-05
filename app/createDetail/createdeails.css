@@ -74,24 +74,43 @@
 .account-pill {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     min-width: 0;
-    border: 0;
+    border: 1.5px solid rgba(212, 160, 23, 0.8);
     border-radius: 999px;
-    padding: 13px 18px;
-    color: #ffad35;
-    background: var(--bg-card-elevated);
+    padding: 6px 16px 6px 6px;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.3);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     font: inherit;
-    font-size: 20px;
-    font-weight: 800;
+    font-size: 14px;
+    font-weight: 700;
     cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.account-pill:hover,
+.account-pill.active {
+    box-shadow: 0 0 15px rgba(212, 160, 23, 0.3);
 }
 
 .account-pill span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.account-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #d4a017;
+    color: #1a1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
 }
 
 .account-wrapper {
@@ -105,87 +124,113 @@
 
 .account-menu {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 12px);
     right: 0;
     z-index: 30;
-    min-width: 220px;
-    padding: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 14px;
-    background: #1a1a1a;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    min-width: 260px;
+    padding: 8px 0;
+    border: 1.5px solid rgba(212, 160, 23, 0.8);
+    border-radius: 16px;
+    background: rgba(15, 15, 15, 0.95);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8);
 }
 
 .account-menu-item {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
     width: 100%;
-    padding: 10px 14px;
+    padding: 12px 18px;
     border: 0;
-    border-radius: 10px;
-    color: var(--text-primary);
+    color: #ffffff;
     background: transparent;
     font: inherit;
     text-align: left;
     cursor: pointer;
+    transition: background 0.2s;
 }
 
-.account-menu-item.active {
-    background: #2a2d36;
+.account-menu-item:hover {
+    background: rgba(212, 160, 23, 0.1);
 }
 
-.account-menu-item:not(.active):hover {
-    background: #222;
+.account-menu-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 800;
+    flex-shrink: 0;
+    border: 1.5px solid #d4a017;
+    color: #d4a017;
+    background: transparent;
+}
+
+.account-menu-item.active .account-menu-avatar {
+    background: #d4a017;
+    color: #1a1000;
+    border-color: #d4a017;
+}
+
+.account-menu-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
 }
 
 .account-menu-name {
     font-size: 15px;
-    font-weight: 800;
-    line-height: 1.2;
+    font-weight: 700;
+    line-height: 1;
 }
 
 .account-menu-email {
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 500;
     color: #8f8f93;
-    line-height: 1.2;
+    line-height: 1;
+}
+
+.account-menu-check {
+    color: #d4a017;
+    margin-left: auto;
 }
 
 .account-menu-divider {
     height: 1px;
-    margin: 4px 0;
+    margin: 8px 0;
     background: rgba(255, 255, 255, 0.1);
 }
 
 .account-menu-action {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 16px;
     width: 100%;
-    padding: 10px 14px;
+    padding: 14px 18px;
     border: 0;
-    border-radius: 10px;
-    color: var(--text-primary);
+    color: #ffffff;
     background: transparent;
     font: inherit;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     text-align: left;
     cursor: pointer;
+    transition: background 0.2s;
+}
+
+.account-menu-action svg {
+    color: #d4a017;
 }
 
 .account-menu-action:hover {
-    background: #222;
-}
-
-.account-menu-action.danger {
-    color: #ff4444;
-}
-
-.account-menu-action.danger:hover {
-    background: rgba(255, 68, 68, 0.1);
+    background: rgba(212, 160, 23, 0.1);
 }
 
 .expense-form {
@@ -444,22 +489,22 @@
 
 .settings-action.danger {
     border: 0;
-    color: #1a1000;
-    background: linear-gradient(90deg, var(--brand-gradient-end) 0%, var(--brand-gradient-start) 50%, var(--brand-gradient-end) 100%);
+    color: #ffffff;
+    background: linear-gradient(90deg, #d32f2f 0%, #ff5252 50%, #d32f2f 100%);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.2),
-        0 12px 24px rgba(212, 160, 23, 0.3);
+        0 12px 24px rgba(211, 47, 47, 0.3);
 }
 
 .settings-action.danger svg {
-    color: #1a1000;
+    color: #ffffff;
 }
 
 .settings-action.danger:hover {
-    background: linear-gradient(90deg, var(--brand-gradient-end) 0%, var(--brand-gradient-mid) 50%, var(--brand-gradient-end) 100%);
+    background: linear-gradient(90deg, #d32f2f 0%, #f44336 50%, #d32f2f 100%);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.3),
-        0 16px 32px rgba(212, 160, 23, 0.4);
+        0 16px 32px rgba(211, 47, 47, 0.4);
 }
 
 .settings-action:focus-visible {
@@ -482,11 +527,11 @@
     min-height: 72px;
     border-radius: 16px;
     border: 0;
-    color: #1a1000;
-    background: linear-gradient(90deg, var(--brand-gradient-end) 0%, var(--brand-gradient-start) 50%, var(--brand-gradient-end) 100%);
+    color: #ffffff;
+    background: linear-gradient(90deg, #d32f2f 0%, #ff5252 50%, #d32f2f 100%);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.2),
-        0 12px 24px rgba(212, 160, 23, 0.3);
+        0 12px 24px rgba(211, 47, 47, 0.3);
     font: inherit;
     font-size: 22px;
     font-weight: 800;
@@ -495,15 +540,16 @@
 }
 
 .delete-data-btn.MuiButton-root:hover {
-    background: linear-gradient(90deg, var(--brand-gradient-end) 0%, var(--brand-gradient-mid) 50%, var(--brand-gradient-end) 100%);
+    background: linear-gradient(90deg, #d32f2f 0%, #f44336 50%, #d32f2f 100%);
     transform: translateY(-2px);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.3),
-        0 16px 32px rgba(212, 160, 23, 0.4);
+        0 16px 32px rgba(211, 47, 47, 0.4);
 }
 
 .delete-data-btn svg {
     margin-right: 8px;
+    color: #ffffff;
 }
 
 .history-page {
@@ -534,7 +580,7 @@
     padding: 34px 20px 12px;
     margin: -34px -20px 12px -20px;
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s;
-    
+
     /* Full Liquid Glass Effect for the entire sticky area */
     background: rgba(35, 35, 40, 0.4);
     backdrop-filter: blur(24px) saturate(150%);
@@ -797,7 +843,8 @@
     text-align: left;
     cursor: pointer;
     transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
-    background: rgba(35, 35, 40, 0.4); /* Base liquid glass */
+    background: rgba(35, 35, 40, 0.4);
+    /* Base liquid glass */
 }
 
 .analytics-card {
@@ -806,8 +853,10 @@
     justify-content: space-between;
     gap: 16px;
     padding: 18px 20px;
-    border: 1px solid rgba(212, 160, 23, 0.08); /* subtle gold */
-    border-top: 1px solid rgba(212, 160, 23, 0.25); /* brighter gold top highlight */
+    border: 1px solid rgba(212, 160, 23, 0.08);
+    /* subtle gold */
+    border-top: 1px solid rgba(212, 160, 23, 0.25);
+    /* brighter gold top highlight */
     border-left: 1px solid rgba(212, 160, 23, 0.15);
     border-radius: 16px;
     color: var(--text-primary);
@@ -816,15 +865,18 @@
     box-shadow: 0 12px 30px rgba(212, 160, 23, 0.05), inset 0 1px 0 rgba(212, 160, 23, 0.1);
     font: inherit;
     text-align: left;
-    background: rgba(20, 20, 20, 0.25); /* Pure liquid glass */
+    background: rgba(20, 20, 20, 0.25);
+    /* Pure liquid glass */
 }
 
 .history-list .history-card:nth-child(odd) {
-    background: rgba(15, 15, 15, 0.4); /* Translucent version of requested odd color */
+    background: rgba(15, 15, 15, 0.4);
+    /* Translucent version of requested odd color */
 }
 
 .history-list .history-card:nth-child(even) {
-    background: rgba(42, 46, 52, 0.4); /* Translucent version of requested even color */
+    background: rgba(42, 46, 52, 0.4);
+    /* Translucent version of requested even color */
 }
 
 .history-card:hover {

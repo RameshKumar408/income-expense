@@ -23,6 +23,9 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import '../loginRegister.css'
 import { useLoader } from '@/app/context/LoaderContext'
 import PrimaryButton from '@/components/PrimaryButton'
+import LiquidTextField from '@/components/LiquidTextField'
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
 
 export default function Home() {
 
@@ -92,70 +95,86 @@ export default function Home() {
                 <form className="register-panel" onSubmit={handleSubmit}>
                     <div className="register-heading">
                         <div className="register-art" aria-hidden="true">
-                            <span className="register-art-top"></span>
+                            {/* <span className="register-art-top"></span> */}
                             <span className="register-art-user"></span>
-                            <span className="register-art-check one"></span>
-                            <span className="register-art-check two"></span>
-                            <span className="register-art-line one"></span>
-                            <span className="register-art-line two"></span>
+                            {/* <span className="register-art-check one"></span> */}
+                            {/* <span className="register-art-check two"></span> */}
+                            {/* <span className="register-art-line one"></span> */}
+                            {/* <span className="register-art-line two"></span> */}
                         </div>
                         <h1>Register</h1>
                     </div>
 
                     <div className="register-fields">
-                        <div className="register-field">
-                            <input
+                        <div className="auth-input-wrapper">
+                            <LiquidTextField
                                 value={name}
                                 placeholder="Name"
                                 type="text"
                                 onChange={(e) => { setname(e.target.value); setnameError("") }}
+                                fullWidth
                             />
                             {nameError ? <div className="register-error">{nameError}</div> : <></>}
                         </div>
 
-                        <div className="register-field">
-                            <input
+                        <div className="auth-input-wrapper">
+                            <LiquidTextField
                                 value={email}
                                 placeholder="Email"
                                 type="email"
                                 onChange={(e) => { setemail(e.target.value); setemailError("") }}
+                                fullWidth
                             />
                             {emailError ? <div className="register-error">{emailError}</div> : <></>}
                         </div>
 
-                        <div className="register-field password-field">
-                            <input
+                        <div className="auth-input-wrapper">
+                            <LiquidTextField
                                 value={password}
                                 placeholder="Password"
                                 type={showPassword ? "text" : "password"}
                                 onChange={(e) => { setpassword(e.target.value); setpasswordError(""); setConfirmPasswordError(""); }}
+                                fullWidth
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                edge="end"
+                                                sx={{ color: 'rgba(255,255,255,0.7)' }}
+                                            >
+                                                {showPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
-                            <button
-                                className="password-toggle"
-                                type="button"
-                                aria-label={showPassword ? "Hide password" : "Show password"}
-                                onClick={() => { setShowPassword(!showPassword) }}
-                            >
-                                {showPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
-                            </button>
                             {passwordError ? <div className="register-error">{passwordError}</div> : <></>}
                         </div>
 
-                        <div className="register-field password-field">
-                            <input
+                        <div className="auth-input-wrapper">
+                            <LiquidTextField
                                 value={confirmPassword}
                                 placeholder="Confirm Password"
                                 type={showConfirmPassword ? "text" : "password"}
                                 onChange={(e) => { setConfirmPassword(e.target.value); setConfirmPasswordError(""); }}
+                                fullWidth
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                edge="end"
+                                                sx={{ color: 'rgba(255,255,255,0.7)' }}
+                                            >
+                                                {showConfirmPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
                             />
-                            <button
-                                className="password-toggle"
-                                type="button"
-                                aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
-                                onClick={() => { setShowConfirmPassword(!showConfirmPassword) }}
-                            >
-                                {showConfirmPassword ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
-                            </button>
                             {confirmPasswordError ? <div className="register-error">{confirmPasswordError}</div> : <></>}
                         </div>
                     </div>

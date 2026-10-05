@@ -8,7 +8,12 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
+import LiquidTextField from '@/components/LiquidTextField';
 import PieChartIcon from '@mui/icons-material/PieChart';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import CalculateIcon from '@mui/icons-material/Calculate';
@@ -434,21 +439,24 @@ export default function Page() {
 
                         <form className='history-search-form' onSubmit={submitSearch} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', margin: 0, display: 'flex', alignItems: 'center', gap: '12px', transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s', opacity: showSearch ? 1 : 0, transform: showSearch ? 'translateX(0)' : 'translateX(20px)', pointerEvents: showSearch ? 'auto' : 'none' }}>
                             <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', height: '100%' }}>
-                                <input
+                                <LiquidTextField
                                     value={searchText}
                                     placeholder='Search title'
                                     type='search'
                                     onChange={(e) => { setSearchText(e.target.value) }}
-                                    style={{ width: '100%', height: '100%', paddingRight: '48px' }}
                                     autoFocus={showSearch}
+                                    fullWidth
+                                    InputProps={{
+                                        sx: { minHeight: '100%', height: '100%', borderRadius: '100px' },
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton type='submit' aria-label='Search' edge="end">
+                                                    <SearchIcon />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        )
+                                    }}
                                 />
-                                <button
-                                    type='submit'
-                                    aria-label='Search'
-                                    style={{ position: 'absolute', right: '4px', height: '100%', aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 0, color: 'var(--text-secondary)', cursor: 'pointer' }}
-                                >
-                                    <SearchIcon />
-                                </button>
                             </div>
                             <button
                                 className='history-search-toggle'
@@ -469,30 +477,72 @@ export default function Page() {
                     </header>
 
                     {role == 'admin' &&
-                        <select
+                        <Select
                             className='history-account-select'
                             value={selectedUser}
                             onChange={(e) => { setSelectedUser(e.target.value) }}
                             aria-label='Select account'
+                            fullWidth
+                            sx={{
+                                color: '#ffffff',
+                                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                                backdropFilter: 'blur(16px) saturate(150%)',
+                                WebkitBackdropFilter: 'blur(16px) saturate(150%)',
+                                boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.4)',
+                                borderRadius: { xs: '12px', sm: '14px' },
+                                fontSize: { xs: '16px', sm: '20px' },
+                                fontWeight: 700,
+                                minHeight: { xs: '48px', sm: '66px' },
+                                mb: 2,
+                                transition: 'all 0.3s ease',
+                                '& .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: 'rgba(212, 160, 23, 0.45)',
+                                    borderWidth: '1.5px',
+                                },
+                                '&:hover .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: 'rgba(212, 160, 23, 0.45)',
+                                },
+                                '&.Mui-focused': {
+                                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                                    boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 0 20px rgba(212, 160, 23, 0.2)',
+                                },
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: 'rgba(212, 160, 23, 0.8)',
+                                    borderWidth: '1.5px',
+                                },
+                                '& .MuiSvgIcon-root': {
+                                    color: '#d4a017',
+                                },
+                            }}
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        backgroundColor: 'rgba(25, 25, 25, 0.65)',
+                                        backdropFilter: 'blur(16px) saturate(150%)',
+                                        WebkitBackdropFilter: 'blur(16px) saturate(150%)',
+                                        color: '#ffffff',
+                                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+                                    }
+                                }
+                            }}
                         >
                             {users?.map((user) => (
-                                <option key={user?._id} value={user?._id}>{user?.Name}</option>
+                                <MenuItem key={user?._id} value={user?._id}>{user?.Name}</MenuItem>
                             ))}
-                        </select>
+                        </Select>
                     }
 
                     <form className='history-date-form' onSubmit={submitSearch}>
-                        <label>
-                            <span>Start date<b>*</b></span>
-                            <input value={from} type='date' onClick={(e) => { e.target.showPicker && e.target.showPicker() }} onChange={(e) => { setFrom(e.target.value) }} />
-                            <em>{formatInputDate(from)}</em>
-                        </label>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <span style={{ fontSize: '13px', fontWeight: 800, color: '#fff' }}>Start date<b style={{ color: '#ff3b3f' }}>*</b></span>
+                            <LiquidTextField value={from} type='date' onClick={(e) => { e.target.showPicker && e.target.showPicker() }} onChange={(e) => { setFrom(e.target.value) }} fullWidth />
+                        </div>
 
-                        <label>
-                            <span>End date<b>*</b></span>
-                            <input value={to} type='date' onClick={(e) => { e.target.showPicker && e.target.showPicker() }} onChange={(e) => { setTo(e.target.value) }} />
-                            <em>{formatInputDate(to)}</em>
-                        </label>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <span style={{ fontSize: '13px', fontWeight: 800, color: '#fff' }}>End date<b style={{ color: '#ff3b3f' }}>*</b></span>
+                            <LiquidTextField value={to} type='date' onClick={(e) => { e.target.showPicker && e.target.showPicker() }} onChange={(e) => { setTo(e.target.value) }} fullWidth />
+                        </div>
                     </form>
 
                     <div className='history-sort-row' aria-label='Sort history'>

@@ -4,7 +4,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
+import LiquidTextField from '@/components/LiquidTextField';
 import Button from '@mui/material/Button';
 import PrimaryButton from '@/components/PrimaryButton';
 import InputLabel from '@mui/material/InputLabel';
@@ -25,6 +25,11 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
@@ -142,19 +147,27 @@ export default function Home() {
     const inputSx = {
         '& .MuiOutlinedInput-root': {
             color: '#ffffff',
-            backgroundColor: '#151515',
+            backgroundColor: 'rgba(255, 255, 255, 0.03)',
+            backdropFilter: 'blur(16px) saturate(150%)',
+            WebkitBackdropFilter: 'blur(16px) saturate(150%)',
+            boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.4)',
             borderRadius: { xs: '12px', sm: '14px' },
             fontSize: { xs: '16px', sm: '20px' },
             minHeight: { xs: '48px', sm: '66px' },
+            transition: 'all 0.3s ease',
             '& fieldset': {
-                borderColor: '#666a72',
+                borderColor: 'rgba(212, 160, 23, 0.35)',
                 borderWidth: '1.5px',
             },
             '&:hover fieldset': {
-                borderColor: '#8a8f99',
+                borderColor: 'rgba(212, 160, 23, 0.35)',
+            },
+            '&.Mui-focused': {
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 0 20px rgba(212, 160, 23, 0.2)',
             },
             '&.Mui-focused fieldset': {
-                borderColor: '#2366d6',
+                borderColor: 'rgba(212, 160, 23, 0.6)',
                 borderWidth: '1.5px',
             },
         },
@@ -201,17 +214,25 @@ export default function Home() {
 
     const selectSx = {
         color: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
-        backgroundColor: '#050505',
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
+        backdropFilter: 'blur(16px) saturate(150%)',
+        WebkitBackdropFilter: 'blur(16px) saturate(150%)',
+        boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.4)',
         borderRadius: { xs: '12px', sm: '14px' },
         fontSize: { xs: '13px', sm: '20px' },
         fontWeight: 700,
         minHeight: { xs: '48px', sm: '66px' },
+        transition: 'all 0.3s ease',
         '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
+            borderColor: type == 'Expense' ? 'rgba(255, 59, 63, 0.5)' : 'rgba(47, 208, 111, 0.5)',
             borderWidth: '1.5px',
         },
         '&:hover .MuiOutlinedInput-notchedOutline': {
             borderColor: type == 'Expense' ? '#ff575a' : '#45df82',
+        },
+        '&.Mui-focused': {
+            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            boxShadow: `inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 0 20px ${type == 'Expense' ? 'rgba(255, 59, 63, 0.2)' : 'rgba(47, 208, 111, 0.2)'}`,
         },
         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
             borderColor: type == 'Expense' ? '#ff3b3f' : '#2fd06f',
@@ -362,31 +383,43 @@ export default function Home() {
                             <h1>Expenses</h1>
                         </div>
                         <div className='account-wrapper' ref={accountRef}>
-                            <button type='button' className='account-pill' onClick={() => setShowAccountMenu(!showAccountMenu)}>
+                            <button type='button' className={`account-pill ${showAccountMenu ? 'active' : ''}`} onClick={() => setShowAccountMenu(!showAccountMenu)}>
+                                <div className='account-avatar'>{currentUser?.name?.substring(0, 1).toUpperCase() || 'AK'}</div>
                                 <span>{currentUser?.name || 'Account'}</span>
-                                <ExpandMoreIcon fontSize='small' />
+                                {showAccountMenu ? <ExpandLessIcon fontSize='small' /> : <ExpandMoreIcon fontSize='small' />}
                             </button>
                             {showAccountMenu && accounts.length > 0 &&
                                 <div className='account-menu'>
-                                    {accounts.map((acc) => (
-                                        <button
-                                            key={acc.email}
-                                            className={`account-menu-item ${acc.email == currentUser?.email ? 'active' : ''}`}
-                                            type='button'
-                                            onClick={() => { if (acc.email != currentUser?.email) switchAccount(acc) }}
-                                        >
-                                            <span className='account-menu-name'>{acc.name}</span>
-                                            <span className='account-menu-email'>{acc.email}</span>
-                                        </button>
-                                    ))}
+                                    {accounts.map((acc) => {
+                                        const isActive = acc.email == currentUser?.email;
+                                        return (
+                                            <button
+                                                key={acc.email}
+                                                className={`account-menu-item ${isActive ? 'active' : ''}`}
+                                                type='button'
+                                                onClick={() => { if (!isActive) switchAccount(acc) }}
+                                            >
+                                                <div className='account-menu-avatar'>{acc.name?.substring(0, 2).toUpperCase() || 'AK'}</div>
+                                                <div className='account-menu-info'>
+                                                    <span className='account-menu-name'>{acc.name}</span>
+                                                    <span className='account-menu-email'>{acc.accountType || 'Personal Account'}</span>
+                                                </div>
+                                                {isActive && <CheckCircleIcon className='account-menu-check' fontSize='small' />}
+                                            </button>
+                                        )
+                                    })}
                                     <div className='account-menu-divider' />
                                     <button className='account-menu-action' type='button' onClick={addAccount}>
-                                        <PersonAddIcon fontSize='small' />
-                                        <span>Add account</span>
+                                        <AddCircleOutlineIcon fontSize='small' />
+                                        <span>Add Account</span>
                                     </button>
-                                    <button className='account-menu-action danger' type='button' onClick={logoutAccount}>
-                                        <LogoutIcon fontSize='small' />
-                                        <span>{accounts.length > 1 ? 'Remove account' : 'Logout'}</span>
+                                    <button className='account-menu-action' type='button' onClick={() => router.push('/settings')}>
+                                        <SettingsOutlinedIcon fontSize='small' />
+                                        <span>Account Settings</span>
+                                    </button>
+                                    <button className='account-menu-action' type='button' onClick={logoutAccount}>
+                                        <LogoutOutlinedIcon fontSize='small' />
+                                        <span>Sign Out</span>
                                     </button>
                                 </div>
                             }
@@ -415,12 +448,11 @@ export default function Home() {
 
                         <div className='form-group'>
                             <label>Title<span>*</span></label>
-                            <TextField
+                            <LiquidTextField
                                 value={topic}
                                 placeholder='Title'
                                 variant='outlined'
                                 onChange={(e) => { setTopic(e.target.value); setTopicError("") }}
-                                sx={inputSx}
                                 fullWidth
                                 InputProps={{
                                     endAdornment: topic
@@ -447,14 +479,13 @@ export default function Home() {
 
                         <div className='form-group'>
                             <label>Description</label>
-                            <TextField
+                            <LiquidTextField
                                 value={description}
                                 placeholder='Description'
                                 variant='outlined'
                                 multiline
                                 minRows={isShortMobile ? 2 : isMobile ? 3 : 4}
                                 onChange={(e) => { setDescription(e.target.value); setDescriptionError("") }}
-                                sx={inputSx}
                                 fullWidth
                                 InputProps={{
                                     endAdornment: description
@@ -468,13 +499,12 @@ export default function Home() {
                         <div className='form-row'>
                             <div className='form-group'>
                                 <label>Amount<span>*</span></label>
-                                <TextField
+                                <LiquidTextField
                                     value={amount}
                                     type='number'
                                     placeholder='Amount'
                                     variant='outlined'
                                     onChange={(e) => { setAmount(e.target.value); setAmountError() }}
-                                    sx={inputSx}
                                     fullWidth
                                     InputProps={{
                                         endAdornment: amount
@@ -501,9 +531,12 @@ export default function Home() {
                                             MenuProps={{
                                                 PaperProps: {
                                                     sx: {
-                                                        backgroundColor: '#151515',
+                                                        backgroundColor: 'rgba(25, 25, 25, 0.65)',
+                                                        backdropFilter: 'blur(16px) saturate(150%)',
+                                                        WebkitBackdropFilter: 'blur(16px) saturate(150%)',
                                                         color: '#ffffff',
-                                                        border: '1px solid #343844',
+                                                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                                                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
                                                     }
                                                 }
                                             }}
@@ -534,7 +567,7 @@ export default function Home() {
                         <Link className='bottom-nav-item' href='/viewDetails' aria-label='History'>
                             <SearchIcon />
                         </Link>
-{/* <Link className='bottom-nav-item' href='/details' aria-label='Analytics'>
+                        {/* <Link className='bottom-nav-item' href='/details' aria-label='Analytics'>
                             <PieChartIcon />
                         </Link> */}
                         <Link className='bottom-nav-item' href='/settings' aria-label='Settings'>

@@ -16,7 +16,7 @@ import Modal from '@mui/material/Modal';
 
 import { RWebShare } from "react-web-share";
 import folder from '../../public/folder.jpg'
-import TextField from '@mui/material/TextField';
+import LiquidTextField from '@/components/LiquidTextField';
 import { toast } from "react-toastify";
 import { useLoader } from '@/app/context/LoaderContext';
 
@@ -346,7 +346,7 @@ export default function Home() {
                         <Box sx={style}>
                             <Typography id="modal-modal-title" variant="h6" component="h2">
                                 <div style={{ display: "flex", flexDirection: "column" }} >
-                                    <TextField id="outlined-basic" label="Name" variant="outlined" onChange={(e) => setName(e.target.value)} />
+                                    <LiquidTextField id="outlined-basic" label="Name" variant="outlined" onChange={(e) => setName(e.target.value)} />
                                     <Button variant="contained" onClick={() => createFolder()} >Create</Button>
                                 </div>
                             </Typography>
@@ -422,7 +422,7 @@ export default function Home() {
                             <Typography id="modal-modal-title" variant="h6" component="h2">
                                 <div style={{ display: "flex", flexDirection: "column" }} >
                                     <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-                                    <TextField id="outlined-basic" label="File Name" variant="outlined" onChange={(e) => setFileName(e.target.value)} />
+                                    <LiquidTextField id="outlined-basic" label="File Name" variant="outlined" onChange={(e) => setFileName(e.target.value)} />
                                     <Button variant="contained" onClick={() => CreateFile()} >Create</Button>
                                 </div>
                             </Typography>

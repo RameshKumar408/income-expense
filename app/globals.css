@@ -8,20 +8,23 @@ body {
 
 * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(29, 100, 255, 0.6) transparent;
+    scrollbar-color: #d4a017 transparent;
 }
 
 *::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
+
 *::-webkit-scrollbar-track {
     background: transparent;
 }
+
 *::-webkit-scrollbar-thumb {
     background: rgba(29, 100, 255, 0.6);
     border-radius: 10px;
 }
+
 *::-webkit-scrollbar-thumb:hover {
     background: rgba(29, 100, 255, 1);
 }
@@ -77,15 +80,34 @@ body {
     margin-left: -4px;
 }
 
-.skype-loader .dot:nth-child(1) { animation-delay: -0.15s; }
-.skype-loader .dot:nth-child(2) { animation-delay: -0.30s; }
-.skype-loader .dot:nth-child(3) { animation-delay: -0.45s; }
-.skype-loader .dot:nth-child(4) { animation-delay: -0.60s; }
-.skype-loader .dot:nth-child(5) { animation-delay: -0.75s; }
+.skype-loader .dot:nth-child(1) {
+    animation-delay: -0.15s;
+}
+
+.skype-loader .dot:nth-child(2) {
+    animation-delay: -0.30s;
+}
+
+.skype-loader .dot:nth-child(3) {
+    animation-delay: -0.45s;
+}
+
+.skype-loader .dot:nth-child(4) {
+    animation-delay: -0.60s;
+}
+
+.skype-loader .dot:nth-child(5) {
+    animation-delay: -0.75s;
+}
 
 @keyframes skype-rotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 :root {
@@ -95,25 +117,33 @@ body {
     --bg-input: #050505;
     --bg-pure-black: #000000;
     --bg-dark-gray: #050505;
-    
+
     --text-primary: #fcfcfc;
-    --text-secondary: #d4a017; /* Amber Gold */
+    --text-secondary: #d4a017;
+    /* Amber Gold */
     --text-placeholder: #7c7365;
-    
+
     --accent-expense: #ff455b;
     --accent-expense-alt: #ff3043;
     --accent-expense-hover: #e03248;
-    
-    --accent-income: #d4a017; /* Amber Gold */
-    --accent-income-hover: #805200; /* Deep Amber */
-    
-    --accent-warning: #ffd88a; /* Warm Gold Highlight */
-    
-    --border-subtle: rgba(212, 160, 23, 0.15); /* Gold tinted border using D4A017 */
+
+    --accent-income: #d4a017;
+    /* Amber Gold */
+    --accent-income-hover: #805200;
+    /* Deep Amber */
+
+    --accent-warning: #ffd88a;
+    /* Warm Gold Highlight */
+
+    --border-subtle: rgba(212, 160, 23, 0.15);
+    /* Gold tinted border using D4A017 */
     --border-input: rgba(212, 160, 23, 0.25);
     --border-input-hover: rgba(212, 160, 23, 0.5);
-    
-    --brand-gradient-start: #ffd88a; /* Warm Gold (Highlight) */
-    --brand-gradient-mid: #d4a017;   /* Amber Gold (Main) */
-    --brand-gradient-end: #805200;   /* Deep Amber (Shadow) */
+
+    --brand-gradient-start: #ffd88a;
+    /* Warm Gold (Highlight) */
+    --brand-gradient-mid: #d4a017;
+    /* Amber Gold (Main) */
+    --brand-gradient-end: #805200;
+    /* Deep Amber (Shadow) */
 }
