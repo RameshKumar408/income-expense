@@ -557,7 +557,10 @@ export default function Page() {
                                 sx={{
                                     '& input[type=date]': {
                                         textAlign: 'left',
-                                        paddingRight: '36px',
+                                        paddingRight: '28px',
+                                        paddingLeft: '10px',
+                                        fontSize: { xs: '14px', sm: '18px' },
+                                        whiteSpace: 'nowrap',
                                         WebkitAppearance: 'none',
                                     },
                                     '& input[type=date]::-webkit-date-and-time-value': {
@@ -589,7 +592,10 @@ export default function Page() {
                                 sx={{
                                     '& input[type=date]': {
                                         textAlign: 'left',
-                                        paddingRight: '36px',
+                                        paddingRight: '28px',
+                                        paddingLeft: '10px',
+                                        fontSize: { xs: '14px', sm: '18px' },
+                                        whiteSpace: 'nowrap',
                                         WebkitAppearance: 'none',
                                     },
                                     '& input[type=date]::-webkit-date-and-time-value': {
