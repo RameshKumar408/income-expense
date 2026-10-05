@@ -90,6 +90,7 @@ export default function Home() {
 
     const [titleSuggestions, setTitleSuggestions] = useState([]);
     const [isSuggestionsExpanded, setIsSuggestionsExpanded] = useState(false);
+    const suggestionRowRef = useRef(null);
 
     useEffect(() => {
         const fetchTitles = async () => {
@@ -459,21 +460,35 @@ export default function Home() {
                             />
                             {titleSuggestions.length > 0 &&
                                 <div className='suggestion-row-wrapper' style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', width: '100%' }}>
-                                    <div className={`suggestion-row ${isSuggestionsExpanded ? 'expanded' : ''}`} aria-label='Title suggestions'>
+                                    <div ref={suggestionRowRef} className={`suggestion-row ${isSuggestionsExpanded ? 'expanded' : ''}`} aria-label='Title suggestions'>
                                         {(() => {
-                                            const isExactMatch = titleSuggestions.some(s => s.toLowerCase() === (topic || '').toLowerCase());
-                                            const displayed = isExactMatch
-                                                ? titleSuggestions
-                                                : titleSuggestions.filter(s => !topic || s.toLowerCase().includes(topic.toLowerCase()));
+                                            const topicLower = (topic || '').toLowerCase();
+                                            const isExactMatch = titleSuggestions.some(s => s.toLowerCase() === topicLower);
+                                            let displayed = isExactMatch
+                                                ? [...titleSuggestions]
+                                                : titleSuggestions.filter(s => !topic || s.toLowerCase().includes(topicLower));
+
+                                            if (topicLower) {
+                                                const exactMatchItem = displayed.find(s => s.toLowerCase() === topicLower);
+                                                if (exactMatchItem) {
+                                                    displayed = [exactMatchItem, ...displayed.filter(s => s !== exactMatchItem)];
+                                                }
+                                            }
 
                                             return displayed.map((item) => {
-                                                const isActive = item.toLowerCase() === (topic || '').toLowerCase();
+                                                const isActive = item.toLowerCase() === topicLower;
                                                 return (
                                                     <button
                                                         type='button'
                                                         className={`suggestion-chip ${isActive ? 'active' : ''}`}
                                                         key={item}
-                                                        onClick={() => { setTopic(item); setTopicError(""); }}
+                                                        onClick={() => {
+                                                            setTopic(item);
+                                                            setTopicError("");
+                                                            if (suggestionRowRef.current) {
+                                                                suggestionRowRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+                                                            }
+                                                        }}
                                                     >
                                                         {item}
                                                     </button>
