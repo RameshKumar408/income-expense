@@ -88,6 +88,15 @@ export default function Home() {
     useEffect(() => {
         const fetchTitles = async () => {
             try {
+                const storedSuggestions = window.localStorage.getItem('titleSuggestions');
+                if (storedSuggestions) {
+                    try {
+                        setTitleSuggestions(JSON.parse(storedSuggestions));
+                    } catch (e) {
+                        console.error('Error parsing stored suggestions', e);
+                    }
+                }
+
                 let newstartdate = new Date(
                     dayjs().subtract(2, 'month').date(1).startOf('day')
                 );
@@ -130,6 +139,7 @@ export default function Home() {
                         .map(([name]) => name.charAt(0).toUpperCase() + name.slice(1));
 
                     setTitleSuggestions(topNames);
+                    window.localStorage.setItem('titleSuggestions', JSON.stringify(topNames));
                 }
             } catch (error) {
                 console.log('err', error);

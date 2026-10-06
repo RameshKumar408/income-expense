@@ -22,6 +22,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import CloseIcon from '@mui/icons-material/Close';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import SearchIcon from '@mui/icons-material/Search';
@@ -29,7 +31,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 import dayjs from 'dayjs';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import { toast } from 'react-toastify';
@@ -53,6 +55,73 @@ export default function Home({ params }) {
     const [descriptionError, setDescriptionError] = useState('');
     const [amountError, setAmountError] = useState('');
     const [typeError, setTypeError] = useState('');
+
+    const [titleSuggestions, setTitleSuggestions] = useState([]);
+    const [isSuggestionsExpanded, setIsSuggestionsExpanded] = useState(false);
+    const suggestionRowRef = useRef(null);
+
+    useEffect(() => {
+        const fetchTitles = async () => {
+            try {
+                const storedSuggestions = window.localStorage.getItem('titleSuggestions');
+                if (storedSuggestions) {
+                    try {
+                        setTitleSuggestions(JSON.parse(storedSuggestions));
+                    } catch (e) {
+                        console.error('Error parsing stored suggestions', e);
+                    }
+                }
+
+                let newstartdate = new Date(
+                    dayjs().subtract(2, 'month').date(1).startOf('day')
+                );
+                let startTimeStamp = newstartdate.getTime();
+                let newenddate = new Date(dayjs().endOf('day'));
+                let endTimeStamp = newenddate.getTime();
+
+                let params = {
+                    From: startTimeStamp.toString(),
+                    To: endTimeStamp.toString(),
+                };
+
+                let res = await fetch(`/api/getDateRange`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json',
+                        authorization: window.localStorage.getItem('token')
+                    },
+                    body: JSON.stringify(params),
+                });
+
+                let resData = await res.json();
+                let data = resData.topics;
+
+                if (data && data?.length > 0) {
+                    let items = data.map((item) => {
+                        return item.Title;
+                    });
+                    const frequency = items.reduce((acc, item) => {
+                        if (!item) return acc;
+                        const key = item.trim().toLowerCase();
+                        acc[key] = (acc[key] || 0) + 1;
+                        return acc;
+                    }, {});
+
+                    // Sort by frequency (descending) and extract only the top 80 names
+                    const topNames = Object.entries(frequency)
+                        .sort((a, b) => b[1] - a[1])
+                        .slice(0, 80)
+                        .map(([name]) => name.charAt(0).toUpperCase() + name.slice(1));
+
+                    setTitleSuggestions(topNames);
+                    window.localStorage.setItem('titleSuggestions', JSON.stringify(topNames));
+                }
+            } catch (error) {
+                console.log('err', error);
+            }
+        };
+        fetchTitles()
+    }, [])
 
     const router = useRouter();
     const { showLoader, hideLoader } = useLoader();
@@ -374,6 +443,63 @@ export default function Home({ params }) {
                                     : null,
                             }}
                         />
+                        {titleSuggestions.length > 0 &&
+                            <div className='suggestion-row-wrapper' style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', width: '100%' }}>
+                                <div ref={suggestionRowRef} className={`suggestion-row ${isSuggestionsExpanded ? 'expanded' : ''}`} aria-label='Title suggestions'>
+                                    {(() => {
+                                        const topicLower = (topic || '').toLowerCase();
+                                        const isExactMatch = titleSuggestions.some(s => s.toLowerCase() === topicLower);
+                                        let displayed = isExactMatch
+                                            ? [...titleSuggestions]
+                                            : titleSuggestions.filter(s => !topic || s.toLowerCase().includes(topicLower));
+
+                                        if (topicLower) {
+                                            const exactMatchItem = displayed.find(s => s.toLowerCase() === topicLower);
+                                            if (exactMatchItem) {
+                                                displayed = [exactMatchItem, ...displayed.filter(s => s !== exactMatchItem)];
+                                            }
+                                        }
+
+                                        return displayed.map((item) => {
+                                            const isActive = item.toLowerCase() === topicLower;
+                                            return (
+                                                <button
+                                                    type='button'
+                                                    className={`suggestion-chip ${isActive ? 'active' : ''}`}
+                                                    key={item}
+                                                    onClick={() => {
+                                                        setTopic(item);
+                                                        setTopicError("");
+                                                        if (suggestionRowRef.current) {
+                                                            suggestionRowRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+                                                        }
+                                                    }}
+                                                >
+                                                    {item}
+                                                </button>
+                                            );
+                                        });
+                                    })()}
+                                </div>
+                                <IconButton
+                                    onClick={() => setIsSuggestionsExpanded(!isSuggestionsExpanded)}
+                                    sx={{
+                                        flexShrink: 0,
+                                        color: '#d4a017',
+                                        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                                        border: '1px solid rgba(212, 160, 23, 0.3)',
+                                        marginTop: '4px',
+                                        padding: '8px',
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(212, 160, 23, 0.1)',
+                                            borderColor: 'rgba(212, 160, 23, 0.5)'
+                                        }
+                                    }}
+                                >
+                                    {isSuggestionsExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                                </IconButton>
+                            </div>
+                        }
                         {topicError ? <div className='field-error'>{topicError}</div> : <></>}
                     </div>
 

@@ -1009,14 +1009,14 @@
     align-items: center;
     justify-content: center;
     min-height: 70px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--border-input);
     border-radius: 999px;
     color: var(--text-primary);
     background: rgba(25, 25, 25, 0.15);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(18px) saturate(100%);
     -webkit-backdrop-filter: blur(18px) saturate(100%);
+    width: fit-content;
 }
 
 .history-balance {
@@ -1041,7 +1041,7 @@
 .history-round-btn {
     display: inline-flex;
     min-width: 70px;
-    border: 0;
+    /* border: 0; */
     cursor: pointer;
 }
 
@@ -1232,19 +1232,17 @@
     align-items: flex-end;
     justify-content: center;
     padding: 14px;
-    background: rgba(0, 0, 0, 0.5);
+    border: 2px var(--border-input);
 }
 
 .record-detail-sheet {
     box-sizing: border-box;
     width: min(100%, 430px);
     padding: 18px;
-    border: 1px solid rgba(212, 160, 23, 0.08);
-    border-top: 1px solid rgba(212, 160, 23, 0.3);
-    border-left: 1px solid rgba(212, 160, 23, 0.15);
+    border: 1px solid var(--border-input);
     border-radius: 20px 20px 16px 16px;
     color: var(--text-primary);
-    background: rgba(10, 10, 10, 0.9);
+    background: rgba(10, 10, 10, 0.4);
     backdrop-filter: blur(30px) saturate(140%);
     -webkit-backdrop-filter: blur(30px) saturate(140%);
     box-shadow: 0 -20px 50px rgba(212, 160, 23, 0.1), inset 0 1px 0 rgba(212, 160, 23, 0.15);
