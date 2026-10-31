@@ -63,6 +63,11 @@ export default function Home() {
         setTypeError("")
     };
 
+    const handleToggleType = () => {
+        setType((prev) => (prev === 'Income' ? 'Expense' : 'Income'));
+        setTypeError('');
+    };
+
     const handleDateChange = (date) => {
         if (!date || !date.isValid()) {
             setDateValue(null);
@@ -226,7 +231,17 @@ export default function Home() {
         fontSize: { xs: '13px', sm: '20px' },
         fontWeight: 700,
         minHeight: { xs: '48px', sm: '66px' },
+        cursor: 'pointer',
+        userSelect: 'none',
         transition: 'all 0.3s ease',
+        '& .MuiSelect-select': {
+            cursor: 'pointer',
+            paddingRight: '14px !important',
+            textAlign: 'center',
+        },
+        '& .MuiSelect-icon': {
+            display: 'none',
+        },
         '& .MuiOutlinedInput-notchedOutline': {
             borderColor: type == 'Expense' ? 'rgba(255, 59, 63, 0.5)' : 'rgba(47, 208, 111, 0.5)',
             borderWidth: '1.5px',
@@ -566,9 +581,18 @@ export default function Home() {
                                             id='type-select'
                                             value={type}
                                             displayEmpty
+                                            readOnly
+                                            open={false}
+                                            onClick={handleToggleType}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.preventDefault();
+                                                    handleToggleType();
+                                                }
+                                            }}
                                             onChange={handleChange}
                                             sx={selectSx}
-                                            IconComponent={CloseIcon}
+                                            IconComponent={() => null}
                                             MenuProps={{
                                                 PaperProps: {
                                                     sx: {
