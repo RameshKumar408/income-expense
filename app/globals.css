@@ -228,12 +228,27 @@ body {
         0 12px 32px rgba(212, 160, 23, 0.25) !important;
 }
 
-.liquid-toast-body {
+.liquid-toast-body,
+.Toastify__toast-body {
     font-weight: 600 !important;
     font-size: 15px !important;
     padding: 8px 12px !important;
     gap: 12px !important;
     margin: 0 !important;
+    align-items: center !important;
+}
+
+.liquid-toast-body > div:last-child,
+.Toastify__toast-body > div:last-child {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    word-break: break-word !important;
+    line-height: 1.35 !important;
+    max-height: calc(1.35em * 2) !important;
 }
 
 .Toastify__close-button {
