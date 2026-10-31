@@ -11,6 +11,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import TypeToggleButton from '@/components/TypeToggleButton';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -31,7 +32,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import constant from '@/constant';
@@ -89,6 +90,25 @@ export default function Home() {
     const [titleSuggestions, setTitleSuggestions] = useState([]);
     const [isSuggestionsExpanded, setIsSuggestionsExpanded] = useState(false);
     const suggestionRowRef = useRef(null);
+
+    const displayedSuggestions = useMemo(() => {
+        if (!titleSuggestions || titleSuggestions.length === 0) return [];
+        const topicTrimmed = (topic || '').trim().toLowerCase();
+        if (!topicTrimmed) {
+            return [...titleSuggestions];
+        }
+
+        const isExactMatch = titleSuggestions.some(s => (s || '').trim().toLowerCase() === topicTrimmed);
+        let displayed = isExactMatch
+            ? [...titleSuggestions]
+            : titleSuggestions.filter(s => (s || '').trim().toLowerCase().includes(topicTrimmed));
+
+        const exactMatchItem = displayed.find(s => (s || '').trim().toLowerCase() === topicTrimmed);
+        if (exactMatchItem) {
+            displayed = [exactMatchItem, ...displayed.filter(s => s !== exactMatchItem)];
+        }
+        return displayed;
+    }, [topic, titleSuggestions]);
 
     useEffect(() => {
         const fetchTitles = async () => {
@@ -473,61 +493,49 @@ export default function Home() {
                                         : null,
                                 }}
                             />
-                            {titleSuggestions.length > 0 &&
+                            {displayedSuggestions.length > 0 &&
                                 <div className='suggestion-row-wrapper' style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', width: '100%' }}>
                                     <div ref={suggestionRowRef} className={`suggestion-row ${isSuggestionsExpanded ? 'expanded' : ''}`} aria-label='Title suggestions'>
-                                        {(() => {
-                                            const topicLower = (topic || '').toLowerCase();
-                                            const isExactMatch = titleSuggestions.some(s => s.toLowerCase() === topicLower);
-                                            let displayed = isExactMatch
-                                                ? [...titleSuggestions]
-                                                : titleSuggestions.filter(s => !topic || s.toLowerCase().includes(topicLower));
-
-                                            if (topicLower) {
-                                                const exactMatchItem = displayed.find(s => s.toLowerCase() === topicLower);
-                                                if (exactMatchItem) {
-                                                    displayed = [exactMatchItem, ...displayed.filter(s => s !== exactMatchItem)];
-                                                }
-                                            }
-
-                                            return displayed.map((item) => {
-                                                const isActive = item.toLowerCase() === topicLower;
-                                                return (
-                                                    <button
-                                                        type='button'
-                                                        className={`suggestion-chip ${isActive ? 'active' : ''}`}
-                                                        key={item}
-                                                        onClick={() => {
-                                                            setTopic(item);
-                                                            setTopicError("");
-                                                            if (suggestionRowRef.current) {
-                                                                suggestionRowRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-                                                            }
-                                                        }}
-                                                    >
-                                                        {item}
-                                                    </button>
-                                                );
-                                            });
-                                        })()}
+                                        {displayedSuggestions.map((item) => {
+                                            const isActive = (item || '').trim().toLowerCase() === (topic || '').trim().toLowerCase();
+                                            return (
+                                                <button
+                                                    type='button'
+                                                    className={`suggestion-chip ${isActive ? 'active' : ''}`}
+                                                    key={item}
+                                                    onClick={() => {
+                                                        setTopic(item);
+                                                        setTopicError("");
+                                                        if (suggestionRowRef.current) {
+                                                            suggestionRowRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+                                                        }
+                                                    }}
+                                                >
+                                                    {item}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
-                                    <IconButton
-                                        onClick={() => setIsSuggestionsExpanded(!isSuggestionsExpanded)}
-                                        sx={{
-                                            flexShrink: 0,
-                                            color: '#d4a017',
-                                            backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                                            border: '1px solid rgba(212, 160, 23, 0.3)',
-                                            marginTop: '4px',
-                                            padding: '8px',
-                                            '&:hover': {
-                                                backgroundColor: 'rgba(212, 160, 23, 0.1)',
-                                                borderColor: 'rgba(212, 160, 23, 0.5)'
-                                            }
-                                        }}
-                                    >
-                                        {isSuggestionsExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                                    </IconButton>
+                                    {displayedSuggestions.length > 0 && (
+                                        <IconButton
+                                            onClick={() => setIsSuggestionsExpanded(!isSuggestionsExpanded)}
+                                            aria-label={isSuggestionsExpanded ? 'Show less suggestions' : 'Show more suggestions'}
+                                            sx={{
+                                                flexShrink: 0,
+                                                color: '#d4a017',
+                                                backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                                                border: '1px solid rgba(212, 160, 23, 0.3)',
+                                                marginTop: '4px',
+                                                padding: '8px',
+                                                '&:hover': {
+                                                    backgroundColor: 'rgba(212, 160, 23, 0.1)',
+                                                    borderColor: 'rgba(212, 160, 23, 0.5)'
+                                                }
+                                            }}
+                                        >
+                                            {isSuggestionsExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                                        </IconButton>
+                                    )}
                                 </div>
                             }
                             {topicError ? <div className='field-error'>{topicError}</div> : <></>}
@@ -573,44 +581,11 @@ export default function Home() {
 
                             <div className='form-group'>
                                 <label>Type<span>*</span></label>
-                                <Box sx={{ minWidth: 0 }}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id='type-select-label' sx={{ display: 'none' }}>Type</InputLabel>
-                                        <Select
-                                            labelId='type-select-label'
-                                            id='type-select'
-                                            value={type}
-                                            displayEmpty
-                                            readOnly
-                                            open={false}
-                                            onClick={handleToggleType}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter' || e.key === ' ') {
-                                                    e.preventDefault();
-                                                    handleToggleType();
-                                                }
-                                            }}
-                                            onChange={handleChange}
-                                            sx={selectSx}
-                                            IconComponent={() => null}
-                                            MenuProps={{
-                                                PaperProps: {
-                                                    sx: {
-                                                        backgroundColor: 'rgba(25, 25, 25, 0.65)',
-                                                        backdropFilter: 'blur(16px) saturate(150%)',
-                                                        WebkitBackdropFilter: 'blur(16px) saturate(150%)',
-                                                        color: '#ffffff',
-                                                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                                                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-                                                    }
-                                                }
-                                            }}
-                                        >
-                                            <MenuItem value={"Income"}>Income</MenuItem>
-                                            <MenuItem value={"Expense"}>Expense</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Box>
+                                <TypeToggleButton
+                                    id='type-select'
+                                    value={type}
+                                    onToggle={handleToggleType}
+                                />
                                 {typeError ? <div className='field-error'>{typeError}</div> : <></>}
                             </div>
                         </div>

@@ -1,10 +1,32 @@
-import { Inter } from "next/font/google";
+import { Inter, DM_Sans, Manrope, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import "./createDetail/createdeails.css";
 import { ToastContainer } from 'react-toastify';
 import AppWrapper from './AppWrapper';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+  display: "swap",
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-plus-jakarta-sans",
+  display: "swap",
+});
 
 export const metadata = {
   title: "Expenses Tracker",
@@ -32,15 +54,27 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" data-font="Inter" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var f = localStorage.getItem('appFont') || 'Inter';
+                  document.documentElement.setAttribute('data-font', f);
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Expenses" />
         <meta name="theme-color" content="#000000" />
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.className} ${inter.variable} ${dmSans.variable} ${manrope.variable} ${plusJakartaSans.variable}`}>
         <ToastContainer 
           closeOnClick 
           theme="dark" 

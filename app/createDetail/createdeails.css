@@ -682,16 +682,26 @@
     margin-bottom: 18px;
 }
 
-.history-search-form input,
+.history-search-form input {
+    box-sizing: border-box;
+    width: 100%;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    color: var(--text-primary) !important;
+    font: inherit;
+    font-size: 16px;
+    min-height: unset !important;
+}
+
 .history-account-select {
     box-sizing: border-box;
     width: 100%;
     min-height: 52px;
-    border: 1.5px solid var(--border-input);
     border-radius: 12px;
     padding: 0 16px;
     color: var(--text-primary);
-    background: var(--bg-card-elevated);
     font: inherit;
     font-size: 17px;
     outline: 0;

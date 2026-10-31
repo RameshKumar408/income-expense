@@ -17,7 +17,7 @@
     color: #1a1000;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
-    font-family: "Times New Roman", Times, serif;
+    font-family: inherit;
 }
 
 .premiumButton:hover {

@@ -1,5 +1,5 @@
 body {
-    font-family: 'Open Sans', sans-serif;
+    font-family: var(--font-family-base, inherit);
     font-weight: 500;
     color: #fff;
     background: var(--bg-pure-black);
@@ -862,7 +862,7 @@ img.bg-img {
     padding: 13px;
     border: 0;
     border-radius: 20px;
-    font-family: "Roboto", sans-serif;
+    font-family: inherit;
     opacity: 1.15;
 }
 
