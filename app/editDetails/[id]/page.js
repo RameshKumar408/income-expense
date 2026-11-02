@@ -12,11 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import TypeToggleButton from '@/components/TypeToggleButton';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+
 import useMediaQuery from '@mui/material/useMediaQuery';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -29,7 +25,6 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 import dayjs from 'dayjs';
 import { useCallback, useEffect, useState, useRef, useMemo } from 'react';
@@ -49,7 +44,6 @@ export default function Home({ params }) {
     const [type, setType] = useState('Expense');
     const [TimeStamp, setTimeStamp] = useState('');
     const [role, setRole] = useState();
-    const [openDelete, setOpenDelete] = useState(false);
 
     const [selectedDateError, setSelectedDateError] = useState('');
     const [topicError, setTopicError] = useState('');
@@ -401,32 +395,6 @@ export default function Home({ params }) {
         }
     };
 
-    const handleDelete = async () => {
-        try {
-            if (params?.id) {
-                showLoader()
-                const res = await fetch(`/api/incomes?id=${params.id}`, {
-                    method: "DELETE",
-                    headers: {
-                        "Content-type": "application/json",
-                        "authorization": window.localStorage.getItem("token")
-                    },
-                });
-                if (res?.ok) {
-                    hideLoader()
-                    toast.success("Deleted Successfully");
-                    router.push("/viewDetails");
-                } else {
-                    hideLoader()
-                    toast.error("Something Went Wrong");
-                }
-            }
-        } catch (error) {
-            hideLoader()
-            console.log("handleDelete error:", error);
-        }
-    };
-
     return (
         <div className='create-detail-page'>
             <GlowingBubbles />
@@ -577,15 +545,9 @@ export default function Home({ params }) {
                         </div>
                     </div>
 
-                    <div className='edit-action-row'>
-                        <Button className='add-data-btn edit-update-btn' variant='contained' type='submit'>
-                            Update
-                        </Button>
-                        <Button className='delete-data-btn' variant='contained' type='button' onClick={() => setOpenDelete(true)}>
-                            <DeleteOutlineIcon />
-                            Delete
-                        </Button>
-                    </div>
+                    <Button className='add-data-btn' variant='contained' type='submit'>
+                        Update
+                    </Button>
                 </form>
 
                 <nav className='bottom-nav' aria-label='Main actions'>
@@ -604,27 +566,6 @@ export default function Home({ params }) {
                         <SettingsIcon />
                     </Link>
                 </nav>
-
-                <Dialog
-                    open={openDelete}
-                    onClose={() => setOpenDelete(false)}
-                    PaperProps={{
-                        sx: { backgroundColor: '#151515', color: '#fff', borderRadius: '16px' }
-                    }}
-                >
-                    <DialogTitle sx={{ fontWeight: 700 }}>Confirm Delete</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText sx={{ color: '#a0a0a0' }}>
-                            Are you sure you want to delete this record? This action cannot be undone.
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions sx={{ padding: '0 24px 24px' }}>
-                        <Button onClick={() => setOpenDelete(false)} sx={{ color: '#fff', fontWeight: 600 }}>Cancel</Button>
-                        <Button onClick={() => { setOpenDelete(false); handleDelete(); }} variant="contained" sx={{ backgroundColor: '#ff3b3f', color: '#fff', fontWeight: 700, '&:hover': { backgroundColor: '#e62f33' } }}>
-                            Delete
-                        </Button>
-                    </DialogActions>
-                </Dialog>
             </main>
         </div>
     );

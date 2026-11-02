@@ -1,6 +1,8 @@
 import { Inter, DM_Sans, Manrope, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import "./createDetail/createdeails.css";
+import "./loginRegister.css";
+import "@/components/PrimaryButton.css";
 import { ToastContainer } from 'react-toastify';
 import AppWrapper from './AppWrapper';
 

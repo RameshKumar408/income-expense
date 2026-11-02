@@ -15,10 +15,21 @@ import IconButton from "@mui/material/IconButton";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import CalculateIcon from "@mui/icons-material/Calculate";
 import CloseIcon from "@mui/icons-material/Close";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
+import { toast } from "react-toastify";
+import constant from "@/constant";
 import { useLoader } from "@/app/context/LoaderContext";
 import PrimaryButton from "@/components/PrimaryButton";
 import GlowingBubbles from "@/components/GlowingBubbles";
@@ -65,6 +76,21 @@ const AnimatedNumber = ({ value }) => {
   });
 };
 
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 export default function Page() {
   const router = useRouter();
   const [datas, setDatas] = useState([]);
@@ -73,6 +99,22 @@ export default function Page() {
     dayjs().startOf("month").format("YYYY-MM-DD"),
   );
   const [to, setTo] = useState(dayjs().format("YYYY-MM-DD"));
+
+  // History filtering states: Month-wise vs Custom Date Range
+  const [filterMode, setFilterMode] = useState("month"); // 'month' | 'range'
+  const [selectedMonth, setSelectedMonth] = useState(dayjs().format("YYYY-MM"));
+  const [showFilterModal, setShowFilterModal] = useState(false);
+
+  // Staging / draft states for bottom sheet
+  const [draftMode, setDraftMode] = useState("month");
+  const [draftMonth, setDraftMonth] = useState(dayjs().month()); // 0-11
+  const [draftYear, setDraftYear] = useState(dayjs().year());
+  const [draftFrom, setDraftFrom] = useState(
+    dayjs().startOf("month").format("YYYY-MM-DD"),
+  );
+  const [draftTo, setDraftTo] = useState(dayjs().format("YYYY-MM-DD"));
+  const [rangeError, setRangeError] = useState("");
+
   const [searchText, setSearchText] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const searchInputRef = useRef(null);
@@ -120,7 +162,192 @@ export default function Page() {
   const [calcValue, setCalcValue] = useState("0");
   const [calcHistory, setCalcHistory] = useState([]);
   const [selectedRecord, setSelectedRecord] = useState(null);
-  const [touchStartX, setTouchStartX] = useState(null);
+  const [expandedCardId, setExpandedCardId] = useState(null);
+  const [swipedCardId, setSwipedCardId] = useState(null);
+  const [swipeDirection, setSwipeDirection] = useState(null);
+  const [activeDrag, setActiveDrag] = useState({
+    cardId: null,
+    offset: 0,
+    direction: null,
+  });
+  const [recordToDelete, setRecordToDelete] = useState(null);
+
+  const touchState = useRef({
+    startX: 0,
+    startY: 0,
+    startTime: 0,
+    isSwiping: false,
+    cardId: null,
+    initialOffset: 0,
+  });
+  const lastTouchTapTime = useRef(0);
+
+  const handleDelete = async (id) => {
+    try {
+      showLoader();
+      const res = await fetch(`${constant?.Live_url || ""}/api/incomes?id=${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json",
+          authorization: `${window?.localStorage?.getItem("token")}`,
+        },
+      });
+      const data = await res.json();
+      if (res.ok && data?.status) {
+        toast.success("Deleted successfully");
+        setDatas((prev) => prev.filter((item) => item._id !== id));
+        getDetails({ text: searchText, requestRole: role, userId: selectedUser });
+      } else {
+        toast.error(data?.message || "Failed to delete");
+      }
+    } catch (err) {
+      toast.error("Failed to delete transaction");
+      console.error("handleDelete error:", err);
+    } finally {
+      setRecordToDelete(null);
+      setSwipedCardId(null);
+      setSwipeDirection(null);
+      setActiveDrag({ cardId: null, offset: 0, direction: null });
+      hideLoader();
+    }
+  };
+
+  const handleCardClick = (row) => {
+    // If triggered right after a touch tap on mobile, ignore the duplicate synthetic click
+    if (Date.now() - lastTouchTapTime.current < 450) {
+      return;
+    }
+    if (swipedCardId) {
+      setSwipedCardId(null);
+      setSwipeDirection(null);
+      return;
+    }
+    setExpandedCardId((prev) => (prev === row._id ? null : row._id));
+  };
+
+  const handleCardTouchStart = (e, row) => {
+    const touch = e.touches[0];
+    touchState.current = {
+      startX: touch.clientX,
+      startY: touch.clientY,
+      startTime: Date.now(),
+      isSwiping: false,
+      cardId: row._id,
+      initialOffset: 0,
+    };
+  };
+
+  const handleCardTouchMove = (e, row) => {
+    if (!touchState.current || touchState.current.cardId !== row._id) return;
+    const touch = e.touches[0];
+    const diffX = touch.clientX - touchState.current.startX;
+    const diffY = touch.clientY - touchState.current.startY;
+
+    if (!touchState.current.isSwiping) {
+      if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+          touchState.current.isSwiping = true;
+        } else {
+          touchState.current.cardId = null;
+          return;
+        }
+      }
+    }
+
+    if (touchState.current.isSwiping) {
+      // Allow fluid drag up to 96px in either direction
+      const clampedOffset = Math.max(-96, Math.min(96, diffX));
+      const direction =
+        clampedOffset > 5
+          ? "right"
+          : clampedOffset < -5
+          ? "left"
+          : null;
+
+      setActiveDrag({
+        cardId: row._id,
+        offset: clampedOffset,
+        direction,
+      });
+    }
+  };
+
+  const handleCardTouchEnd = (e, row) => {
+    if (!touchState.current || touchState.current.cardId !== row._id) return;
+    const touch = e.changedTouches?.[0] || e.touches?.[0];
+    const diffX = touch ? touch.clientX - touchState.current.startX : 0;
+    const diffY = touch ? touch.clientY - touchState.current.startY : 0;
+    const duration = Date.now() - touchState.current.startTime;
+
+    if (touchState.current.isSwiping) {
+      const SWIPE_THRESHOLD = 60; // Auto-trigger threshold
+
+      if (diffX >= SWIPE_THRESHOLD) {
+        // Swiped right past threshold -> automatically open Delete confirmation popup
+        setRecordToDelete(row);
+      } else if (diffX <= -SWIPE_THRESHOLD) {
+        // Swiped left past threshold -> automatically trigger Edit
+        router.push(`/editDetails/${row._id}`);
+      }
+
+      setSwipedCardId(null);
+      setSwipeDirection(null);
+      lastTouchTapTime.current = Date.now();
+    } else {
+      const dist = Math.hypot(diffX, diffY);
+      if (dist < 12 && duration < 400) {
+        lastTouchTapTime.current = Date.now();
+        if (swipedCardId) {
+          setSwipedCardId(null);
+          setSwipeDirection(null);
+        } else {
+          setExpandedCardId((prev) => (prev === row._id ? null : row._id));
+        }
+      }
+    }
+
+    setActiveDrag({ cardId: null, offset: 0, direction: null });
+    touchState.current = {
+      startX: 0,
+      startY: 0,
+      startTime: 0,
+      isSwiping: false,
+      cardId: null,
+      initialOffset: 0,
+    };
+  };
+
+  const handleCardTouchCancel = () => {
+    setActiveDrag({ cardId: null, offset: 0, direction: null });
+    touchState.current = {
+      startX: 0,
+      startY: 0,
+      startTime: 0,
+      isSwiping: false,
+      cardId: null,
+      initialOffset: 0,
+    };
+  };
+
+  useEffect(() => {
+    const handleGlobalClick = (e) => {
+      if (
+        !e.target.closest(".history-card-item") &&
+        !e.target.closest(".MuiDialog-root") &&
+        !e.target.closest(".calculator-overlay")
+      ) {
+        setSwipedCardId(null);
+        setSwipeDirection(null);
+        setActiveDrag({ cardId: null, offset: 0, direction: null });
+      }
+    };
+    window.addEventListener("click", handleGlobalClick);
+    window.addEventListener("touchstart", handleGlobalClick, { passive: true });
+    return () => {
+      window.removeEventListener("click", handleGlobalClick);
+      window.removeEventListener("touchstart", handleGlobalClick);
+    };
+  }, []);
   const [loading, setLoading] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
   const lastScrollYRef = useRef(0);
@@ -156,11 +383,29 @@ export default function Page() {
   };
 
   const getDetails = useCallback(
-    async ({ text = "", requestRole = "", userId = "" } = {}) => {
+    async ({
+      text = "",
+      requestRole = "",
+      userId = "",
+      customFrom = null,
+      customTo = null,
+    } = {}) => {
       try {
         setLoading(true);
-        const fromTimestamp = dateToStart(from);
-        const toTimestamp = dateToEnd(to);
+        let fromTimestamp = customFrom;
+        let toTimestamp = customTo;
+
+        if (fromTimestamp == null || toTimestamp == null) {
+          if (filterMode === "month") {
+            const mObj = dayjs(`${selectedMonth || dayjs().format("YYYY-MM")}-01`);
+            fromTimestamp = mObj.startOf("month").startOf("day").valueOf();
+            toTimestamp = mObj.endOf("month").endOf("day").valueOf();
+          } else {
+            fromTimestamp = dateToStart(from);
+            toTimestamp = dateToEnd(to);
+          }
+        }
+
         const body = {
           From: fromTimestamp,
           To: toTimestamp,
@@ -202,7 +447,7 @@ export default function Page() {
         setLoading(false);
       }
     },
-    [from, to, router],
+    [from, to, filterMode, selectedMonth, router],
   );
 
   const usersLists = useCallback(
@@ -314,49 +559,122 @@ export default function Page() {
     }
   }, [role, usersLists]);
 
-  // Intersection Observer for scroll animations
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const rect = entry.boundingClientRect;
-          const windowHeight =
-            window.innerHeight || document.documentElement.clientHeight;
 
-          if (entry.isIntersecting) {
-            entry.target.classList.add("in-view");
-            entry.target.classList.remove("out-view-top", "out-view-bottom");
-          } else {
-            entry.target.classList.remove("in-view");
-            // Check if it's above or below viewport
-            if (rect.top < windowHeight / 2) {
-              entry.target.classList.add("out-view-top");
-              entry.target.classList.remove("out-view-bottom");
-            } else {
-              entry.target.classList.add("out-view-bottom");
-              entry.target.classList.remove("out-view-top");
-            }
-          }
-        });
-      },
-      {
-        threshold: 0.15,
-        rootMargin: "-5% 0px -5% 0px",
-      },
-    );
 
-    const elements = document.querySelectorAll(".scroll-animate");
-    elements.forEach((el) => observer.observe(el));
+  const currentYear = dayjs().year();
+  const availableYears = useMemo(() => {
+    const list = [];
+    for (let y = currentYear - 8; y <= currentYear + 5; y++) {
+      list.push(y);
+    }
+    return list;
+  }, [currentYear]);
 
-    return () => observer.disconnect();
-  }, [filteredDatas]);
+  const appliedFilterLabel = useMemo(() => {
+    if (filterMode === "month") {
+      return dayjs(`${selectedMonth || dayjs().format("YYYY-MM")}-01`).format("MMMM YYYY");
+    }
+    return `${dayjs(from).format("DD/MM/YYYY")} – ${dayjs(to).format("DD/MM/YYYY")}`;
+  }, [filterMode, selectedMonth, from, to]);
+
+  const handleOpenFilterModal = () => {
+    setDraftMode(filterMode);
+    const currentM = dayjs(`${selectedMonth || dayjs().format("YYYY-MM")}-01`);
+    setDraftMonth(currentM.month());
+    setDraftYear(currentM.year());
+    setDraftFrom(from);
+    setDraftTo(to);
+    setRangeError("");
+    setShowFilterModal(true);
+  };
+
+  const handleCloseFilterModal = () => {
+    setShowFilterModal(false);
+    setRangeError("");
+  };
+
+  const handleResetFilter = () => {
+    const currentMonthStr = dayjs().format("YYYY-MM");
+    const currentMonthObj = dayjs();
+    const defaultFrom = currentMonthObj.startOf("month").format("YYYY-MM-DD");
+    const defaultTo = currentMonthObj.endOf("month").format("YYYY-MM-DD");
+
+    setFilterMode("month");
+    setSelectedMonth(currentMonthStr);
+    setFrom(defaultFrom);
+    setTo(defaultTo);
+
+    setDraftMode("month");
+    setDraftMonth(currentMonthObj.month());
+    setDraftYear(currentMonthObj.year());
+    setDraftFrom(defaultFrom);
+    setDraftTo(defaultTo);
+    setRangeError("");
+    setShowFilterModal(false);
+
+    const fromTimestamp = currentMonthObj.startOf("month").startOf("day").valueOf();
+    const toTimestamp = currentMonthObj.endOf("month").endOf("day").valueOf();
+    getDetails({
+      requestRole: role,
+      userId: selectedUser,
+      text: searchText,
+      customFrom: fromTimestamp,
+      customTo: toTimestamp,
+    });
+  };
+
+  const handleApplyFilter = () => {
+    if (draftMode === "range") {
+      if (dayjs(draftFrom).isAfter(dayjs(draftTo), "day")) {
+        setRangeError("Start date cannot be later than end date");
+        return;
+      }
+      setRangeError("");
+      setFilterMode("range");
+      setFrom(draftFrom);
+      setTo(draftTo);
+      setShowFilterModal(false);
+
+      const fromTimestamp = dayjs(draftFrom).startOf("day").valueOf();
+      const toTimestamp = dayjs(draftTo).endOf("day").valueOf();
+      getDetails({
+        requestRole: role,
+        userId: selectedUser,
+        text: searchText,
+        customFrom: fromTimestamp,
+        customTo: toTimestamp,
+      });
+    } else {
+      setRangeError("");
+      const monthStr = `${draftYear}-${String(draftMonth + 1).padStart(2, "0")}`;
+      const monthObj = dayjs(`${monthStr}-01`);
+      const fromStr = monthObj.startOf("month").format("YYYY-MM-DD");
+      const toStr = monthObj.endOf("month").format("YYYY-MM-DD");
+
+      setFilterMode("month");
+      setSelectedMonth(monthStr);
+      setFrom(fromStr);
+      setTo(toStr);
+      setShowFilterModal(false);
+
+      const fromTimestamp = monthObj.startOf("month").startOf("day").valueOf();
+      const toTimestamp = monthObj.endOf("month").endOf("day").valueOf();
+      getDetails({
+        requestRole: role,
+        userId: selectedUser,
+        text: searchText,
+        customFrom: fromTimestamp,
+        customTo: toTimestamp,
+      });
+    }
+  };
 
   useEffect(() => {
     if (role == "admin" && !selectedUser) {
       return;
     }
     getDetails({ requestRole: role, userId: selectedUser });
-  }, [from, to, selectedUser, role, getDetails]);
+  }, [from, to, filterMode, selectedMonth, selectedUser, role, getDetails]);
 
   const submitSearch = (e) => {
     e?.preventDefault();
@@ -720,113 +1038,29 @@ export default function Page() {
             </Select>
           )}
 
-          <form className="history-date-form" onSubmit={submitSearch}>
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+          <div className="history-compact-filter-bar">
+            <button
+              type="button"
+              className="history-date-selector-btn"
+              onClick={handleOpenFilterModal}
+              aria-label="Filter period selector"
             >
-              <span
-                style={{ fontSize: "13px", fontWeight: 800, color: "#fff" }}
-              >
-                Start date<b style={{ color: "#ff3b3f" }}>*</b>
-              </span>
-              <LiquidTextField
-                value={from}
-                type="date"
-                onClick={(e) => {
-                  e.target.showPicker && e.target.showPicker();
-                }}
-                onChange={(e) => {
-                  setFrom(e.target.value);
-                }}
-                fullWidth
-                sx={{
-                  "& input[type=date]": {
-                    textAlign: "left",
-                    paddingRight: "28px",
-                    paddingLeft: "10px",
-                    fontSize: { xs: "14px", sm: "18px" },
-                    whiteSpace: "nowrap",
-                    WebkitAppearance: "none",
-                  },
-                  "& input[type=date]::-webkit-date-and-time-value": {
-                    textAlign: "left",
-                  },
-                  "& input[type=date]::-webkit-calendar-picker-indicator": {
-                    display: "none",
-                    WebkitAppearance: "none",
-                  },
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment
-                      position="end"
-                      sx={{ pointerEvents: "none" }}
-                    >
-                      <CalendarTodayOutlinedIcon
-                        sx={{
-                          fontSize: "18px",
-                          color: "rgba(255, 255, 255, 0.75)",
-                        }}
-                      />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </div>
+              <div className="filter-pill-content">
+                <CalendarTodayOutlinedIcon className="filter-pill-icon" />
+                <span className="filter-pill-label">{appliedFilterLabel}</span>
+              </div>
+              <KeyboardArrowDownIcon className="filter-pill-arrow" />
+            </button>
 
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            <button
+              type="button"
+              className="history-filter-trigger-btn"
+              onClick={handleOpenFilterModal}
+              aria-label="Open filter options"
             >
-              <span
-                style={{ fontSize: "13px", fontWeight: 800, color: "#fff" }}
-              >
-                End date<b style={{ color: "#ff3b3f" }}>*</b>
-              </span>
-              <LiquidTextField
-                value={to}
-                type="date"
-                onClick={(e) => {
-                  e.target.showPicker && e.target.showPicker();
-                }}
-                onChange={(e) => {
-                  setTo(e.target.value);
-                }}
-                fullWidth
-                sx={{
-                  "& input[type=date]": {
-                    textAlign: "left",
-                    paddingRight: "28px",
-                    paddingLeft: "10px",
-                    fontSize: { xs: "14px", sm: "18px" },
-                    whiteSpace: "nowrap",
-                    WebkitAppearance: "none",
-                  },
-                  "& input[type=date]::-webkit-date-and-time-value": {
-                    textAlign: "left",
-                  },
-                  "& input[type=date]::-webkit-calendar-picker-indicator": {
-                    display: "none",
-                    WebkitAppearance: "none",
-                  },
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment
-                      position="end"
-                      sx={{ pointerEvents: "none" }}
-                    >
-                      <CalendarTodayOutlinedIcon
-                        sx={{
-                          fontSize: "18px",
-                          color: "rgba(255, 255, 255, 0.75)",
-                        }}
-                      />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </div>
-          </form>
+              <FilterListIcon />
+            </button>
+          </div>
 
           <div className="history-sort-row" aria-label="Sort history">
             <button
@@ -871,33 +1105,148 @@ export default function Page() {
               ))}
             </div>
           ) : filteredDatas?.length > 0 ? (
-            filteredDatas.map((row, index) => (
-              <button
-                className={`history-card scroll-animate`}
-                key={row?._id}
-                type="button"
-                onClick={() => {
-                  setSelectedRecord(row);
-                }}
-                onDoubleClick={() => {
-                  router.push(`/editDetails/${row?._id}`);
-                }}
-                onTouchStart={(event) => {
-                  setTouchStartX(event.touches?.[0]?.clientX);
-                }}
-                onTouchEnd={(event) => {
-                  handleRecordTouchEnd(row, event);
-                }}
-              >
-                <span>
-                  <strong>{row?.Title}</strong>
-                  <small>{formatHistoryDate(row)}</small>
-                </span>
-                <b className={row?.Type == "Income" ? "income" : "expense"}>
-                  ₹{formatIndianNumber(row?.Amount)}
-                </b>
-              </button>
-            ))
+            filteredDatas.map((row) => {
+              const isDragging = activeDrag.cardId === row?._id;
+              const isPastThreshold =
+                isDragging && Math.abs(activeDrag.offset) >= 60;
+              const swipingClass =
+                isDragging && activeDrag.direction
+                  ? `is-swiping-${activeDrag.direction}`
+                  : "";
+              const thresholdClass = isPastThreshold ? "is-past-threshold" : "";
+
+              return (
+                <div
+                  className={`history-card-item ${swipingClass} ${thresholdClass}`}
+                  key={row?._id}
+                >
+                  {/* Swipe Action Left: Delete */}
+                  <div className="card-swipe-action action-left">
+                    <button
+                      type="button"
+                      className="swipe-btn delete-action"
+                      aria-label={`Delete ${row?.Title}`}
+                      onTouchEnd={(e) => {
+                        e.stopPropagation();
+                        setRecordToDelete(row);
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setRecordToDelete(row);
+                      }}
+                    >
+                      <DeleteOutlineIcon />
+                    </button>
+                  </div>
+
+                  {/* Main Transaction Card */}
+                  <div
+                    className={`history-card ${
+                      expandedCardId === row?._id ? "expanded" : ""
+                    }`}
+                    style={
+                      isDragging
+                        ? {
+                            transform: `translateX(${activeDrag.offset}px)`,
+                            transition: "none",
+                          }
+                        : undefined
+                    }
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => handleCardClick(row)}
+                    onTouchStart={(e) => handleCardTouchStart(e, row)}
+                    onTouchMove={(e) => handleCardTouchMove(e, row)}
+                    onTouchEnd={(e) => handleCardTouchEnd(e, row)}
+                    onTouchCancel={handleCardTouchCancel}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleCardClick(row);
+                      }
+                    }}
+                  >
+                  <div className="history-card-main">
+                    <div className="history-card-info">
+                      <strong className="history-card-title">{row?.Title}</strong>
+                      <small className="history-card-date">{formatHistoryDate(row)}</small>
+                    </div>
+
+                    <div className="history-card-amount-box">
+                      <b
+                        className={`history-card-amount ${
+                          row?.Type === "Income" ? "income" : "expense"
+                        }`}
+                      >
+                        ₹{formatIndianNumber(row?.Amount)}
+                      </b>
+                      {/* Desktop accessible Delete and Edit buttons */}
+                      <div className="desktop-card-actions">
+                        <button
+                          type="button"
+                          className="desktop-action-btn delete-btn"
+                          title="Delete"
+                          aria-label={`Delete ${row?.Title}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setRecordToDelete(row);
+                          }}
+                        >
+                          <DeleteOutlineIcon fontSize="small" />
+                        </button>
+                        <button
+                          type="button"
+                          className="desktop-action-btn edit-btn"
+                          title="Edit"
+                          aria-label={`Edit ${row?.Title}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/editDetails/${row?._id}`);
+                          }}
+                        >
+                          <EditOutlinedIcon fontSize="small" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expandable Description inline */}
+                  <div
+                    className={`history-card-description ${
+                      expandedCardId === row?._id ? "open" : ""
+                    }`}
+                  >
+                    <span className="desc-label">Description: </span>
+                    <span
+                      className="desc-content"
+                      style={
+                        !row?.Description?.trim()
+                          ? { opacity: 0.65, fontStyle: "italic" }
+                          : undefined
+                      }
+                    >
+                      {row?.Description?.trim() || "No description"}
+                    </span>
+                  </div>
+                </div>
+
+                  {/* Swipe Action Right: Edit */}
+                  <div className="card-swipe-action action-right">
+                    <button
+                      type="button"
+                      className="swipe-btn edit-action"
+                      aria-label={`Edit ${row?.Title}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/editDetails/${row?._id}`);
+                      }}
+                    >
+                      <EditOutlinedIcon />
+                    </button>
+                  </div>
+              </div>
+            );
+          })
           ) : (
             <div className="history-empty">No data found</div>
           )}
@@ -910,29 +1259,203 @@ export default function Page() {
               ₹<AnimatedNumber value={totalBalance} />
             </strong>
           </div>
-          <div style={{ display: "flex", gap: "10px" }}>
-            <button
-              className="history-round-btn"
-              type="button"
-              aria-label="View Analytics"
-              onClick={() => {
-                router.push(`/details?from=${from}&to=${to}`);
-              }}
-            >
-              <PieChartIcon />
-            </button>
-            <button
-              className="history-round-btn"
-              type="button"
-              aria-label="Open calculator"
-              onClick={() => {
-                setShowCalculator(true);
-              }}
-            >
-              <CalculateIcon />
-            </button>
-          </div>
+          <button
+            className="history-detailed-view-btn"
+            type="button"
+            aria-label="Detailed View"
+            onClick={() => {
+              router.push(`/details?from=${from}&to=${to}`);
+            }}
+          >
+            Detailed View
+          </button>
+          <button
+            className="history-round-btn"
+            type="button"
+            aria-label="Open calculator"
+            onClick={() => {
+              setShowCalculator(true);
+            }}
+          >
+            <CalculateIcon />
+          </button>
         </div>
+
+        {recordToDelete && (
+          <Dialog
+            open={Boolean(recordToDelete)}
+            onClose={() => setRecordToDelete(null)}
+            PaperProps={{
+              sx: {
+                backgroundColor: "rgba(22, 22, 26, 0.96)",
+                backdropFilter: "blur(24px) saturate(160%)",
+                WebkitBackdropFilter: "blur(24px) saturate(160%)",
+                color: "#ffffff",
+                border: "1px solid rgba(255, 59, 48, 0.35)",
+                borderRadius: "20px",
+                boxShadow:
+                  "0 24px 60px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 59, 48, 0.15)",
+                maxWidth: { xs: "92vw", sm: "420px" },
+                width: "100%",
+                padding: { xs: "20px", sm: "24px" },
+                boxSizing: "border-box",
+                overflow: "hidden",
+              },
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                textAlign: "center",
+              }}
+            >
+              <div
+                style={{
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "16px",
+                  background:
+                    "radial-gradient(circle, rgba(255, 59, 48, 0.25) 0%, rgba(255, 59, 48, 0.08) 100%)",
+                  border: "1px solid rgba(255, 59, 48, 0.4)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: "16px",
+                  boxShadow: "0 8px 20px rgba(255, 59, 48, 0.2)",
+                }}
+              >
+                <DeleteOutlineIcon sx={{ color: "#ff3b30", fontSize: "32px" }} />
+              </div>
+
+              <h3
+                style={{
+                  margin: "0 0 8px",
+                  color: "#ffffff",
+                  fontSize: "20px",
+                  fontWeight: 700,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                Delete Transaction?
+              </h3>
+
+              <p
+                style={{
+                  color: "rgba(255, 255, 255, 0.65)",
+                  margin: "0 0 16px",
+                  fontSize: "14px",
+                  lineHeight: 1.5,
+                }}
+              >
+                Are you sure you want to permanently delete this record? This action cannot be undone.
+              </p>
+
+              {/* Transaction details preview badge */}
+              <div
+                style={{
+                  width: "100%",
+                  padding: "12px 16px",
+                  borderRadius: "12px",
+                  background: "rgba(255, 255, 255, 0.04)",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: "22px",
+                  boxSizing: "border-box",
+                }}
+              >
+                <div
+                  style={{
+                    textAlign: "left",
+                    minWidth: 0,
+                    flex: 1,
+                    paddingRight: "12px",
+                  }}
+                >
+                  <div
+                    style={{
+                      color: "#ffffff",
+                      fontSize: "15px",
+                      fontWeight: 600,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {recordToDelete?.Title}
+                  </div>
+                  <div
+                    style={{
+                      color: "rgba(255, 255, 255, 0.45)",
+                      fontSize: "12px",
+                      marginTop: "2px",
+                    }}
+                  >
+                    {formatHistoryDate(recordToDelete)}
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    color:
+                      recordToDelete?.Type === "Income" ? "#22c55e" : "#ff3b30",
+                    fontSize: "16px",
+                    fontWeight: 700,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  ₹{formatIndianNumber(recordToDelete?.Amount)}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: "flex", gap: "12px", width: "100%" }}>
+                <button
+                  type="button"
+                  onClick={() => setRecordToDelete(null)}
+                  style={{
+                    flex: 1,
+                    height: "44px",
+                    borderRadius: "12px",
+                    border: "1px solid rgba(255, 255, 255, 0.15)",
+                    background: "rgba(255, 255, 255, 0.05)",
+                    color: "#ffffff",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleDelete(recordToDelete._id)}
+                  style={{
+                    flex: 1,
+                    height: "44px",
+                    borderRadius: "12px",
+                    border: "none",
+                    background:
+                      "linear-gradient(135deg, #ff453a 0%, #e02828 100%)",
+                    color: "#ffffff",
+                    fontSize: "15px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    boxShadow: "0 4px 14px rgba(255, 59, 48, 0.35)",
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </Dialog>
+        )}
 
         {showCalculator && (
           <div
@@ -1079,6 +1602,399 @@ export default function Page() {
                 Edit
               </PrimaryButton>
             </section>
+          </div>
+        )}
+
+        {showFilterModal && (
+          <div
+            className="history-filter-modal-overlay"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Filter transactions"
+            onClick={handleCloseFilterModal}
+          >
+            <div
+              className="history-filter-sheet"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="filter-sheet-drag-handle" />
+
+              <div className="filter-sheet-header">
+                <div className="filter-sheet-title-group">
+                  <h3>Filter Transactions</h3>
+                  <p>Choose month or custom date range</p>
+                </div>
+                <button
+                  type="button"
+                  className="filter-sheet-close-btn"
+                  aria-label="Close filter"
+                  onClick={handleCloseFilterModal}
+                >
+                  <CloseIcon fontSize="small" />
+                </button>
+              </div>
+
+              <div className="filter-mode-tabs" role="tablist">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={draftMode === "month"}
+                  className={`filter-mode-tab ${draftMode === "month" ? "active" : ""}`}
+                  onClick={() => {
+                    setDraftMode("month");
+                    setRangeError("");
+                  }}
+                >
+                  Month-wise
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={draftMode === "range"}
+                  className={`filter-mode-tab ${draftMode === "range" ? "active" : ""}`}
+                  onClick={() => {
+                    setDraftMode("range");
+                    setRangeError("");
+                  }}
+                >
+                  Custom Date Range
+                </button>
+              </div>
+
+              <div className="filter-sheet-body">
+                {draftMode === "month" ? (
+                  <div className="filter-month-selector-group">
+                    <span className="filter-group-title">Select Month</span>
+
+                    <div className="filter-month-year-grid">
+                      <div className="filter-select-field">
+                        <span className="filter-select-label">Month</span>
+                        <Select
+                          value={draftMonth}
+                          onChange={(e) => setDraftMonth(Number(e.target.value))}
+                          fullWidth
+                          sx={{
+                            color: "#ffffff",
+                            backgroundColor: "rgba(255, 255, 255, 0.04)",
+                            borderRadius: "12px",
+                            fontSize: "15px",
+                            fontWeight: 700,
+                            minHeight: "48px",
+                            height: "48px",
+                            "& .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "rgba(212, 160, 23, 0.45)",
+                              borderWidth: "1.5px",
+                            },
+                            "&:hover .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "rgba(212, 160, 23, 0.8)",
+                            },
+                            "&.Mui-focused": {
+                              backgroundColor: "rgba(255, 255, 255, 0.08)",
+                            },
+                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "#d4a017",
+                              borderWidth: "1.5px",
+                            },
+                            "& .MuiSvgIcon-root": {
+                              color: "#d4a017",
+                            },
+                          }}
+                          MenuProps={{
+                            PaperProps: {
+                              sx: {
+                                backgroundColor: "rgba(20, 20, 24, 0.98)",
+                                backdropFilter: "blur(20px)",
+                                WebkitBackdropFilter: "blur(20px)",
+                                color: "#ffffff",
+                                border: "1px solid rgba(212, 160, 23, 0.35)",
+                                borderRadius: "12px",
+                                boxShadow: "0 12px 36px rgba(0, 0, 0, 0.75)",
+                                maxHeight: "260px",
+                                "& .MuiMenuItem-root": {
+                                  fontSize: "14px",
+                                  fontWeight: 600,
+                                  padding: "10px 16px",
+                                  "&:hover": {
+                                    backgroundColor: "rgba(212, 160, 23, 0.15)",
+                                  },
+                                  "&.Mui-selected": {
+                                    backgroundColor: "rgba(212, 160, 23, 0.25)",
+                                    color: "#d4a017",
+                                    fontWeight: 800,
+                                    "&:hover": {
+                                      backgroundColor: "rgba(212, 160, 23, 0.35)",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          }}
+                        >
+                          {MONTH_NAMES.map((name, idx) => (
+                            <MenuItem key={name} value={idx}>
+                              {name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </div>
+
+                      <div className="filter-select-field">
+                        <span className="filter-select-label">Year</span>
+                        <Select
+                          value={draftYear}
+                          onChange={(e) => setDraftYear(Number(e.target.value))}
+                          fullWidth
+                          sx={{
+                            color: "#ffffff",
+                            backgroundColor: "rgba(255, 255, 255, 0.04)",
+                            borderRadius: "12px",
+                            fontSize: "15px",
+                            fontWeight: 700,
+                            minHeight: "48px",
+                            height: "48px",
+                            "& .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "rgba(212, 160, 23, 0.45)",
+                              borderWidth: "1.5px",
+                            },
+                            "&:hover .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "rgba(212, 160, 23, 0.8)",
+                            },
+                            "&.Mui-focused": {
+                              backgroundColor: "rgba(255, 255, 255, 0.08)",
+                            },
+                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                              borderColor: "#d4a017",
+                              borderWidth: "1.5px",
+                            },
+                            "& .MuiSvgIcon-root": {
+                              color: "#d4a017",
+                            },
+                          }}
+                          MenuProps={{
+                            PaperProps: {
+                              sx: {
+                                backgroundColor: "rgba(20, 20, 24, 0.98)",
+                                backdropFilter: "blur(20px)",
+                                WebkitBackdropFilter: "blur(20px)",
+                                color: "#ffffff",
+                                border: "1px solid rgba(212, 160, 23, 0.35)",
+                                borderRadius: "12px",
+                                boxShadow: "0 12px 36px rgba(0, 0, 0, 0.75)",
+                                maxHeight: "260px",
+                                "& .MuiMenuItem-root": {
+                                  fontSize: "14px",
+                                  fontWeight: 600,
+                                  padding: "10px 16px",
+                                  "&:hover": {
+                                    backgroundColor: "rgba(212, 160, 23, 0.15)",
+                                  },
+                                  "&.Mui-selected": {
+                                    backgroundColor: "rgba(212, 160, 23, 0.25)",
+                                    color: "#d4a017",
+                                    fontWeight: 800,
+                                    "&:hover": {
+                                      backgroundColor: "rgba(212, 160, 23, 0.35)",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          }}
+                        >
+                          {availableYears.map((yr) => (
+                            <MenuItem key={yr} value={yr}>
+                              {yr}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="filter-preview-banner">
+                      <CalendarTodayOutlinedIcon
+                        sx={{ fontSize: 18, color: "var(--brand-gold)" }}
+                      />
+                      <div>
+                        <strong>
+                          {MONTH_NAMES[draftMonth]} {draftYear}
+                        </strong>
+                        <span>
+                          {dayjs(
+                            `${draftYear}-${String(draftMonth + 1).padStart(2, "0")}-01`,
+                          )
+                            .startOf("month")
+                            .format("DD MMM YYYY")}{" "}
+                          to{" "}
+                          {dayjs(
+                            `${draftYear}-${String(draftMonth + 1).padStart(2, "0")}-01`,
+                          )
+                            .endOf("month")
+                            .format("DD MMM YYYY")}{" "}
+                          (
+                          {dayjs(
+                            `${draftYear}-${String(draftMonth + 1).padStart(2, "0")}-01`,
+                          ).daysInMonth()}{" "}
+                          days)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="filter-custom-range-group">
+                    <div className="filter-range-fields">
+                      <div className="filter-date-field">
+                        <span className="filter-select-label">
+                          Start date<b style={{ color: "#ff3b3f" }}>*</b>
+                        </span>
+                        <LiquidTextField
+                          value={draftFrom}
+                          type="date"
+                          onClick={(e) =>
+                            e.target.showPicker && e.target.showPicker()
+                          }
+                          onChange={(e) => {
+                            setDraftFrom(e.target.value);
+                            if (rangeError) setRangeError("");
+                          }}
+                          fullWidth
+                          sx={{
+                            width: "100%",
+                            minWidth: 0,
+                            "& .MuiOutlinedInput-root": {
+                              paddingLeft: { xs: "8px", sm: "12px" },
+                              paddingRight: { xs: "6px", sm: "10px" },
+                              minHeight: { xs: "46px", sm: "50px" },
+                              height: { xs: "46px", sm: "50px" },
+                              boxSizing: "border-box",
+                            },
+                            "& input[type=date]": {
+                              textAlign: "left",
+                              padding: "8px 0",
+                              fontSize: { xs: "13px", sm: "14px" },
+                              whiteSpace: "nowrap",
+                              WebkitAppearance: "none",
+                              minWidth: 0,
+                              width: "100%",
+                              boxSizing: "border-box",
+                            },
+                            "& input[type=date]::-webkit-date-and-time-value": {
+                              textAlign: "left",
+                              minWidth: 0,
+                            },
+                            "& input[type=date]::-webkit-calendar-picker-indicator":
+                              {
+                                display: "none",
+                                WebkitAppearance: "none",
+                              },
+                          }}
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment
+                                position="end"
+                                sx={{ pointerEvents: "none", ml: 0.5, mr: 0 }}
+                              >
+                                <CalendarTodayOutlinedIcon
+                                  sx={{
+                                    fontSize: { xs: "16px", sm: "18px" },
+                                    color: "rgba(255, 255, 255, 0.75)",
+                                  }}
+                                />
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                      </div>
+
+                      <div className="filter-date-field">
+                        <span className="filter-select-label">
+                          End date<b style={{ color: "#ff3b3f" }}>*</b>
+                        </span>
+                        <LiquidTextField
+                          value={draftTo}
+                          type="date"
+                          onClick={(e) =>
+                            e.target.showPicker && e.target.showPicker()
+                          }
+                          onChange={(e) => {
+                            setDraftTo(e.target.value);
+                            if (rangeError) setRangeError("");
+                          }}
+                          fullWidth
+                          sx={{
+                            width: "100%",
+                            minWidth: 0,
+                            "& .MuiOutlinedInput-root": {
+                              paddingLeft: { xs: "8px", sm: "12px" },
+                              paddingRight: { xs: "6px", sm: "10px" },
+                              minHeight: { xs: "46px", sm: "50px" },
+                              height: { xs: "46px", sm: "50px" },
+                              boxSizing: "border-box",
+                            },
+                            "& input[type=date]": {
+                              textAlign: "left",
+                              padding: "8px 0",
+                              fontSize: { xs: "13px", sm: "14px" },
+                              whiteSpace: "nowrap",
+                              WebkitAppearance: "none",
+                              minWidth: 0,
+                              width: "100%",
+                              boxSizing: "border-box",
+                            },
+                            "& input[type=date]::-webkit-date-and-time-value": {
+                              textAlign: "left",
+                              minWidth: 0,
+                            },
+                            "& input[type=date]::-webkit-calendar-picker-indicator":
+                              {
+                                display: "none",
+                                WebkitAppearance: "none",
+                              },
+                          }}
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment
+                                position="end"
+                                sx={{ pointerEvents: "none", ml: 0.5, mr: 0 }}
+                              >
+                                <CalendarTodayOutlinedIcon
+                                  sx={{
+                                    fontSize: { xs: "16px", sm: "18px" },
+                                    color: "rgba(255, 255, 255, 0.75)",
+                                  }}
+                                />
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {rangeError && (
+                      <div className="filter-error-banner">
+                        <span>⚠️ {rangeError}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div className="filter-sheet-actions">
+                <button
+                  type="button"
+                  className="filter-btn-reset"
+                  onClick={handleResetFilter}
+                >
+                  Reset
+                </button>
+                <button
+                  type="button"
+                  className="filter-btn-apply"
+                  onClick={handleApplyFilter}
+                >
+                  Apply Filter
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

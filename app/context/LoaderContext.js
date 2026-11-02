@@ -19,11 +19,20 @@ export function LoaderProvider({ children }) {
   useEffect(() => {
     if (loading > 0 || initialLoading) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+      document.documentElement.style.touchAction = 'none';
     } else {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.touchAction = '';
+      document.documentElement.style.touchAction = '';
     }
     return () => {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.touchAction = '';
+      document.documentElement.style.touchAction = '';
     };
   }, [loading, initialLoading]);
 
@@ -39,7 +48,11 @@ export function LoaderProvider({ children }) {
     <LoaderContext.Provider value={value}>
       {children}
       {(loading > 0 || initialLoading) && (
-        <div className='app-loader-overlay' style={{ background: initialLoading ? '#000000' : 'rgba(0, 0, 0, 0.72)', zIndex: 99999 }}>
+        <div
+          className='app-loader-overlay'
+          style={{ background: initialLoading ? '#000000' : 'rgba(0, 0, 0, 0.72)', zIndex: 99999 }}
+          onTouchMove={(e) => e.preventDefault()}
+        >
           {initialLoading ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
                 <img src="/icon.png" alt="Splash Logo" style={{ width: '120px', height: '120px', objectFit: 'contain' }} />

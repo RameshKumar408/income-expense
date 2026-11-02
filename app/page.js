@@ -93,10 +93,25 @@ export default function Home() {
 
   return (
     <>
-      <main className="login-page">
+      <main className="login-page" style={{ backgroundColor: "#000000", minHeight: "100vh" }}>
         <form className="login-panel" noValidate>
           <div className="login-heading">
-            <img src="/apple-touch-icon.png" alt="Logo" className="login-avatar-img" />
+            <img
+              src="/apple-touch-icon.png"
+              alt="Logo"
+              className="login-avatar-img"
+              width={120}
+              height={120}
+              style={{
+                width: "clamp(100px, 25vw, 140px)",
+                height: "clamp(100px, 25vw, 140px)",
+                maxWidth: "140px",
+                maxHeight: "140px",
+                objectFit: "contain",
+                borderRadius: "28px",
+                display: "block",
+              }}
+            />
             <h1>Login</h1>
           </div>
 

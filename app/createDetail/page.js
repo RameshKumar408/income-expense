@@ -319,7 +319,17 @@ export default function Home() {
                     setDescriptionError('');
                     setAmountError('');
                     setTypeError('');
-                    hideLoader()
+                    setIsSuggestionsExpanded(false);
+                    hideLoader();
+                    if (typeof document !== 'undefined') {
+                        document.activeElement?.blur?.();
+                    }
+                    if (typeof window !== 'undefined') {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        setTimeout(() => {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }, 100);
+                    }
                 } else {
                     hideLoader()
                     toast.error("Something went wrong");
@@ -395,9 +405,51 @@ export default function Home() {
         }
     }
 
+    const removeAccount = (accountToRemove, e) => {
+        e?.stopPropagation();
+        try {
+            var activeEmail = window.localStorage.getItem('activeAccount');
+            var list = JSON.parse(window.localStorage.getItem('accounts') || '[]');
+            var remaining = list.filter(a => a.email !== accountToRemove.email);
+            window.localStorage.setItem('accounts', JSON.stringify(remaining));
+            setAccounts(remaining);
+            toast.success(`Removed ${accountToRemove.email}`);
+
+            if (activeEmail === accountToRemove.email) {
+                if (remaining.length > 0) {
+                    var next = remaining[0];
+                    window.localStorage.setItem('token', next.token);
+                    window.localStorage.setItem('roles', next.role);
+                    window.localStorage.setItem('activeAccount', next.email);
+                    setShowAccountMenu(false);
+                    window.location.reload();
+                } else {
+                    window.localStorage.setItem('accounts', JSON.stringify([]));
+                    window.localStorage.removeItem("token");
+                    window.localStorage.removeItem("roles");
+                    window.localStorage.removeItem("activeAccount");
+                    router.push('/');
+                }
+            }
+        } catch (error) {
+            console.log("🚀 ~ removeAccount ~ error:", error);
+        }
+    };
+
     const addAccount = () => {
         router.push('/?add=1');
     }
+
+    useEffect(() => {
+        if (showAccountMenu && isMobile) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [showAccountMenu, isMobile]);
 
     useEffect(() => {
         loadAccounts()
@@ -424,38 +476,96 @@ export default function Home() {
                                 <span>{currentUser?.name || 'Account'}</span>
                                 {showAccountMenu ? <ExpandLessIcon fontSize='small' /> : <ExpandMoreIcon fontSize='small' />}
                             </button>
-                            {showAccountMenu && accounts.length > 0 &&
-                                <div className='account-menu'>
-                                    {accounts.map((acc) => {
-                                        const isActive = acc.email == currentUser?.email;
-                                        return (
-                                            <button
-                                                key={acc.email}
-                                                className={`account-menu-item ${isActive ? 'active' : ''}`}
-                                                type='button'
-                                                onClick={() => { if (!isActive) switchAccount(acc) }}
-                                            >
-                                                <div className='account-menu-avatar'>{acc.name?.substring(0, 1).toUpperCase() || 'AK'}</div>
-                                                <div className='account-menu-info'>
-                                                    <span className='account-menu-name'>{acc.name}</span>
-                                                    <span className='account-menu-email'>{acc.accountType || 'Personal Account'}</span>
-                                                </div>
-                                                {isActive && <CheckCircleIcon className='account-menu-check' fontSize='small' />}
-                                            </button>
-                                        )
-                                    })}
-                                    <div className='account-menu-divider' />
-                                    <button className='account-menu-action' type='button' onClick={addAccount}>
-                                        <AddCircleOutlineIcon fontSize='small' />
-                                        <span>Add Account</span>
-                                    </button>
+                            {showAccountMenu && accounts.length > 0 && (
+                                <>
+                                    {/* Desktop Menu - Preserved for non-mobile */}
+                                    <div className='account-menu desktop-account-menu'>
+                                        {accounts.map((acc) => {
+                                            const isActive = acc.email == currentUser?.email;
+                                            return (
+                                                <button
+                                                    key={acc.email}
+                                                    className={`account-menu-item ${isActive ? 'active' : ''}`}
+                                                    type='button'
+                                                    onClick={() => { if (!isActive) switchAccount(acc) }}
+                                                >
+                                                    <div className='account-menu-avatar'>{acc.name?.substring(0, 1).toUpperCase() || 'AK'}</div>
+                                                    <div className='account-menu-info'>
+                                                        <span className='account-menu-name'>{acc.name}</span>
+                                                        <span className='account-menu-email'>{acc.accountType || 'Personal Account'}</span>
+                                                    </div>
+                                                    {isActive && <CheckCircleIcon className='account-menu-check' fontSize='small' />}
+                                                </button>
+                                            )
+                                        })}
+                                        <div className='account-menu-divider' />
+                                        <button className='account-menu-action' type='button' onClick={addAccount}>
+                                            <AddCircleOutlineIcon fontSize='small' />
+                                            <span>Add Account</span>
+                                        </button>
 
-                                    <button className='account-menu-action' type='button' onClick={logoutAccount}>
-                                        <LogoutOutlinedIcon fontSize='small' />
-                                        <span>Sign Out</span>
-                                    </button>
-                                </div>
-                            }
+                                        <button className='account-menu-action' type='button' onClick={logoutAccount}>
+                                            <LogoutOutlinedIcon fontSize='small' />
+                                            <span>Sign Out</span>
+                                        </button>
+                                    </div>
+
+                                    {/* Mobile Bottom Sheet Modal */}
+                                    <div className='mobile-account-container'>
+                                        <div className='mobile-account-backdrop' onClick={() => setShowAccountMenu(false)} />
+                                        <div className='mobile-account-sheet' role='dialog' aria-modal='true' aria-label='Switch Account' onClick={(e) => e.stopPropagation()}>
+                                            <div className='sheet-handle' onClick={() => setShowAccountMenu(false)} />
+                                            <h2 className='sheet-title'>Switch Account</h2>
+                                            <div className='sheet-account-list'>
+                                                {accounts.map((acc) => {
+                                                    const isActive = acc.email === currentUser?.email;
+                                                    return (
+                                                        <div
+                                                            key={acc.email}
+                                                            className={`sheet-account-item ${isActive ? 'active' : ''}`}
+                                                            onClick={() => {
+                                                                if (!isActive) switchAccount(acc);
+                                                                else setShowAccountMenu(false);
+                                                            }}
+                                                        >
+                                                            <span className='sheet-account-email'>{acc.email}</span>
+                                                            {isActive ? (
+                                                                <div className='sheet-account-check' aria-label='Active Account'>
+                                                                    <svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='#ffffff' strokeWidth='3.5' strokeLinecap='round' strokeLinejoin='round'>
+                                                                        <polyline points='20 6 9 17 4 12' />
+                                                                    </svg>
+                                                                </div>
+                                                            ) : (
+                                                                <button
+                                                                    type='button'
+                                                                    className='sheet-account-remove'
+                                                                    aria-label={`Remove ${acc.email}`}
+                                                                    onClick={(e) => removeAccount(acc, e)}
+                                                                >
+                                                                    <svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='#ff3b30' strokeWidth='2.4' strokeLinecap='round' strokeLinejoin='round'>
+                                                                        <line x1='18' y1='6' x2='6' y2='18' />
+                                                                        <line x1='6' y1='6' x2='18' y2='18' />
+                                                                    </svg>
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                            <button
+                                                type='button'
+                                                className='sheet-add-account-btn'
+                                                onClick={() => {
+                                                    setShowAccountMenu(false);
+                                                    addAccount();
+                                                }}
+                                            >
+                                                Add Account
+                                            </button>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </header>
 
