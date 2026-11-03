@@ -31,6 +31,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 import { useEffect, useState, useRef, useMemo } from "react";
 import Link from "next/link";
@@ -42,6 +43,8 @@ import { useLoader } from "@/app/context/LoaderContext";
 import dayjs from "dayjs";
 
 export default function Home() {
+  const router = useRouter();
+  const { showLoader, hideLoader } = useLoader();
   const isMobile = useMediaQuery("(max-width:520px)", { noSsr: true });
   const isShortMobile = useMediaQuery(
     "(max-width:520px) and (max-height:700px)",
@@ -126,7 +129,13 @@ export default function Home() {
   const fetchTitles = async (tokenOverride) => {
     try {
       const activeToken = tokenOverride || window.localStorage.getItem("token");
-      if (!activeToken) return;
+      if (!activeToken) {
+        hideLoader();
+        router.push("/");
+        return;
+      }
+
+      showLoader();
 
       let newstartdate = new Date(
         dayjs().subtract(2, "month").date(1).startOf("day"),
@@ -149,7 +158,30 @@ export default function Home() {
         body: JSON.stringify(params),
       });
 
+      if (res.status === 401 || res.status === 403) {
+        window.localStorage.removeItem("token");
+        window.localStorage.removeItem("roles");
+        window.localStorage.removeItem("activeAccount");
+        window.localStorage.setItem("accounts", JSON.stringify([]));
+        toast.error("Session expired. Please log in again.");
+        router.push("/");
+        hideLoader();
+        return;
+      }
+
       let resData = await res.json();
+
+      if (resData?.message === "UnAuthorized") {
+        window.localStorage.removeItem("token");
+        window.localStorage.removeItem("roles");
+        window.localStorage.removeItem("activeAccount");
+        window.localStorage.setItem("accounts", JSON.stringify([]));
+        toast.error("Session expired. Please log in again.");
+        router.push("/");
+        hideLoader();
+        return;
+      }
+
       let data = resData.topics;
 
       if (data && data?.length > 0) {
@@ -180,6 +212,8 @@ export default function Home() {
       }
     } catch (error) {
       console.log("err", error);
+    } finally {
+      hideLoader();
     }
   };
 
@@ -382,8 +416,6 @@ export default function Home() {
   const [currentUser, setCurrentUser] = useState(null);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const accountRef = useRef(null);
-  const router = useRouter();
-  const { showLoader, hideLoader } = useLoader();
 
   const loadAccounts = () => {
     try {
@@ -527,7 +559,8 @@ export default function Home() {
 
     const handleViewportResize = () => {
       if (window.visualViewport) {
-        const isShrunk = window.innerHeight - window.visualViewport.height > 150;
+        const isShrunk =
+          window.innerHeight - window.visualViewport.height > 150;
         setIsKeyboardOpen(isShrunk);
       }
     };
@@ -542,10 +575,56 @@ export default function Home() {
       window.removeEventListener("focusin", handleFocusIn);
       window.removeEventListener("focusout", handleFocusOut);
       if (window.visualViewport) {
-        window.visualViewport.removeEventListener("resize", handleViewportResize);
+        window.visualViewport.removeEventListener(
+          "resize",
+          handleViewportResize,
+        );
       }
     };
   }, []);
+
+  const touchStartY = useRef(0);
+  const touchDeltaY = useRef(0);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !isMobile) return;
+
+    const handleTouchStart = (e) => {
+      touchStartY.current = e.touches[0].clientY;
+      touchDeltaY.current = 0;
+    };
+
+    const handleTouchMove = (e) => {
+      const currentY = e.touches[0].clientY;
+      const deltaY = touchStartY.current - currentY; // positive when swiping up
+      touchDeltaY.current = deltaY;
+    };
+
+    const handleTouchEnd = () => {
+      const scrollBottom = window.innerHeight + window.scrollY;
+      const documentHeight = document.documentElement.scrollHeight;
+      const isAtBottom = scrollBottom >= documentHeight - 60;
+
+      if (isAtBottom && touchDeltaY.current > 50 && accounts.length > 1) {
+        setShowAccountMenu(true);
+        if (typeof navigator !== "undefined" && navigator.vibrate) {
+          navigator.vibrate(12);
+        }
+      }
+      touchStartY.current = 0;
+      touchDeltaY.current = 0;
+    };
+
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [isMobile, accounts.length]);
 
   useEffect(() => {
     loadAccounts();
@@ -561,7 +640,9 @@ export default function Home() {
     <>
       <div className="create-detail-page">
         <GlowingBubbles />
-        <main className={`expense-shell ${isKeyboardOpen ? "keyboard-open" : ""}`}>
+        <main
+          className={`expense-shell ${isKeyboardOpen ? "keyboard-open" : ""}`}
+        >
           <header className="expense-header">
             <div className="expense-title-wrap">
               <span className="expense-title-icon">
@@ -953,6 +1034,21 @@ export default function Home() {
             </div>
 
             <PrimaryButton type="submit">Add Data</PrimaryButton>
+
+            {isMobile && accounts.length > 1 && (
+              <div
+                className="swipe-up-switch-hint"
+                onClick={() => setShowAccountMenu(true)}
+                role="button"
+                tabIndex={0}
+              >
+                <KeyboardArrowUpIcon
+                  className="swipe-up-hint-arrow"
+                  fontSize="small"
+                />
+                <span>Swipe up to switch account</span>
+              </div>
+            )}
           </form>
 
           <nav

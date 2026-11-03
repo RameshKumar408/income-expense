@@ -837,7 +837,10 @@ export default function Page() {
             }, 800);
           }}
         >
-          <header className="history-header" style={{ position: "relative" }}>
+          <header
+            className="history-header"
+            style={{ position: "relative", marginTop: "20px" }}
+          >
             <div
               style={{
                 display: "flex",
@@ -871,7 +874,7 @@ export default function Page() {
                 type="button"
                 aria-label="Search history"
                 onClick={handleOpenSearch}
-                style={{ marginLeft: "auto" }}
+                style={{ marginLeft: "auto", color: "#d4a017" }}
               >
                 <SearchIcon />
               </button>
@@ -956,7 +959,12 @@ export default function Page() {
                           type="submit"
                           aria-label="Search"
                           edge="end"
-                          sx={{ color: "#d4a017", mr: "2px" }}
+                          sx={{
+                            color: "#d4a017",
+                            height: "15px",
+                            width: "15px",
+                            mr: "3px",
+                          }}
                         >
                           <SearchIcon />
                         </IconButton>
@@ -1871,25 +1879,37 @@ export default function Page() {
                             width: "100%",
                             minWidth: 0,
                             "& .MuiOutlinedInput-root": {
-                              paddingLeft: { xs: "8px", sm: "12px" },
-                              paddingRight: { xs: "6px", sm: "10px" },
-                              minHeight: { xs: "46px", sm: "50px" },
-                              height: { xs: "46px", sm: "50px" },
+                              paddingLeft: { xs: "10px", sm: "14px" },
+                              paddingRight: { xs: "8px", sm: "12px" },
+                              minHeight: { xs: "50px", sm: "52px" },
+                              height: { xs: "50px", sm: "52px" },
+                              display: "flex",
+                              alignItems: "center",
                               boxSizing: "border-box",
                             },
-                            "& input[type=date]": {
+                            "& .MuiInputBase-input, & input[type=date]": {
                               textAlign: "left",
-                              padding: "8px 0",
-                              fontSize: { xs: "13px", sm: "14px" },
+                              padding: "0 !important",
+                              height: "100% !important",
+                              minHeight: "0 !important",
+                              fontSize: { xs: "13.5px", sm: "14px" },
+                              lineHeight: "normal !important",
                               whiteSpace: "nowrap",
                               WebkitAppearance: "none",
                               minWidth: 0,
                               width: "100%",
                               boxSizing: "border-box",
+                              display: "flex",
+                              alignItems: "center",
                             },
                             "& input[type=date]::-webkit-date-and-time-value": {
                               textAlign: "left",
                               minWidth: 0,
+                              lineHeight: "normal !important",
+                              minHeight: "0 !important",
+                              height: "auto !important",
+                              margin: "0 !important",
+                              padding: "0 !important",
                             },
                             "& input[type=date]::-webkit-calendar-picker-indicator":
                               {
@@ -1934,25 +1954,37 @@ export default function Page() {
                             width: "100%",
                             minWidth: 0,
                             "& .MuiOutlinedInput-root": {
-                              paddingLeft: { xs: "8px", sm: "12px" },
-                              paddingRight: { xs: "6px", sm: "10px" },
-                              minHeight: { xs: "46px", sm: "50px" },
-                              height: { xs: "46px", sm: "50px" },
+                              paddingLeft: { xs: "10px", sm: "14px" },
+                              paddingRight: { xs: "8px", sm: "12px" },
+                              minHeight: { xs: "50px", sm: "52px" },
+                              height: { xs: "50px", sm: "52px" },
+                              display: "flex",
+                              alignItems: "center",
                               boxSizing: "border-box",
                             },
-                            "& input[type=date]": {
+                            "& .MuiInputBase-input, & input[type=date]": {
                               textAlign: "left",
-                              padding: "8px 0",
-                              fontSize: { xs: "13px", sm: "14px" },
+                              padding: "0 !important",
+                              height: "100% !important",
+                              minHeight: "0 !important",
+                              fontSize: { xs: "13.5px", sm: "14px" },
+                              lineHeight: "normal !important",
                               whiteSpace: "nowrap",
                               WebkitAppearance: "none",
                               minWidth: 0,
                               width: "100%",
                               boxSizing: "border-box",
+                              display: "flex",
+                              alignItems: "center",
                             },
                             "& input[type=date]::-webkit-date-and-time-value": {
                               textAlign: "left",
                               minWidth: 0,
+                              lineHeight: "normal !important",
+                              minHeight: "0 !important",
+                              height: "auto !important",
+                              margin: "0 !important",
+                              padding: "0 !important",
                             },
                             "& input[type=date]::-webkit-calendar-picker-indicator":
                               {

@@ -66,6 +66,15 @@ export default function RootLayout({ children }) {
                 try {
                   var f = localStorage.getItem('appFont') || 'Inter';
                   document.documentElement.setAttribute('data-font', f);
+
+                  // Fast-track authenticated users straight to createDetail without waiting for full login bundle hydration
+                  if (
+                    window.location.pathname === '/' &&
+                    localStorage.getItem('token') &&
+                    !window.location.search.includes('add=1')
+                  ) {
+                    window.location.replace('/createDetail');
+                  }
                 } catch (e) {}
               })();
             `,

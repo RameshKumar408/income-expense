@@ -26,6 +26,8 @@ export default function Home() {
     var tokens = window.localStorage.getItem("token")
     if (tokens && !isAdd) {
       router.push("/createDetail");
+    } else {
+      hideLoader();
     }
   }, [])
 

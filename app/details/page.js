@@ -217,6 +217,9 @@ export default function Analytics() {
   const dailyAvg = totalExpense / daysDiff;
 
   const glassStyle = {
+    padding: "20px",
+    boxSizing: "border-box",
+    width: "100%",
     background:
       "rgba(35, 35, 40, 0.4)" /* Slightly lighter base so it stands out from pitch black */,
     backdropFilter: "blur(24px) saturate(150%)",
@@ -240,42 +243,50 @@ export default function Analytics() {
             alignItems: "center",
           }}
         >
-          <button
-            type="button"
-            onClick={() => router.back()}
-            style={{
-              justifySelf: "start",
-              background: "transparent",
-              border: "none",
-              color: "var(--text-secondary)",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "0",
-            }}
-            aria-label="Go back"
-          >
-            <ArrowBackIcon />
-          </button>
           <div
-            className="history-title-wrap"
-            style={{ margin: 0, justifySelf: "center" }}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              display: "flex",
+            }}
           >
-            <span className="history-title-icon">
-              <img
-                src="/icon.png"
-                alt="Logo"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "contain",
-                  mixBlendMode: "screen",
-                  transform: "scale(1.3)",
-                }}
-              />
-            </span>
-            <h1>Analytics</h1>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              style={{
+                justifySelf: "start",
+                background: "transparent",
+                border: "none",
+                color: "var(--text-secondary)",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "0",
+              }}
+              aria-label="Go back"
+            >
+              <ArrowBackIcon />
+            </button>
+            <div
+              className="history-title-wrap"
+              style={{ marginLeft: 10, justifySelf: "center" }}
+            >
+              <span className="history-title-icon">
+                <img
+                  src="/icon.png"
+                  alt="Logo"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    mixBlendMode: "screen",
+                    transform: "scale(1.3)",
+                  }}
+                />
+              </span>
+              <h1>Analytics</h1>
+            </div>
           </div>
           <div />
         </header>

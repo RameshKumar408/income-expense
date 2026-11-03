@@ -44,6 +44,17 @@ export default function LiquidTextField(props) {
             WebkitAppearance: 'none',
             margin: 0,
         },
+        '& input[type=date]': {
+            minHeight: 0,
+        },
+        '& input[type=date]::-webkit-date-and-time-value': {
+            textAlign: 'left',
+            lineHeight: 'normal',
+            minHeight: '0',
+            height: 'auto',
+            margin: 0,
+            padding: 0,
+        },
         '& .clear-field-button': {
             color: 'rgba(255, 255, 255, 0.4)',
             marginRight: { xs: '-4px', sm: '2px' },
