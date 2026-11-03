@@ -39,11 +39,9 @@ export default function SettingsPage() {
       window.localStorage.setItem("token", next.token);
       window.localStorage.setItem("roles", next.role);
       window.localStorage.setItem("activeAccount", next.email);
-      window.sessionStorage.setItem(
-        "pendingToast",
-        `Removed account. Switched to ${next.email}`,
-      );
-      window.location.reload();
+      setAccounts(remaining);
+      setRole(next.role);
+      toast.success(`Removed account. Switched to ${next.email}`);
     } else {
       window.localStorage.setItem("accounts", JSON.stringify([]));
       window.localStorage.removeItem("token");
@@ -61,8 +59,10 @@ export default function SettingsPage() {
     const newFont = e.target.value;
     setSelectedFont(newFont);
     window.localStorage.setItem("appFont", newFont);
-    window.sessionStorage.setItem("pendingToast", `Font changed to ${newFont}`);
-    window.location.reload();
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-font", newFont);
+    }
+    toast.success(`Font changed to ${newFont}`);
   };
 
   useEffect(() => {
@@ -230,7 +230,7 @@ export default function SettingsPage() {
             fontWeight: "500",
           }}
         >
-          Version 1.06
+          Version 1.07
         </div>
 
         <nav className="bottom-nav" aria-label="Main actions">

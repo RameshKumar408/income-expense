@@ -185,18 +185,25 @@ export default function Page() {
   const handleDelete = async (id) => {
     try {
       showLoader();
-      const res = await fetch(`${constant?.Live_url || ""}/api/incomes?id=${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-type": "application/json",
-          authorization: `${window?.localStorage?.getItem("token")}`,
+      const res = await fetch(
+        `${constant?.Live_url || ""}/api/incomes?id=${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-type": "application/json",
+            authorization: `${window?.localStorage?.getItem("token")}`,
+          },
         },
-      });
+      );
       const data = await res.json();
       if (res.ok && data?.status) {
         toast.success("Deleted successfully");
         setDatas((prev) => prev.filter((item) => item._id !== id));
-        getDetails({ text: searchText, requestRole: role, userId: selectedUser });
+        getDetails({
+          text: searchText,
+          requestRole: role,
+          userId: selectedUser,
+        });
       } else {
         toast.error(data?.message || "Failed to delete");
       }
@@ -258,11 +265,7 @@ export default function Page() {
       // Allow fluid drag up to 96px in either direction
       const clampedOffset = Math.max(-96, Math.min(96, diffX));
       const direction =
-        clampedOffset > 5
-          ? "right"
-          : clampedOffset < -5
-          ? "left"
-          : null;
+        clampedOffset > 5 ? "right" : clampedOffset < -5 ? "left" : null;
 
       setActiveDrag({
         cardId: row._id,
@@ -397,7 +400,9 @@ export default function Page() {
 
         if (fromTimestamp == null || toTimestamp == null) {
           if (filterMode === "month") {
-            const mObj = dayjs(`${selectedMonth || dayjs().format("YYYY-MM")}-01`);
+            const mObj = dayjs(
+              `${selectedMonth || dayjs().format("YYYY-MM")}-01`,
+            );
             fromTimestamp = mObj.startOf("month").startOf("day").valueOf();
             toTimestamp = mObj.endOf("month").endOf("day").valueOf();
           } else {
@@ -559,8 +564,6 @@ export default function Page() {
     }
   }, [role, usersLists]);
 
-
-
   const currentYear = dayjs().year();
   const availableYears = useMemo(() => {
     const list = [];
@@ -572,7 +575,9 @@ export default function Page() {
 
   const appliedFilterLabel = useMemo(() => {
     if (filterMode === "month") {
-      return dayjs(`${selectedMonth || dayjs().format("YYYY-MM")}-01`).format("MMMM YYYY");
+      return dayjs(`${selectedMonth || dayjs().format("YYYY-MM")}-01`).format(
+        "MMMM YYYY",
+      );
     }
     return `${dayjs(from).format("DD/MM/YYYY")} – ${dayjs(to).format("DD/MM/YYYY")}`;
   }, [filterMode, selectedMonth, from, to]);
@@ -612,7 +617,10 @@ export default function Page() {
     setRangeError("");
     setShowFilterModal(false);
 
-    const fromTimestamp = currentMonthObj.startOf("month").startOf("day").valueOf();
+    const fromTimestamp = currentMonthObj
+      .startOf("month")
+      .startOf("day")
+      .valueOf();
     const toTimestamp = currentMonthObj.endOf("month").endOf("day").valueOf();
     getDetails({
       requestRole: role,
@@ -1166,69 +1174,73 @@ export default function Page() {
                       }
                     }}
                   >
-                  <div className="history-card-main">
-                    <div className="history-card-info">
-                      <strong className="history-card-title">{row?.Title}</strong>
-                      <small className="history-card-date">{formatHistoryDate(row)}</small>
-                    </div>
+                    <div className="history-card-main">
+                      <div className="history-card-info">
+                        <strong className="history-card-title">
+                          {row?.Title}
+                        </strong>
+                        <small className="history-card-date">
+                          {formatHistoryDate(row)}
+                        </small>
+                      </div>
 
-                    <div className="history-card-amount-box">
-                      <b
-                        className={`history-card-amount ${
-                          row?.Type === "Income" ? "income" : "expense"
-                        }`}
-                      >
-                        ₹{formatIndianNumber(row?.Amount)}
-                      </b>
-                      {/* Desktop accessible Delete and Edit buttons */}
-                      <div className="desktop-card-actions">
-                        <button
-                          type="button"
-                          className="desktop-action-btn delete-btn"
-                          title="Delete"
-                          aria-label={`Delete ${row?.Title}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setRecordToDelete(row);
-                          }}
+                      <div className="history-card-amount-box">
+                        <b
+                          className={`history-card-amount ${
+                            row?.Type === "Income" ? "income" : "expense"
+                          }`}
                         >
-                          <DeleteOutlineIcon fontSize="small" />
-                        </button>
-                        <button
-                          type="button"
-                          className="desktop-action-btn edit-btn"
-                          title="Edit"
-                          aria-label={`Edit ${row?.Title}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            router.push(`/editDetails/${row?._id}`);
-                          }}
-                        >
-                          <EditOutlinedIcon fontSize="small" />
-                        </button>
+                          ₹{formatIndianNumber(row?.Amount)}
+                        </b>
+                        {/* Desktop accessible Delete and Edit buttons */}
+                        <div className="desktop-card-actions">
+                          <button
+                            type="button"
+                            className="desktop-action-btn delete-btn"
+                            title="Delete"
+                            aria-label={`Delete ${row?.Title}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setRecordToDelete(row);
+                            }}
+                          >
+                            <DeleteOutlineIcon fontSize="small" />
+                          </button>
+                          <button
+                            type="button"
+                            className="desktop-action-btn edit-btn"
+                            title="Edit"
+                            aria-label={`Edit ${row?.Title}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/editDetails/${row?._id}`);
+                            }}
+                          >
+                            <EditOutlinedIcon fontSize="small" />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Expandable Description inline */}
-                  <div
-                    className={`history-card-description ${
-                      expandedCardId === row?._id ? "open" : ""
-                    }`}
-                  >
-                    <span className="desc-label">Description: </span>
-                    <span
-                      className="desc-content"
-                      style={
-                        !row?.Description?.trim()
-                          ? { opacity: 0.65, fontStyle: "italic" }
-                          : undefined
-                      }
+                    {/* Expandable Description inline */}
+                    <div
+                      className={`history-card-description ${
+                        expandedCardId === row?._id ? "open" : ""
+                      }`}
                     >
-                      {row?.Description?.trim() || "No description"}
-                    </span>
+                      <span className="desc-label">Description: </span>
+                      <span
+                        className="desc-content"
+                        style={
+                          !row?.Description?.trim()
+                            ? { opacity: 0.65, fontStyle: "italic" }
+                            : undefined
+                        }
+                      >
+                        {row?.Description?.trim() || "No description"}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
                   {/* Swipe Action Right: Edit */}
                   <div className="card-swipe-action action-right">
@@ -1244,9 +1256,9 @@ export default function Page() {
                       <EditOutlinedIcon />
                     </button>
                   </div>
-              </div>
-            );
-          })
+                </div>
+              );
+            })
           ) : (
             <div className="history-empty">No data found</div>
           )}
@@ -1263,21 +1275,12 @@ export default function Page() {
             className="history-detailed-view-btn"
             type="button"
             aria-label="Detailed View"
+            title="Detailed View"
             onClick={() => {
               router.push(`/details?from=${from}&to=${to}`);
             }}
           >
-            Detailed View
-          </button>
-          <button
-            className="history-round-btn"
-            type="button"
-            aria-label="Open calculator"
-            onClick={() => {
-              setShowCalculator(true);
-            }}
-          >
-            <CalculateIcon />
+            <PieChartIcon />
           </button>
         </div>
 
@@ -1326,7 +1329,9 @@ export default function Page() {
                   boxShadow: "0 8px 20px rgba(255, 59, 48, 0.2)",
                 }}
               >
-                <DeleteOutlineIcon sx={{ color: "#ff3b30", fontSize: "32px" }} />
+                <DeleteOutlineIcon
+                  sx={{ color: "#ff3b30", fontSize: "32px" }}
+                />
               </div>
 
               <h3
@@ -1349,7 +1354,8 @@ export default function Page() {
                   lineHeight: 1.5,
                 }}
               >
-                Are you sure you want to permanently delete this record? This action cannot be undone.
+                Are you sure you want to permanently delete this record? This
+                action cannot be undone.
               </p>
 
               {/* Transaction details preview badge */}
@@ -1671,7 +1677,9 @@ export default function Page() {
                         <span className="filter-select-label">Month</span>
                         <Select
                           value={draftMonth}
-                          onChange={(e) => setDraftMonth(Number(e.target.value))}
+                          onChange={(e) =>
+                            setDraftMonth(Number(e.target.value))
+                          }
                           fullWidth
                           sx={{
                             color: "#ffffff",
@@ -1722,7 +1730,8 @@ export default function Page() {
                                     color: "#d4a017",
                                     fontWeight: 800,
                                     "&:hover": {
-                                      backgroundColor: "rgba(212, 160, 23, 0.35)",
+                                      backgroundColor:
+                                        "rgba(212, 160, 23, 0.35)",
                                     },
                                   },
                                 },
@@ -1793,7 +1802,8 @@ export default function Page() {
                                     color: "#d4a017",
                                     fontWeight: 800,
                                     "&:hover": {
-                                      backgroundColor: "rgba(212, 160, 23, 0.35)",
+                                      backgroundColor:
+                                        "rgba(212, 160, 23, 0.35)",
                                     },
                                   },
                                 },
