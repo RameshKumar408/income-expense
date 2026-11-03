@@ -33,6 +33,12 @@ import constant from "@/constant";
 import { useLoader } from "@/app/context/LoaderContext";
 import PrimaryButton from "@/components/PrimaryButton";
 import GlowingBubbles from "@/components/GlowingBubbles";
+import {
+  getCachedRangeData,
+  setCachedRangeData,
+  clearRangeDataCache,
+  fetchDeduplicated,
+} from "@/libs/dataCache";
 
 const AnimatedNumber = ({ value }) => {
   const [displayValue, setDisplayValue] = useState(0);
@@ -154,7 +160,11 @@ export default function Page() {
       searchInputRef.current.focus();
     }
   }, [showSearch]);
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState(() =>
+    typeof window !== "undefined"
+      ? window?.localStorage?.getItem("roles") || ""
+      : "",
+  );
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState("");
   const [sortKey, setSortKey] = useState("date");
@@ -198,6 +208,7 @@ export default function Page() {
       const data = await res.json();
       if (res.ok && data?.status) {
         toast.success("Deleted successfully");
+        clearRangeDataCache();
         setDatas((prev) => prev.filter((item) => item._id !== id));
         getDetails({
           text: searchText,
@@ -352,6 +363,7 @@ export default function Page() {
     };
   }, []);
   const [loading, setLoading] = useState(false);
+  const [isBackgroundFetching, setIsBackgroundFetching] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
   const lastScrollYRef = useRef(0);
   const isInteracting = useRef(false);
@@ -394,6 +406,7 @@ export default function Page() {
       customTo = null,
     } = {}) => {
       try {
+        setIsBackgroundFetching(true);
         setLoading(true);
         let fromTimestamp = customFrom;
         let toTimestamp = customTo;
@@ -428,28 +441,54 @@ export default function Page() {
           body.id = userId;
         }
 
-        const res = await fetch(`/api/getDateRange`, {
-          method: "POST",
-          cache: "no-store",
-          headers: {
-            "Content-type": "application/json",
-            authorization: `${window?.localStorage?.getItem("token")}`,
-          },
-          body: JSON.stringify(body),
-        });
+        const token = window?.localStorage?.getItem("token") || "";
+        const cacheKey = `${fromTimestamp}_${toTimestamp}_${text || ""}_${userId || "self"}_${token}`;
 
-        if (res.status == 400) {
-          router.push("/");
-          return;
+        // Stale-While-Revalidate: Instant render from cache, zero skeletons
+        const cached = getCachedRangeData(cacheKey);
+        if (cached) {
+          setDatas(cached.topics || []);
+          setTotalCount(cached.totalCount || null);
+          setLoading(false);
+        } else {
+          setLoading(true);
         }
 
-        const response = await res.json();
-        setDatas(response?.topics || []);
-        setTotalCount(response?.totalCount?.[0] || null);
+        // Deduplicate in-flight requests (prevent concurrent duplicate fetches)
+        const response = await fetchDeduplicated(cacheKey, async () => {
+          const res = await fetch(`/api/getDateRange`, {
+            method: "POST",
+            cache: "no-store",
+            headers: {
+              "Content-type": "application/json",
+              authorization: token,
+            },
+            body: JSON.stringify(body),
+          });
+
+          if (res.status == 400) {
+            router.push("/");
+            return null;
+          }
+
+          return await res.json();
+        });
+
+        if (!response) return;
+
+        const freshTopics = response?.topics || [];
+        const freshTotal = response?.totalCount?.[0] || null;
+        setDatas(freshTopics);
+        setTotalCount(freshTotal);
+        setCachedRangeData(cacheKey, {
+          topics: freshTopics,
+          totalCount: freshTotal,
+        });
       } catch (error) {
         console.log("Error loading topics: ", error);
       } finally {
         setLoading(false);
+        setIsBackgroundFetching(false);
       }
     },
     [from, to, filterMode, selectedMonth, router],
@@ -470,11 +509,6 @@ export default function Page() {
         if (dts?.result?.length > 0) {
           setUsers(dts.result);
           setSelectedUser(dts.result[0]?._id);
-          getDetails({
-            text: currentText,
-            requestRole: "admin",
-            userId: dts.result[0]?._id,
-          });
         }
       } catch (error) {
         console.log("usersLists error: ", error);
@@ -503,8 +537,6 @@ export default function Page() {
   const totalBalance = totalCount?.netIncome || 0;
 
   useEffect(() => {
-    const currentRole = window?.localStorage?.getItem("roles") || "";
-    setRole(currentRole);
     const storedHistory = window?.localStorage?.getItem("calculatorHistory");
     if (storedHistory) {
       try {
@@ -872,11 +904,17 @@ export default function Page() {
               <button
                 className="history-search-toggle"
                 type="button"
-                aria-label="Search history"
+                aria-label={
+                  isBackgroundFetching ? "Syncing data..." : "Search history"
+                }
                 onClick={handleOpenSearch}
                 style={{ marginLeft: "auto", color: "#d4a017" }}
               >
-                <SearchIcon />
+                {isBackgroundFetching ? (
+                  <span className="history-header-spinner" title="Syncing..." />
+                ) : (
+                  <SearchIcon />
+                )}
               </button>
             </div>
 
@@ -1274,7 +1312,7 @@ export default function Page() {
 
         <div className="history-floating-actions">
           <div className="history-balance">
-            <span>Total balance</span>
+            <span style={{ color: "#d4a017" }}>Total balance</span>
             <strong>
               ₹<AnimatedNumber value={totalBalance} />
             </strong>

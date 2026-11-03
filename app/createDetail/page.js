@@ -41,6 +41,8 @@ import { decodeToken } from "@/libs/jwt";
 import { toast } from "react-toastify";
 import { useLoader } from "@/app/context/LoaderContext";
 import dayjs from "dayjs";
+import { clearRangeDataCache } from "@/libs/dataCache";
+import { enqueueOfflineTransaction } from "@/libs/offlineSync";
 
 export default function Home() {
   const router = useRouter();
@@ -355,25 +357,22 @@ export default function Home() {
       } else if (type == "") {
         setTypeError("Please Select Type");
       } else {
-        showLoader();
-        const res = await fetch(`${constant?.Live_url}/api/incomes`, {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-            authorization: window.localStorage.getItem("token"),
-          },
-          // body: JSON.stringify({ Title: topic, Amount: amount, Type: type, Description: description, Date: selectedDate, TimeStamp: TimeStamp, AccType: accType }),
-          body: JSON.stringify({
-            Title: topic,
-            Amount: amount,
-            Type: type,
-            Description: description,
-            Date: selectedDate,
-            TimeStamp: TimeStamp,
-          }),
-        });
-        if (res?.ok) {
-          toast.success("Created Successfully");
+        const payload = {
+          Title: topic,
+          Amount: amount,
+          Type: type,
+          Description: description,
+          Date: selectedDate,
+          TimeStamp: TimeStamp,
+        };
+
+        const activeToken = window.localStorage.getItem("token") || "";
+        const activeEmail =
+          window.localStorage.getItem("activeAccount") ||
+          currentUser?.email ||
+          "";
+
+        const resetForm = () => {
           setDateValue(dayjs());
           setSelectedDate(dayjs().format("YYYY-MM-DD"));
           setTopic("");
@@ -397,10 +396,50 @@ export default function Home() {
               window.scrollTo({ top: 0, behavior: "smooth" });
             }, 100);
           }
-        } else {
-          hideLoader();
-          toast.error("Something went wrong");
-          throw new Error("Failed to create a topic");
+        };
+
+        // If currently offline, queue immediately without waiting on network timeout
+        if (typeof navigator !== "undefined" && !navigator.onLine) {
+          enqueueOfflineTransaction(payload, {
+            email: activeEmail,
+            token: activeToken,
+          });
+          resetForm();
+          toast.info(
+            `Saved offline for ${activeEmail}. Will auto-sync when online 📶`,
+          );
+          return;
+        }
+
+        showLoader();
+        try {
+          const res = await fetch(`${constant?.Live_url}/api/incomes`, {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json",
+              authorization: activeToken,
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (res?.ok) {
+            toast.success("Created Successfully");
+            clearRangeDataCache();
+            resetForm();
+          } else {
+            hideLoader();
+            toast.error("Something went wrong");
+          }
+        } catch (fetchErr) {
+          // If network failed mid-request (e.g. signal dropped), save to offline queue
+          enqueueOfflineTransaction(payload, {
+            email: activeEmail,
+            token: activeToken,
+          });
+          resetForm();
+          toast.info(
+            `Saved offline for ${activeEmail}. Will auto-sync when online 📶`,
+          );
         }
       }
     } catch (error) {
@@ -448,6 +487,7 @@ export default function Home() {
   };
 
   const switchAccount = (account) => {
+    clearRangeDataCache();
     window.localStorage.setItem("token", account.token);
     window.localStorage.setItem("roles", account.role);
     window.localStorage.setItem("activeAccount", account.email);
@@ -1055,7 +1095,7 @@ export default function Home() {
 
             <PrimaryButton type="submit">Add Data</PrimaryButton>
 
-            {isMobile && accounts.length > 1 && (
+            {/* {isMobile && accounts.length > 1 && (
               <div
                 className="swipe-up-switch-hint"
                 onClick={() => setShowAccountMenu(true)}
@@ -1068,7 +1108,7 @@ export default function Home() {
                 />
                 <span>Swipe up to switch account</span>
               </div>
-            )}
+            )} */}
           </form>
 
           <nav

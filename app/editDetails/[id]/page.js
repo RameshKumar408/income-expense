@@ -28,6 +28,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 
 import dayjs from 'dayjs';
 import { useCallback, useEffect, useState, useRef, useMemo } from 'react';
+import { clearRangeDataCache } from '@/libs/dataCache';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import { toast } from 'react-toastify';
@@ -381,6 +382,7 @@ export default function Home({ params }) {
                 });
                 if (res?.ok) {
                     hideLoader()
+                    clearRangeDataCache()
                     toast.success("Updated Successfully");
                     router.push("/viewDetails");
 

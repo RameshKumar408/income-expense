@@ -12,6 +12,7 @@ import PieChartIcon from "@mui/icons-material/PieChart";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import dynamic from "next/dynamic";
 import GlowingBubbles from "@/components/GlowingBubbles";
+import { getCachedRangeData, setCachedRangeData } from "@/libs/dataCache";
 
 const Pie = dynamic(
   () => import("../../components/Charts").then((mod) => mod.Pie),
@@ -65,12 +66,24 @@ export default function Analytics() {
         To: toTimestamp,
       };
 
+      const token = window?.localStorage?.getItem("token") || "";
+      const cacheKey = `${fromTimestamp}_${toTimestamp}__self_${token}`;
+
+      // Stale-While-Revalidate: Instant render from cache, zero skeletons
+      const cached = getCachedRangeData(cacheKey);
+      if (cached) {
+        setDatas(cached.topics || []);
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+
       const res = await fetch(`/api/getDateRange`, {
         method: "POST",
         cache: "no-store",
         headers: {
           "Content-type": "application/json",
-          authorization: `${window?.localStorage?.getItem("token")}`,
+          authorization: token,
         },
         body: JSON.stringify(body),
       });
@@ -81,7 +94,12 @@ export default function Analytics() {
       }
 
       const response = await res.json();
-      setDatas(response?.topics || []);
+      const freshTopics = response?.topics || [];
+      setDatas(freshTopics);
+      setCachedRangeData(cacheKey, {
+        topics: freshTopics,
+        totalCount: response?.totalCount?.[0] || null,
+      });
     } catch (error) {
       console.log("Error loading topics: ", error);
     } finally {

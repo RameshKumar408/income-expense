@@ -3,6 +3,7 @@
 import { LoaderProvider } from './context/LoaderContext'
 import { useEffect } from 'react'
 import { toast } from 'react-toastify'
+import { syncOfflineTransactions } from '@/libs/offlineSync'
 
 export default function AppWrapper({ children }) {
   useEffect(() => {
@@ -20,6 +21,19 @@ export default function AppWrapper({ children }) {
         }, 500)
         window.sessionStorage.removeItem('pendingToast')
         window.sessionStorage.removeItem('pendingToastType')
+      }
+
+      // Check and sync any pending offline items on mount
+      syncOfflineTransactions()
+
+      // Automatically sync whenever the network reconnects
+      const handleOnline = () => {
+        syncOfflineTransactions()
+      }
+
+      window.addEventListener('online', handleOnline)
+      return () => {
+        window.removeEventListener('online', handleOnline)
       }
     }
   }, [])

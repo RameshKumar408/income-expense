@@ -883,6 +883,26 @@
     height: 46px;
 }
 
+.history-header-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2.5px solid rgba(212, 160, 23, 0.25);
+    border-top-color: #d4a017;
+    border-radius: 50%;
+    animation: historyHeaderSpin 0.75s linear infinite;
+    display: inline-block;
+    box-sizing: border-box;
+}
+
+@keyframes historyHeaderSpin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .history-search-form {
     display: grid;
     grid-template-columns: 1fr auto auto;
@@ -2065,12 +2085,12 @@
     }
 
     .history-floating-actions {
-        bottom: calc(max(20px, env(safe-area-inset-bottom, 20px)) + 92px);
+        bottom: calc(max(20px, env(safe-area-inset-bottom, 20px)) + 90px);
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 8px;
-        width: min(calc(100% - 24px), 480px);
+        /* width: min(calc(100% - 24px), 480px); */
         transform: translateX(-50%);
         left: 50%;
     }
@@ -2094,9 +2114,9 @@
     }
 
     .history-balance {
-        flex: 1;
+        width: fit-content;
         min-width: 0;
-        padding: 0 14px;
+        padding: 0 30px;
     }
 
     .history-balance span {
