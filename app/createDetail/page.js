@@ -135,8 +135,6 @@ export default function Home() {
         return;
       }
 
-      showLoader();
-
       let newstartdate = new Date(
         dayjs().subtract(2, "month").date(1).startOf("day"),
       );
@@ -585,27 +583,48 @@ export default function Home() {
 
   const touchStartY = useRef(0);
   const touchDeltaY = useRef(0);
+  const wasAtBottomOnStart = useRef(false);
 
   useEffect(() => {
     if (typeof window === "undefined" || !isMobile) return;
 
     const handleTouchStart = (e) => {
+      // Never trigger while keyboard is open or user is focusing an input
+      const activeTag = document.activeElement?.tagName;
+      const isInputFocused = activeTag === "INPUT" || activeTag === "TEXTAREA";
+      if (isKeyboardOpen || isInputFocused) {
+        wasAtBottomOnStart.current = false;
+        return;
+      }
+
       touchStartY.current = e.touches[0].clientY;
       touchDeltaY.current = 0;
+
+      // User must ALREADY be resting at the bottom of the page before this swipe begins
+      const scrollBottom = window.innerHeight + window.scrollY;
+      const documentHeight = document.documentElement.scrollHeight;
+      wasAtBottomOnStart.current = scrollBottom >= documentHeight - 30;
     };
 
     const handleTouchMove = (e) => {
+      if (!wasAtBottomOnStart.current) return;
       const currentY = e.touches[0].clientY;
       const deltaY = touchStartY.current - currentY; // positive when swiping up
       touchDeltaY.current = deltaY;
     };
 
     const handleTouchEnd = () => {
-      const scrollBottom = window.innerHeight + window.scrollY;
-      const documentHeight = document.documentElement.scrollHeight;
-      const isAtBottom = scrollBottom >= documentHeight - 60;
+      const activeTag = document.activeElement?.tagName;
+      const isInputFocused = activeTag === "INPUT" || activeTag === "TEXTAREA";
 
-      if (isAtBottom && touchDeltaY.current > 50 && accounts.length > 1) {
+      // Requires: was already at bottom on touchstart + not in keyboard mode + pull-up distance > 55px
+      if (
+        wasAtBottomOnStart.current &&
+        !isKeyboardOpen &&
+        !isInputFocused &&
+        touchDeltaY.current > 55 &&
+        accounts.length > 1
+      ) {
         setShowAccountMenu(true);
         if (typeof navigator !== "undefined" && navigator.vibrate) {
           navigator.vibrate(12);
@@ -613,6 +632,7 @@ export default function Home() {
       }
       touchStartY.current = 0;
       touchDeltaY.current = 0;
+      wasAtBottomOnStart.current = false;
     };
 
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
@@ -624,7 +644,7 @@ export default function Home() {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [isMobile, accounts.length]);
+  }, [isMobile, accounts.length, isKeyboardOpen]);
 
   useEffect(() => {
     loadAccounts();
