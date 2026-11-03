@@ -99,7 +99,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.72);
+    background: rgba(0, 0, 0, 0.42);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     overflow: hidden;

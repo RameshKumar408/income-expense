@@ -1,37 +1,46 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import Box from "@mui/material/Box";
+
+const DateTimePicker = dynamic(
+  () =>
+    import("@mui/x-date-pickers/DateTimePicker").then(
+      (mod) => mod.DateTimePicker,
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        style={{
+          height: "56px",
+          width: "100%",
+          borderRadius: "12px",
+          background: "rgba(255, 255, 255, 0.04)",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+        }}
+      />
+    ),
+  },
+);
 import LiquidTextField from "@/components/LiquidTextField";
-import Button from "@mui/material/Button";
 import PrimaryButton from "@/components/PrimaryButton";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
 import TypeToggleButton from "@/components/TypeToggleButton";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import GlowingBubbles from "@/components/GlowingBubbles";
-import AddCardIcon from "@mui/icons-material/AddCard";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CloseIcon from "@mui/icons-material/Close";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
-import PieChartIcon from "@mui/icons-material/PieChart";
-import LogoutIcon from "@mui/icons-material/Logout";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 import { useEffect, useState, useRef, useMemo } from "react";
 import Link from "next/link";
@@ -41,7 +50,7 @@ import { decodeToken } from "@/libs/jwt";
 import { toast } from "react-toastify";
 import { useLoader } from "@/app/context/LoaderContext";
 import dayjs from "dayjs";
-import { clearRangeDataCache } from "@/libs/dataCache";
+import { clearRangeDataCache, fetchDeduplicated } from "@/libs/dataCache";
 import { enqueueOfflineTransaction } from "@/libs/offlineSync";
 
 export default function Home() {
@@ -99,6 +108,7 @@ export default function Home() {
   const [titleSuggestions, setTitleSuggestions] = useState([]);
   const [isSuggestionsExpanded, setIsSuggestionsExpanded] = useState(false);
   const suggestionRowRef = useRef(null);
+  const hasFetchedTitles = useRef(false);
 
   const displayedSuggestions = useMemo(() => {
     if (!titleSuggestions || titleSuggestions.length === 0) return [];
@@ -149,27 +159,33 @@ export default function Home() {
         To: endTimeStamp.toString(),
       };
 
-      let res = await fetch(`${constant?.Live_url}/api/getDateRange`, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-          authorization: activeToken,
-        },
-        body: JSON.stringify(params),
+      const dedupeKey = `titles_${activeToken.slice(-10)}_${startTimeStamp}_${endTimeStamp}`;
+
+      const resData = await fetchDeduplicated(dedupeKey, async () => {
+        let res = await fetch(`${constant?.Live_url}/api/getDateRange`, {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            authorization: activeToken,
+          },
+          body: JSON.stringify(params),
+        });
+
+        if (res.status === 401 || res.status === 403) {
+          window.localStorage.removeItem("token");
+          window.localStorage.removeItem("roles");
+          window.localStorage.removeItem("activeAccount");
+          window.localStorage.setItem("accounts", JSON.stringify([]));
+          toast.error("Session expired. Please log in again.");
+          router.push("/");
+          hideLoader();
+          return null;
+        }
+
+        return await res.json();
       });
 
-      if (res.status === 401 || res.status === 403) {
-        window.localStorage.removeItem("token");
-        window.localStorage.removeItem("roles");
-        window.localStorage.removeItem("activeAccount");
-        window.localStorage.setItem("accounts", JSON.stringify([]));
-        toast.error("Session expired. Please log in again.");
-        router.push("/");
-        hideLoader();
-        return;
-      }
-
-      let resData = await res.json();
+      if (!resData) return;
 
       if (resData?.message === "UnAuthorized") {
         window.localStorage.removeItem("token");
@@ -226,7 +242,10 @@ export default function Home() {
         console.error("Error parsing stored suggestions", e);
       }
     }
-    fetchTitles();
+    if (!hasFetchedTitles.current) {
+      hasFetchedTitles.current = true;
+      fetchTitles();
+    }
   }, []);
 
   const inputSx = {
