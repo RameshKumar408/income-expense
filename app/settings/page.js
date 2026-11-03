@@ -230,7 +230,7 @@ export default function SettingsPage() {
             fontWeight: "500",
           }}
         >
-          Version 1.05
+          Version 1.06
         </div>
 
         <nav className="bottom-nav" aria-label="Main actions">
