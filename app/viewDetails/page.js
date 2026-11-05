@@ -1,13 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
+
+const FilterBottomSheet = dynamic(
+  () => import("@/components/FilterBottomSheet"),
+  { ssr: false }
+);
 import SearchIcon from "@mui/icons-material/Search";
-import SettingsIcon from "@mui/icons-material/Settings";
 import LiquidTextField from "@/components/LiquidTextField";
 import PieChartIcon from "@mui/icons-material/PieChart";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -20,7 +23,6 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import CheckIcon from "@mui/icons-material/Check";
 
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import CalculateIcon from "@mui/icons-material/Calculate";
 import CloseIcon from "@mui/icons-material/Close";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -195,6 +197,16 @@ export default function Page() {
       searchInputRef.current.focus();
     }
   }, [showSearch]);
+
+  useEffect(() => {
+    const handleSearchEvent = (e) => {
+      handleOpenSearch(e);
+    };
+    window.addEventListener("open-history-search", handleSearchEvent);
+    return () => {
+      window.removeEventListener("open-history-search", handleSearchEvent);
+    };
+  }, []);
   const [role, setRole] = useState(() =>
     typeof window !== "undefined"
       ? window?.localStorage?.getItem("roles") || ""
@@ -203,9 +215,6 @@ export default function Page() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState("");
   const [sortKey, setSortKey] = useState("date");
-  const [showCalculator, setShowCalculator] = useState(false);
-  const [calcValue, setCalcValue] = useState("0");
-  const [calcHistory, setCalcHistory] = useState([]);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [expandedCardId, setExpandedCardId] = useState(null);
   const [swipedCardId, setSwipedCardId] = useState(null);
@@ -382,8 +391,7 @@ export default function Page() {
     const handleGlobalClick = (e) => {
       if (
         !e.target.closest(".history-card-item") &&
-        !e.target.closest(".MuiDialog-root") &&
-        !e.target.closest(".calculator-overlay")
+        !e.target.closest(".MuiDialog-root")
       ) {
         setSwipedCardId(null);
         setSwipeDirection(null);
@@ -425,11 +433,6 @@ export default function Page() {
   const formatHistoryDate = (row) => {
     const date = row?.TimeStamp ? dayjs(row.TimeStamp) : null;
     return date?.isValid() ? date.format("DD-MMM-YY hh:mm A") : "";
-  };
-
-  const saveCalcHistory = (history) => {
-    setCalcHistory(history);
-    window.localStorage.setItem("calculatorHistory", JSON.stringify(history));
   };
 
   const getDetails = useCallback(
@@ -578,17 +581,6 @@ export default function Page() {
       router.prefetch("/authorize");
     }
   }, [router, role]);
-
-  useEffect(() => {
-    const storedHistory = window?.localStorage?.getItem("calculatorHistory");
-    if (storedHistory) {
-      try {
-        setCalcHistory(JSON.parse(storedHistory) || []);
-      } catch (error) {
-        setCalcHistory([]);
-      }
-    }
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -812,47 +804,6 @@ export default function Page() {
   const submitSearch = (e) => {
     e?.preventDefault();
     getDetails({ text: searchText, requestRole: role, userId: selectedUser });
-  };
-
-  const pressCalculator = (value) => {
-    if (value == "C") {
-      setCalcValue("0");
-      return;
-    }
-    if (value == "DEL") {
-      setCalcValue((current) =>
-        current.length > 1 ? current.slice(0, -1) : "0",
-      );
-      return;
-    }
-    if (value == "=") {
-      try {
-        const expression = calcValue.replaceAll("×", "*").replaceAll("÷", "/");
-        if (!/^[0-9+\-*/.()%\s]+$/.test(expression)) {
-          return;
-        }
-        const result = Function(`"use strict"; return (${expression})`)();
-        if (!Number.isFinite(result)) {
-          return;
-        }
-        const formatted = `${Number(result.toFixed(8))}`;
-        const nextHistory = [
-          { expression: calcValue, result: formatted },
-          ...calcHistory,
-        ].slice(0, 8);
-        saveCalcHistory(nextHistory);
-        setCalcValue(formatted);
-      } catch (error) {
-        setCalcValue("0");
-      }
-      return;
-    }
-    setCalcValue((current) => (current == "0" ? value : `${current}${value}`));
-  };
-
-  const clearCalculatorHistory = () => {
-    saveCalcHistory([]);
-    window.localStorage.removeItem("calculatorHistory");
   };
 
   const handleRecordTouchEnd = (row, event) => {
@@ -1668,97 +1619,6 @@ export default function Page() {
           </Dialog>
         )}
 
-        {showCalculator && (
-          <div
-            className="calculator-overlay"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Calculator"
-          >
-            <div className="calculator-popup">
-              <div className="calculator-header">
-                <h2>Calculator</h2>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowCalculator(false);
-                  }}
-                >
-                  Close
-                </button>
-              </div>
-
-              <output className="calculator-display">{calcValue}</output>
-
-              <div className="calculator-grid">
-                {[
-                  "C",
-                  "DEL",
-                  "%",
-                  "÷",
-                  "7",
-                  "8",
-                  "9",
-                  "×",
-                  "4",
-                  "5",
-                  "6",
-                  "-",
-                  "1",
-                  "2",
-                  "3",
-                  "+",
-                  "0",
-                  ".",
-                  "=",
-                ].map((item) => (
-                  <button
-                    className={item == "=" ? "equals" : ""}
-                    key={item}
-                    type="button"
-                    onClick={() => {
-                      pressCalculator(item);
-                    }}
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-
-              <section
-                className="calculator-history"
-                aria-label="Calculation history"
-              >
-                <div className="calculator-history-head">
-                  <h3>History</h3>
-                  {calcHistory.length > 0 && (
-                    <button type="button" onClick={clearCalculatorHistory}>
-                      Clear
-                    </button>
-                  )}
-                </div>
-                {calcHistory.length > 0 ? (
-                  calcHistory.map((item, index) => (
-                    <button
-                      className="calculator-history-item"
-                      key={`${item.expression}-${index}`}
-                      type="button"
-                      onClick={() => {
-                        setCalcValue(item.result);
-                      }}
-                    >
-                      <span>{item.expression}</span>
-                      <strong>{item.result}</strong>
-                    </button>
-                  ))
-                ) : (
-                  <p>No calculations yet</p>
-                )}
-              </section>
-            </div>
-          </div>
-        )}
-
         {selectedRecord && (
           <div
             className="record-detail-overlay"
@@ -1817,474 +1677,26 @@ export default function Page() {
         )}
 
         {showFilterModal && (
-          <div
-            className="history-filter-modal-overlay"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Filter transactions"
-            onClick={handleCloseFilterModal}
-          >
-            <div
-              className="history-filter-sheet"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="filter-sheet-drag-handle" />
-
-              <div className="filter-sheet-header">
-                <div className="filter-sheet-title-group">
-                  <h3>Filter Transactions</h3>
-                  <p>Choose month or custom date range</p>
-                </div>
-                <button
-                  type="button"
-                  className="filter-sheet-close-btn"
-                  aria-label="Close filter"
-                  onClick={handleCloseFilterModal}
-                >
-                  <CloseIcon fontSize="small" />
-                </button>
-              </div>
-
-              <div className="filter-mode-tabs" role="tablist">
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={draftMode === "month"}
-                  className={`filter-mode-tab ${draftMode === "month" ? "active" : ""}`}
-                  onClick={() => {
-                    setDraftMode("month");
-                    setRangeError("");
-                  }}
-                >
-                  Month-wise
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={draftMode === "range"}
-                  className={`filter-mode-tab ${draftMode === "range" ? "active" : ""}`}
-                  onClick={() => {
-                    setDraftMode("range");
-                    setRangeError("");
-                  }}
-                >
-                  Custom Date Range
-                </button>
-              </div>
-
-              <div className="filter-sheet-body">
-                {draftMode === "month" ? (
-                  <div className="filter-month-selector-group">
-                    <span className="filter-group-title">Select Month</span>
-
-                    <div className="filter-month-year-grid">
-                      <div className="filter-select-field">
-                        <span className="filter-select-label">Month</span>
-                        <Select
-                          value={draftMonth}
-                          onChange={(e) =>
-                            setDraftMonth(Number(e.target.value))
-                          }
-                          fullWidth
-                          sx={{
-                            color: "#ffffff",
-                            backgroundColor: "rgba(255, 255, 255, 0.04)",
-                            borderRadius: "12px",
-                            fontSize: "15px",
-                            fontWeight: 700,
-                            minHeight: "48px",
-                            height: "48px",
-                            "& .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "rgba(212, 160, 23, 0.45)",
-                              borderWidth: "1.5px",
-                            },
-                            "&:hover .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "rgba(212, 160, 23, 0.8)",
-                            },
-                            "&.Mui-focused": {
-                              backgroundColor: "rgba(255, 255, 255, 0.08)",
-                            },
-                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "#d4a017",
-                              borderWidth: "1.5px",
-                            },
-                            "& .MuiSvgIcon-root": {
-                              color: "#d4a017",
-                            },
-                          }}
-                          MenuProps={{
-                            PaperProps: {
-                              sx: {
-                                backgroundColor: "rgba(20, 20, 24, 0.98)",
-                                backdropFilter: "blur(20px)",
-                                WebkitBackdropFilter: "blur(20px)",
-                                color: "#ffffff",
-                                border: "1px solid rgba(212, 160, 23, 0.35)",
-                                borderRadius: "12px",
-                                boxShadow: "0 12px 36px rgba(0, 0, 0, 0.75)",
-                                maxHeight: "260px",
-                                "& .MuiMenuItem-root": {
-                                  fontSize: "14px",
-                                  fontWeight: 600,
-                                  padding: "10px 16px",
-                                  "&:hover": {
-                                    backgroundColor: "rgba(212, 160, 23, 0.15)",
-                                  },
-                                  "&.Mui-selected": {
-                                    backgroundColor: "rgba(212, 160, 23, 0.25)",
-                                    color: "#d4a017",
-                                    fontWeight: 800,
-                                    "&:hover": {
-                                      backgroundColor:
-                                        "rgba(212, 160, 23, 0.35)",
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          }}
-                        >
-                          {MONTH_NAMES.map((name, idx) => (
-                            <MenuItem key={name} value={idx}>
-                              {name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </div>
-
-                      <div className="filter-select-field">
-                        <span className="filter-select-label">Year</span>
-                        <Select
-                          value={draftYear}
-                          onChange={(e) => setDraftYear(Number(e.target.value))}
-                          fullWidth
-                          sx={{
-                            color: "#ffffff",
-                            backgroundColor: "rgba(255, 255, 255, 0.04)",
-                            borderRadius: "12px",
-                            fontSize: "15px",
-                            fontWeight: 700,
-                            minHeight: "48px",
-                            height: "48px",
-                            "& .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "rgba(212, 160, 23, 0.45)",
-                              borderWidth: "1.5px",
-                            },
-                            "&:hover .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "rgba(212, 160, 23, 0.8)",
-                            },
-                            "&.Mui-focused": {
-                              backgroundColor: "rgba(255, 255, 255, 0.08)",
-                            },
-                            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                              borderColor: "#d4a017",
-                              borderWidth: "1.5px",
-                            },
-                            "& .MuiSvgIcon-root": {
-                              color: "#d4a017",
-                            },
-                          }}
-                          MenuProps={{
-                            PaperProps: {
-                              sx: {
-                                backgroundColor: "rgba(20, 20, 24, 0.98)",
-                                backdropFilter: "blur(20px)",
-                                WebkitBackdropFilter: "blur(20px)",
-                                color: "#ffffff",
-                                border: "1px solid rgba(212, 160, 23, 0.35)",
-                                borderRadius: "12px",
-                                boxShadow: "0 12px 36px rgba(0, 0, 0, 0.75)",
-                                maxHeight: "260px",
-                                "& .MuiMenuItem-root": {
-                                  fontSize: "14px",
-                                  fontWeight: 600,
-                                  padding: "10px 16px",
-                                  "&:hover": {
-                                    backgroundColor: "rgba(212, 160, 23, 0.15)",
-                                  },
-                                  "&.Mui-selected": {
-                                    backgroundColor: "rgba(212, 160, 23, 0.25)",
-                                    color: "#d4a017",
-                                    fontWeight: 800,
-                                    "&:hover": {
-                                      backgroundColor:
-                                        "rgba(212, 160, 23, 0.35)",
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          }}
-                        >
-                          {availableYears.map((yr) => (
-                            <MenuItem key={yr} value={yr}>
-                              {yr}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="filter-preview-banner">
-                      <CalendarTodayOutlinedIcon
-                        sx={{ fontSize: 18, color: "var(--brand-gold)" }}
-                      />
-                      <div>
-                        <strong>
-                          {MONTH_NAMES[draftMonth]} {draftYear}
-                        </strong>
-                        <span>
-                          {dayjs(
-                            `${draftYear}-${String(draftMonth + 1).padStart(2, "0")}-01`,
-                          )
-                            .startOf("month")
-                            .format("DD MMM YYYY")}{" "}
-                          to{" "}
-                          {dayjs(
-                            `${draftYear}-${String(draftMonth + 1).padStart(2, "0")}-01`,
-                          )
-                            .endOf("month")
-                            .format("DD MMM YYYY")}{" "}
-                          (
-                          {dayjs(
-                            `${draftYear}-${String(draftMonth + 1).padStart(2, "0")}-01`,
-                          ).daysInMonth()}{" "}
-                          days)
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="filter-custom-range-group">
-                    <div className="filter-range-fields">
-                      <div className="filter-date-field">
-                        <span className="filter-select-label">
-                          Start date<b style={{ color: "#ff3b3f" }}>*</b>
-                        </span>
-                        <LiquidTextField
-                          value={draftFrom}
-                          type="date"
-                          onClick={(e) =>
-                            e.target.showPicker && e.target.showPicker()
-                          }
-                          onChange={(e) => {
-                            setDraftFrom(e.target.value);
-                            if (rangeError) setRangeError("");
-                          }}
-                          fullWidth
-                          sx={{
-                            width: "100%",
-                            minWidth: 0,
-                            "& .MuiOutlinedInput-root": {
-                              paddingLeft: { xs: "10px", sm: "14px" },
-                              paddingRight: { xs: "8px", sm: "12px" },
-                              minHeight: { xs: "50px", sm: "52px" },
-                              height: { xs: "50px", sm: "52px" },
-                              display: "flex",
-                              alignItems: "center",
-                              boxSizing: "border-box",
-                            },
-                            "& .MuiInputBase-input, & input[type=date]": {
-                              textAlign: "left",
-                              padding: "0 !important",
-                              height: "100% !important",
-                              minHeight: "0 !important",
-                              fontSize: { xs: "13.5px", sm: "14px" },
-                              lineHeight: "normal !important",
-                              whiteSpace: "nowrap",
-                              WebkitAppearance: "none",
-                              minWidth: 0,
-                              width: "100%",
-                              boxSizing: "border-box",
-                              display: "flex",
-                              alignItems: "center",
-                            },
-                            "& input[type=date]::-webkit-date-and-time-value": {
-                              textAlign: "left",
-                              minWidth: 0,
-                              lineHeight: "normal !important",
-                              minHeight: "0 !important",
-                              height: "auto !important",
-                              margin: "0 !important",
-                              padding: "0 !important",
-                            },
-                            "& input[type=date]::-webkit-calendar-picker-indicator":
-                              {
-                                display: "none",
-                                WebkitAppearance: "none",
-                              },
-                          }}
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment
-                                position="end"
-                                sx={{ pointerEvents: "none", ml: 0.5, mr: 0 }}
-                              >
-                                <CalendarTodayOutlinedIcon
-                                  sx={{
-                                    fontSize: { xs: "16px", sm: "18px" },
-                                    color: "rgba(255, 255, 255, 0.75)",
-                                  }}
-                                />
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                      </div>
-
-                      <div className="filter-date-field">
-                        <span className="filter-select-label">
-                          End date<b style={{ color: "#ff3b3f" }}>*</b>
-                        </span>
-                        <LiquidTextField
-                          value={draftTo}
-                          type="date"
-                          onClick={(e) =>
-                            e.target.showPicker && e.target.showPicker()
-                          }
-                          onChange={(e) => {
-                            setDraftTo(e.target.value);
-                            if (rangeError) setRangeError("");
-                          }}
-                          fullWidth
-                          sx={{
-                            width: "100%",
-                            minWidth: 0,
-                            "& .MuiOutlinedInput-root": {
-                              paddingLeft: { xs: "10px", sm: "14px" },
-                              paddingRight: { xs: "8px", sm: "12px" },
-                              minHeight: { xs: "50px", sm: "52px" },
-                              height: { xs: "50px", sm: "52px" },
-                              display: "flex",
-                              alignItems: "center",
-                              boxSizing: "border-box",
-                            },
-                            "& .MuiInputBase-input, & input[type=date]": {
-                              textAlign: "left",
-                              padding: "0 !important",
-                              height: "100% !important",
-                              minHeight: "0 !important",
-                              fontSize: { xs: "13.5px", sm: "14px" },
-                              lineHeight: "normal !important",
-                              whiteSpace: "nowrap",
-                              WebkitAppearance: "none",
-                              minWidth: 0,
-                              width: "100%",
-                              boxSizing: "border-box",
-                              display: "flex",
-                              alignItems: "center",
-                            },
-                            "& input[type=date]::-webkit-date-and-time-value": {
-                              textAlign: "left",
-                              minWidth: 0,
-                              lineHeight: "normal !important",
-                              minHeight: "0 !important",
-                              height: "auto !important",
-                              margin: "0 !important",
-                              padding: "0 !important",
-                            },
-                            "& input[type=date]::-webkit-calendar-picker-indicator":
-                              {
-                                display: "none",
-                                WebkitAppearance: "none",
-                              },
-                          }}
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment
-                                position="end"
-                                sx={{ pointerEvents: "none", ml: 0.5, mr: 0 }}
-                              >
-                                <CalendarTodayOutlinedIcon
-                                  sx={{
-                                    fontSize: { xs: "16px", sm: "18px" },
-                                    color: "rgba(255, 255, 255, 0.75)",
-                                  }}
-                                />
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    {rangeError && (
-                      <div className="filter-error-banner">
-                        <span>⚠️ {rangeError}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div className="filter-sheet-actions">
-                <button
-                  type="button"
-                  className="filter-btn-reset"
-                  onClick={handleResetFilter}
-                >
-                  Reset
-                </button>
-                <button
-                  type="button"
-                  className="filter-btn-apply"
-                  onClick={handleApplyFilter}
-                >
-                  Apply Filter
-                </button>
-              </div>
-            </div>
-          </div>
+          <FilterBottomSheet
+            onClose={handleCloseFilterModal}
+            draftMode={draftMode}
+            setDraftMode={setDraftMode}
+            draftMonth={draftMonth}
+            setDraftMonth={setDraftMonth}
+            draftYear={draftYear}
+            setDraftYear={setDraftYear}
+            draftFrom={draftFrom}
+            setDraftFrom={setDraftFrom}
+            draftTo={draftTo}
+            setDraftTo={setDraftTo}
+            rangeError={rangeError}
+            setRangeError={setRangeError}
+            availableYears={availableYears}
+            MONTH_NAMES={MONTH_NAMES}
+            onReset={handleResetFilter}
+            onApply={handleApplyFilter}
+          />
         )}
-
-        <nav
-          className="bottom-nav history-bottom-nav"
-          aria-label="Main actions"
-        >
-          <Link
-            className="bottom-nav-item"
-            href="/createDetail"
-            prefetch={true}
-            aria-label="Create details"
-          >
-            <HomeOutlinedIcon />
-          </Link>
-          {role == "admin" && (
-            <Link
-              className="bottom-nav-item"
-              href="/authorize"
-              prefetch={true}
-              aria-label="Google drive"
-            >
-              <ExploreOutlinedIcon />
-            </Link>
-          )}
-          <Link
-            className="bottom-nav-item active history-center-nav"
-            href="/viewDetails"
-            prefetch={true}
-            aria-label="History"
-            onClick={(e) => {
-              if (!showSearch) {
-                e.preventDefault();
-                handleOpenSearch(e);
-              }
-            }}
-          >
-            <SearchIcon />
-          </Link>
-          {/* <Link className='bottom-nav-item' href='/details' aria-label='Analytics'>
-                        <PieChartIcon />
-                    </Link> */}
-          <Link
-            className="bottom-nav-item"
-            href="/settings"
-            prefetch={true}
-            aria-label="Settings"
-          >
-            <SettingsIcon />
-          </Link>
-        </nav>
       </main>
     </div>
   );

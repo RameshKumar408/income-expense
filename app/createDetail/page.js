@@ -33,10 +33,6 @@ import InputAdornment from "@mui/material/InputAdornment";
 import GlowingBubbles from "@/components/GlowingBubbles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CloseIcon from "@mui/icons-material/Close";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
-import SearchIcon from "@mui/icons-material/Search";
-import SettingsIcon from "@mui/icons-material/Settings";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -1137,49 +1133,6 @@ export default function Home() {
               </div>
             )} */}
           </form>
-
-          <nav
-            className={`bottom-nav ${isKeyboardOpen ? "keyboard-hidden" : ""}`}
-            aria-label="Main actions"
-          >
-            <Link
-              className="bottom-nav-item active"
-              href="/createDetail"
-              prefetch={true}
-              aria-label="Create details"
-            >
-              <HomeOutlinedIcon />
-            </Link>
-            {role == "admin" && (
-              <Link
-                className="bottom-nav-item"
-                href="/authorize"
-                prefetch={true}
-                aria-label="Google drive"
-              >
-                <ExploreOutlinedIcon />
-              </Link>
-            )}
-            <Link
-              className="bottom-nav-item"
-              href="/viewDetails"
-              prefetch={true}
-              aria-label="History"
-            >
-              <SearchIcon />
-            </Link>
-            {/* <Link className='bottom-nav-item' href='/details' aria-label='Analytics'>
-                            <PieChartIcon />
-                        </Link> */}
-            <Link
-              className="bottom-nav-item"
-              href="/settings"
-              prefetch={true}
-              aria-label="Settings"
-            >
-              <SettingsIcon />
-            </Link>
-          </nav>
         </main>
       </div>
     </>

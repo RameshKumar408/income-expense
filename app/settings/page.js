@@ -4,10 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
-import SearchIcon from "@mui/icons-material/Search";
-import SettingsIcon from "@mui/icons-material/Settings";
 import PieChartIcon from "@mui/icons-material/PieChart";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -238,48 +234,8 @@ export default function SettingsPage() {
             fontWeight: "500",
           }}
         >
-          Version 1.101
+          Version 1.102
         </div>
-
-        <nav className="bottom-nav" aria-label="Main actions">
-          <Link
-            className="bottom-nav-item"
-            href="/createDetail"
-            prefetch={true}
-            aria-label="Create details"
-          >
-            <HomeOutlinedIcon />
-          </Link>
-          {role == "admin" && (
-            <Link
-              className="bottom-nav-item"
-              href="/authorize"
-              prefetch={true}
-              aria-label="Google drive"
-            >
-              <ExploreOutlinedIcon />
-            </Link>
-          )}
-          <Link
-            className="bottom-nav-item"
-            href="/viewDetails"
-            prefetch={true}
-            aria-label="History"
-          >
-            <SearchIcon />
-          </Link>
-          {/* <Link className='bottom-nav-item' href='/details' aria-label='Analytics'>
-                        <PieChartIcon />
-                    </Link> */}
-          <Link
-            className="bottom-nav-item active"
-            href="/settings"
-            prefetch={true}
-            aria-label="Settings"
-          >
-            <SettingsIcon />
-          </Link>
-        </nav>
       </main>
     </div>
   );

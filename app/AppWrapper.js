@@ -4,6 +4,7 @@ import { LoaderProvider } from './context/LoaderContext'
 import { useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { syncOfflineTransactions } from '@/libs/offlineSync'
+import BottomNavBar from '@/components/BottomNavBar'
 
 export default function AppWrapper({ children }) {
   useEffect(() => {
@@ -38,5 +39,10 @@ export default function AppWrapper({ children }) {
     }
   }, [])
 
-  return <LoaderProvider>{children}</LoaderProvider>
+  return (
+    <LoaderProvider>
+      {children}
+      <BottomNavBar />
+    </LoaderProvider>
+  )
 }

@@ -36,10 +36,6 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
-import SearchIcon from "@mui/icons-material/Search";
-import SettingsIcon from "@mui/icons-material/Settings";
 
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState, useRef, useMemo } from "react";
@@ -696,43 +692,6 @@ export default function Home({ params }) {
             Update
           </Button>
         </form>
-
-        <nav className="bottom-nav" aria-label="Main actions">
-          <Link
-            className="bottom-nav-item"
-            href="/createDetail"
-            prefetch={true}
-            aria-label="Create details"
-          >
-            <HomeOutlinedIcon />
-          </Link>
-          {role == "admin" && (
-            <Link
-              className="bottom-nav-item"
-              href="/authorize"
-              prefetch={true}
-              aria-label="Google drive"
-            >
-              <ExploreOutlinedIcon />
-            </Link>
-          )}
-          <Link
-            className="bottom-nav-item active"
-            href="/viewDetails"
-            prefetch={true}
-            aria-label="History"
-          >
-            <SearchIcon />
-          </Link>
-          <Link
-            className="bottom-nav-item"
-            href="/settings"
-            prefetch={true}
-            aria-label="Settings"
-          >
-            <SettingsIcon />
-          </Link>
-        </nav>
       </main>
     </div>
   );

@@ -14,7 +14,6 @@
   padding: calc(42px + env(safe-area-inset-top, 0px)) 40px
     calc(132px + env(safe-area-inset-bottom, 0px));
   position: relative;
-  z-index: 10;
 }
 
 .expense-header {
@@ -622,6 +621,24 @@
   transform: translateX(-50%);
   backdrop-filter: blur(32px) saturate(150%);
   -webkit-backdrop-filter: blur(32px) saturate(150%);
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s ease;
+}
+
+body:has(.history-filter-modal-overlay) .bottom-nav,
+body:has(.mobile-account-container) .bottom-nav,
+body:has(.mobile-account-sheet) .bottom-nav,
+body:has(.record-detail-overlay) .bottom-nav,
+body:has(.MuiDialog-root) .bottom-nav,
+body:has(input:not([type="checkbox"]):not([type="radio"]):focus) .bottom-nav,
+body:has(textarea:focus) .bottom-nav,
+body:has([contenteditable="true"]:focus) .bottom-nav,
+.bottom-nav.keyboard-hidden,
+.bottom-nav.modal-hidden {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  transform: translateX(-50%) translateY(40px) !important;
 }
 
 .bottom-nav-item {
@@ -1605,176 +1622,6 @@
   height: 42px;
 }
 
-.calculator-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 40;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 18px;
-  background: rgba(0, 0, 0, 0.68);
-}
-
-.calculator-popup {
-  box-sizing: border-box;
-  width: min(100%, 430px);
-  max-height: calc(100dvh - 36px);
-  overflow-y: auto;
-  padding: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 18px;
-  color: var(--text-primary);
-  background: var(--bg-dark-gray);
-  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.72);
-}
-
-.calculator-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.calculator-header h2 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.calculator-header button {
-  border: 0;
-  color: #ff4b63;
-  background: transparent;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.calculator-display {
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  width: 100%;
-  min-height: 58px;
-  margin-bottom: 14px;
-  padding: 0 16px;
-  overflow: hidden;
-  border: 1.5px solid var(--border-input);
-  border-radius: 12px;
-  color: var(--text-primary);
-  background: var(--bg-input);
-  font-size: 28px;
-  font-weight: 900;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.calculator-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.calculator-grid button {
-  min-height: 52px;
-  border: 0;
-  border-radius: 12px;
-  color: var(--text-primary);
-  background: #252934;
-  font: inherit;
-  font-size: 20px;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.calculator-grid button:nth-child(4n),
-.calculator-grid button:nth-child(-n + 3) {
-  color: #ffad35;
-  background: #1a1a1a;
-}
-
-.calculator-grid button.equals {
-  grid-column: span 2;
-  background: linear-gradient(
-    100deg,
-    var(--accent-expense-alt) 0%,
-    #9b4a9e 50%,
-    #1967d2 100%
-  );
-}
-
-.calculator-history {
-  margin-top: 18px;
-}
-
-.calculator-history-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.calculator-history h3 {
-  margin: 0 0 10px;
-  font-size: 16px;
-  font-weight: 900;
-  color: #8f8f93;
-}
-
-.calculator-history-head h3 {
-  margin: 0;
-}
-
-.calculator-history-head button {
-  border: 0;
-  color: #ff4b63;
-  background: transparent;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.calculator-history-item,
-.calculator-history p {
-  box-sizing: border-box;
-  width: 100%;
-  margin: 0 0 8px;
-  padding: 10px 12px;
-  border: 0;
-  border-radius: 10px;
-  color: var(--text-primary);
-  background: #1a1a1a;
-  font: inherit;
-  text-align: left;
-}
-
-.calculator-history-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  cursor: pointer;
-}
-
-.calculator-history span {
-  overflow: hidden;
-  color: var(--text-secondary);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.calculator-history strong {
-  flex: 0 0 auto;
-  color: var(--text-primary);
-}
-
 .record-detail-overlay {
   position: fixed;
   inset: 0;
@@ -2028,8 +1875,10 @@
   }
 
   .bottom-nav.keyboard-hidden {
+    display: none !important;
     opacity: 0 !important;
     pointer-events: none !important;
+    visibility: hidden !important;
     transform: translate(-50%, 24px) scale(0.95) !important;
   }
 
