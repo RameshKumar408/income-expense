@@ -473,6 +473,14 @@ export default function Home() {
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const accountRef = useRef(null);
 
+  useEffect(() => {
+    router.prefetch("/viewDetails");
+    router.prefetch("/settings");
+    if (role === "admin") {
+      router.prefetch("/authorize");
+    }
+  }, [router, role]);
+
   const loadAccounts = () => {
     try {
       var token = window.localStorage.getItem("token");
@@ -1137,6 +1145,7 @@ export default function Home() {
             <Link
               className="bottom-nav-item active"
               href="/createDetail"
+              prefetch={true}
               aria-label="Create details"
             >
               <HomeOutlinedIcon />
@@ -1145,6 +1154,7 @@ export default function Home() {
               <Link
                 className="bottom-nav-item"
                 href="/authorize"
+                prefetch={true}
                 aria-label="Google drive"
               >
                 <ExploreOutlinedIcon />
@@ -1153,6 +1163,7 @@ export default function Home() {
             <Link
               className="bottom-nav-item"
               href="/viewDetails"
+              prefetch={true}
               aria-label="History"
             >
               <SearchIcon />
@@ -1163,6 +1174,7 @@ export default function Home() {
             <Link
               className="bottom-nav-item"
               href="/settings"
+              prefetch={true}
               aria-label="Settings"
             >
               <SettingsIcon />

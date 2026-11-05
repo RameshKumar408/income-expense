@@ -48,6 +48,24 @@ const withPWA = withPWAInit({
         urlPattern: /\/api\/.*/i,
         handler: "NetworkOnly", // Financial & mutation APIs must never be served from stale SW cache
       },
+      {
+        urlPattern: ({ request, url }) => {
+          if (url.pathname.startsWith("/api/")) return false;
+          return (
+            request.mode === "navigate" ||
+            url.searchParams.has("_rsc") ||
+            url.pathname.startsWith("/_next/data/")
+          );
+        },
+        handler: "StaleWhileRevalidate",
+        options: {
+          cacheName: "pages-rsc-cache",
+          expiration: {
+            maxEntries: 64,
+            maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+          },
+        },
+      },
     ],
   },
 });

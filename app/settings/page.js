@@ -66,6 +66,14 @@ export default function SettingsPage() {
   };
 
   useEffect(() => {
+    router.prefetch("/createDetail");
+    router.prefetch("/viewDetails");
+    if (role === "admin") {
+      router.prefetch("/authorize");
+    }
+  }, [router, role]);
+
+  useEffect(() => {
     setRole(window.localStorage.getItem("roles"));
     setAccounts(JSON.parse(window.localStorage.getItem("accounts") || "[]"));
     const savedFont = window.localStorage.getItem("appFont") || "Inter";
@@ -237,6 +245,7 @@ export default function SettingsPage() {
           <Link
             className="bottom-nav-item"
             href="/createDetail"
+            prefetch={true}
             aria-label="Create details"
           >
             <HomeOutlinedIcon />
@@ -245,6 +254,7 @@ export default function SettingsPage() {
             <Link
               className="bottom-nav-item"
               href="/authorize"
+              prefetch={true}
               aria-label="Google drive"
             >
               <ExploreOutlinedIcon />
@@ -253,6 +263,7 @@ export default function SettingsPage() {
           <Link
             className="bottom-nav-item"
             href="/viewDetails"
+            prefetch={true}
             aria-label="History"
           >
             <SearchIcon />
@@ -263,6 +274,7 @@ export default function SettingsPage() {
           <Link
             className="bottom-nav-item active"
             href="/settings"
+            prefetch={true}
             aria-label="Settings"
           >
             <SettingsIcon />

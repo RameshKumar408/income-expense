@@ -638,7 +638,10 @@
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s ease, background 0.15s ease;
 }
 
 .bottom-nav-item:hover {
@@ -646,7 +649,9 @@
 }
 
 .bottom-nav-item:active {
-  transform: scale(0.85);
+  transform: scale(0.88);
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .bottom-nav-item svg {
@@ -2861,6 +2866,7 @@
    ========================================================================== */
 
 .history-compact-filter-bar {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -2901,6 +2907,14 @@
     0 0 18px rgba(212, 160, 23, 0.25);
 }
 
+.history-date-selector-btn.active {
+  border-color: #d4a017;
+  background: rgba(212, 160, 23, 0.12);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.15),
+    0 0 20px rgba(212, 160, 23, 0.35);
+}
+
 .history-date-selector-btn .filter-pill-content {
   display: flex;
   align-items: center;
@@ -2927,7 +2941,174 @@
   color: #d4a017;
   font-size: 20px;
   flex-shrink: 0;
-  transition: transform 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.history-date-selector-btn .filter-pill-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+/* ==========================================================================
+   History Month Dropdown (Quick Select)
+   ========================================================================== */
+.history-month-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 999;
+  box-sizing: border-box;
+  padding: 16px;
+  background: rgba(18, 20, 26, 0.96);
+  border: 1.5px solid rgba(212, 160, 23, 0.45);
+  border-radius: 16px;
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.85),
+    0 0 24px rgba(212, 160, 23, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  animation: monthDropdownIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes monthDropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.month-dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 4px 8px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.month-dropdown-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+}
+
+.month-dropdown-subtitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(212, 160, 23, 0.85);
+  background: rgba(212, 160, 23, 0.1);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 160, 23, 0.25);
+}
+
+.month-dropdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.month-dropdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.88);
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.month-dropdown-row:hover {
+  background: rgba(212, 160, 23, 0.12);
+  border-color: rgba(212, 160, 23, 0.4);
+  color: #ffffff;
+}
+
+.month-dropdown-row:active {
+  transform: scale(0.98);
+}
+
+.month-dropdown-row.selected {
+  background: linear-gradient(135deg, rgba(212, 160, 23, 0.3), rgba(212, 160, 23, 0.12));
+  border-color: #d4a017;
+  color: #d4a017;
+  font-weight: 800;
+  box-shadow: 0 0 16px rgba(212, 160, 23, 0.25);
+}
+
+.month-dropdown-row-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.month-dropdown-row-label {
+  font-size: 14.5px;
+}
+
+.month-dropdown-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(212, 160, 23, 0.2);
+  color: #d4a017;
+  border: 1px solid rgba(212, 160, 23, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.month-dropdown-check-icon {
+  color: #d4a017;
+  font-size: 18px !important;
+}
+
+.month-dropdown-footer {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: center;
+}
+
+.month-dropdown-more-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s ease;
+}
+
+.month-dropdown-more-btn:hover {
+  color: #d4a017;
+}
+
+.month-dropdown-more-btn:active {
+  transform: scale(0.97);
 }
 
 .history-filter-trigger-btn {

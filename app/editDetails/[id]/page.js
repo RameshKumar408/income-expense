@@ -701,6 +701,7 @@ export default function Home({ params }) {
           <Link
             className="bottom-nav-item"
             href="/createDetail"
+            prefetch={true}
             aria-label="Create details"
           >
             <HomeOutlinedIcon />
@@ -709,6 +710,7 @@ export default function Home({ params }) {
             <Link
               className="bottom-nav-item"
               href="/authorize"
+              prefetch={true}
               aria-label="Google drive"
             >
               <ExploreOutlinedIcon />
@@ -717,6 +719,7 @@ export default function Home({ params }) {
           <Link
             className="bottom-nav-item active"
             href="/viewDetails"
+            prefetch={true}
             aria-label="History"
           >
             <SearchIcon />
@@ -724,6 +727,7 @@ export default function Home({ params }) {
           <Link
             className="bottom-nav-item"
             href="/settings"
+            prefetch={true}
             aria-label="Settings"
           >
             <SettingsIcon />

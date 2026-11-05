@@ -17,6 +17,7 @@ import MenuItem from "@mui/material/MenuItem";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import CheckIcon from "@mui/icons-material/Check";
 
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import CalculateIcon from "@mui/icons-material/Calculate";
@@ -97,6 +98,21 @@ const MONTH_NAMES = [
   "December",
 ];
 
+const SHORT_MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
 export default function Page() {
   const router = useRouter();
   const [datas, setDatas] = useState([]);
@@ -110,6 +126,25 @@ export default function Page() {
   const [filterMode, setFilterMode] = useState("month"); // 'month' | 'range'
   const [selectedMonth, setSelectedMonth] = useState(dayjs().format("YYYY-MM"));
   const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showMonthDropdown, setShowMonthDropdown] = useState(false);
+  const monthDropdownRef = useRef(null);
+
+  // Compute current month and past 5 months (total 6 months)
+  const recentMonths = useMemo(() => {
+    const list = [];
+    const now = dayjs();
+    for (let i = 0; i < 6; i++) {
+      const m = now.subtract(i, "month");
+      list.push({
+        label: m.format("MMMM YYYY"),
+        value: m.format("YYYY-MM"),
+        isCurrent: i === 0,
+        monthIndex: m.month(),
+        year: m.year(),
+      });
+    }
+    return list;
+  }, []);
 
   // Staging / draft states for bottom sheet
   const [draftMode, setDraftMode] = useState("month");
@@ -537,6 +572,14 @@ export default function Page() {
   const totalBalance = totalCount?.netIncome || 0;
 
   useEffect(() => {
+    router.prefetch("/createDetail");
+    router.prefetch("/settings");
+    if (role === "admin") {
+      router.prefetch("/authorize");
+    }
+  }, [router, role]);
+
+  useEffect(() => {
     const storedHistory = window?.localStorage?.getItem("calculatorHistory");
     if (storedHistory) {
       try {
@@ -614,7 +657,57 @@ export default function Page() {
     return `${dayjs(from).format("DD/MM/YYYY")} – ${dayjs(to).format("DD/MM/YYYY")}`;
   }, [filterMode, selectedMonth, from, to]);
 
+  useEffect(() => {
+    if (!showMonthDropdown) return;
+    const handleClickOutside = (e) => {
+      if (
+        monthDropdownRef.current &&
+        !monthDropdownRef.current.contains(e.target) &&
+        !e.target.closest(".history-date-selector-btn")
+      ) {
+        setShowMonthDropdown(false);
+      }
+    };
+    window.addEventListener("click", handleClickOutside);
+    window.addEventListener("touchstart", handleClickOutside, { passive: true });
+    return () => {
+      window.removeEventListener("click", handleClickOutside);
+      window.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [showMonthDropdown]);
+
+  const handleToggleMonthDropdown = (e) => {
+    if (e && e.stopPropagation) {
+      e.stopPropagation();
+    }
+    setShowMonthDropdown((prev) => !prev);
+  };
+
+  const handleSelectDropdownMonth = (monthIndex, year) => {
+    const monthStr = `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
+    const monthObj = dayjs(`${monthStr}-01`);
+    const fromStr = monthObj.startOf("month").format("YYYY-MM-DD");
+    const toStr = monthObj.endOf("month").format("YYYY-MM-DD");
+
+    setFilterMode("month");
+    setSelectedMonth(monthStr);
+    setFrom(fromStr);
+    setTo(toStr);
+    setShowMonthDropdown(false);
+
+    const fromTimestamp = monthObj.startOf("month").startOf("day").valueOf();
+    const toTimestamp = monthObj.endOf("month").endOf("day").valueOf();
+    getDetails({
+      requestRole: role,
+      userId: selectedUser,
+      text: searchText,
+      customFrom: fromTimestamp,
+      customTo: toTimestamp,
+    });
+  };
+
   const handleOpenFilterModal = () => {
+    setShowMonthDropdown(false);
     setDraftMode(filterMode);
     const currentM = dayjs(`${selectedMonth || dayjs().format("YYYY-MM")}-01`);
     setDraftMonth(currentM.month());
@@ -1095,15 +1188,18 @@ export default function Page() {
           <div className="history-compact-filter-bar">
             <button
               type="button"
-              className="history-date-selector-btn"
-              onClick={handleOpenFilterModal}
+              className={`history-date-selector-btn ${showMonthDropdown ? "active" : ""}`}
+              onClick={handleToggleMonthDropdown}
               aria-label="Filter period selector"
+              aria-expanded={showMonthDropdown}
             >
               <div className="filter-pill-content">
                 <CalendarTodayOutlinedIcon className="filter-pill-icon" />
                 <span className="filter-pill-label">{appliedFilterLabel}</span>
               </div>
-              <KeyboardArrowDownIcon className="filter-pill-arrow" />
+              <KeyboardArrowDownIcon
+                className={`filter-pill-arrow ${showMonthDropdown ? "rotated" : ""}`}
+              />
             </button>
 
             <button
@@ -1114,6 +1210,69 @@ export default function Page() {
             >
               <FilterListIcon />
             </button>
+
+            {showMonthDropdown && (
+              <div
+                ref={monthDropdownRef}
+                className="history-month-dropdown"
+                role="dialog"
+                aria-label="Select month"
+              >
+                <div className="month-dropdown-header">
+                  <span className="month-dropdown-title">Select Month</span>
+                  <span className="month-dropdown-subtitle">Past 6 Months</span>
+                </div>
+
+                <div className="month-dropdown-list">
+                  {recentMonths.map((m) => {
+                    const isSelected =
+                      filterMode === "month" && selectedMonth === m.value;
+
+                    return (
+                      <button
+                        key={m.value}
+                        type="button"
+                        className={`month-dropdown-row ${isSelected ? "selected" : ""} ${m.isCurrent ? "current" : ""}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelectDropdownMonth(m.monthIndex, m.year);
+                        }}
+                      >
+                        <div className="month-dropdown-row-main">
+                          <span className="month-dropdown-row-label">
+                            {m.label}
+                          </span>
+                          {m.isCurrent && (
+                            <span className="month-dropdown-badge">
+                              Current
+                            </span>
+                          )}
+                        </div>
+                        {isSelected && (
+                          <CheckIcon
+                            className="month-dropdown-check-icon"
+                            fontSize="small"
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="month-dropdown-footer">
+                  <button
+                    type="button"
+                    className="month-dropdown-more-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenFilterModal();
+                    }}
+                  >
+                    Custom range or older months ➔
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="history-sort-row" aria-label="Sort history">
@@ -2085,6 +2244,7 @@ export default function Page() {
           <Link
             className="bottom-nav-item"
             href="/createDetail"
+            prefetch={true}
             aria-label="Create details"
           >
             <HomeOutlinedIcon />
@@ -2093,6 +2253,7 @@ export default function Page() {
             <Link
               className="bottom-nav-item"
               href="/authorize"
+              prefetch={true}
               aria-label="Google drive"
             >
               <ExploreOutlinedIcon />
@@ -2101,6 +2262,7 @@ export default function Page() {
           <Link
             className="bottom-nav-item active history-center-nav"
             href="/viewDetails"
+            prefetch={true}
             aria-label="History"
             onClick={(e) => {
               if (!showSearch) {
@@ -2117,6 +2279,7 @@ export default function Page() {
           <Link
             className="bottom-nav-item"
             href="/settings"
+            prefetch={true}
             aria-label="Settings"
           >
             <SettingsIcon />
