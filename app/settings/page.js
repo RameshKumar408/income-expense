@@ -234,7 +234,7 @@ export default function SettingsPage() {
             fontWeight: "500",
           }}
         >
-          Version 1.102
+          Version 1.103
         </div>
       </main>
     </div>

@@ -167,6 +167,13 @@ export default function Page() {
       e.preventDefault();
     }
     setShowSearch(true);
+    if (headerRef.current) {
+      headerRef.current.style.transition =
+        "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)";
+      headerRef.current.style.transform = "translate3d(0, 0px, 0)";
+      headerRef.current.style.pointerEvents = "auto";
+      currentTranslateRef.current = 0;
+    }
     // Synchronous focus directly inside user-gesture event handler
     // required for iOS Safari / iPhone WebApp to present virtual keyboard
     if (searchInputRef.current) {
@@ -407,7 +414,8 @@ export default function Page() {
   }, []);
   const [loading, setLoading] = useState(false);
   const [isBackgroundFetching, setIsBackgroundFetching] = useState(false);
-  const [showHeader, setShowHeader] = useState(true);
+  const headerRef = useRef(null);
+  const currentTranslateRef = useRef(0);
   const lastScrollYRef = useRef(0);
   const isInteracting = useRef(false);
 
@@ -583,47 +591,100 @@ export default function Page() {
   }, [router, role]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (typeof window !== "undefined") {
-        const currentScrollY = window.scrollY;
+    const headerEl = headerRef.current;
+    if (!headerEl || typeof window === "undefined") return;
 
-        if (loading) {
-          if (!showHeader) setShowHeader(true);
-          lastScrollYRef.current = currentScrollY;
-          return;
-        }
+    let rafId = null;
+    let snapTimeout = null;
 
-        // Prevent hiding if user is interacting with the header or has focus inside it (specifically an input)
-        const headerEl = document.getElementById("history-sticky-header");
-        const isFocused =
-          headerEl &&
-          headerEl.contains(document.activeElement) &&
-          document.activeElement.tagName === "INPUT";
+    const onScroll = () => {
+      const currentScrollY = window.scrollY;
+      const deltaY = currentScrollY - lastScrollYRef.current;
+      lastScrollYRef.current = currentScrollY;
 
-        if (isInteracting.current || isFocused) {
-          lastScrollYRef.current = currentScrollY;
-          return;
-        }
-
-        if (
-          currentScrollY > lastScrollYRef.current &&
-          currentScrollY - lastScrollYRef.current > 15 &&
-          currentScrollY > 50
-        ) {
-          setShowHeader(false);
-          lastScrollYRef.current = currentScrollY;
-        } else if (
-          currentScrollY < lastScrollYRef.current &&
-          lastScrollYRef.current - currentScrollY > 15
-        ) {
-          setShowHeader(true);
-          lastScrollYRef.current = currentScrollY;
-        }
+      // If at or near top, rubber-banding on iOS, loading, searching, or dropdown open: keep fully visible
+      if (currentScrollY <= 10 || loading || showSearch || showMonthDropdown) {
+        currentTranslateRef.current = 0;
+        headerEl.style.transition =
+          "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)";
+        headerEl.style.transform = "translate3d(0, 0px, 0)";
+        headerEl.style.pointerEvents = "auto";
+        return;
       }
+
+      // Check if user has focused an input/select inside the header or is interacting
+      const activeEl = document.activeElement;
+      const isFocused =
+        activeEl &&
+        headerEl.contains(activeEl) &&
+        (activeEl.tagName === "INPUT" ||
+          activeEl.tagName === "SELECT" ||
+          activeEl.getAttribute("role") === "combobox");
+
+      if (isInteracting.current || isFocused) {
+        currentTranslateRef.current = 0;
+        headerEl.style.transition =
+          "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)";
+        headerEl.style.transform = "translate3d(0, 0px, 0)";
+        headerEl.style.pointerEvents = "auto";
+        return;
+      }
+
+      // During active scroll: 1:1 direct tracking with NO transition delay
+      headerEl.style.transition = "none";
+      const headerHeight = headerEl.offsetHeight || 180;
+
+      // Calculate new translation
+      let nextTranslate = currentTranslateRef.current - deltaY;
+      if (nextTranslate > 0) nextTranslate = 0;
+      if (nextTranslate < -headerHeight) nextTranslate = -headerHeight;
+
+      currentTranslateRef.current = nextTranslate;
+      headerEl.style.transform = `translate3d(0, ${nextTranslate}px, 0)`;
+      headerEl.style.pointerEvents =
+        nextTranslate <= -headerHeight ? "none" : "auto";
+
+      // Settle smoothly when scroll movement ends
+      if (snapTimeout) clearTimeout(snapTimeout);
+      snapTimeout = setTimeout(() => {
+        if (typeof window === "undefined") return;
+        const scrollY = window.scrollY;
+        if (scrollY <= 10) {
+          currentTranslateRef.current = 0;
+          headerEl.style.transition =
+            "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)";
+          headerEl.style.transform = "translate3d(0, 0px, 0)";
+          headerEl.style.pointerEvents = "auto";
+        } else if (
+          currentTranslateRef.current !== 0 &&
+          currentTranslateRef.current !== -headerHeight
+        ) {
+          if (currentTranslateRef.current > -headerHeight * 0.45) {
+            currentTranslateRef.current = 0;
+          } else {
+            currentTranslateRef.current = -headerHeight;
+          }
+          headerEl.style.transition =
+            "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)";
+          headerEl.style.transform = `translate3d(0, ${currentTranslateRef.current}px, 0)`;
+          headerEl.style.pointerEvents =
+            currentTranslateRef.current <= -headerHeight ? "none" : "auto";
+        }
+      }, 140);
     };
+
+    const handleScroll = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(onScroll);
+    };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, showHeader]);
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      if (snapTimeout) clearTimeout(snapTimeout);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [loading, showSearch, showMonthDropdown]);
 
   useEffect(() => {
     if (role == "admin") {
@@ -905,7 +966,8 @@ export default function Page() {
       <main className="history-shell">
         <div
           id="history-sticky-header"
-          className={`history-sticky-wrapper ${showHeader ? "" : "hidden"}`}
+          ref={headerRef}
+          className="history-sticky-wrapper"
           onPointerDown={() => {
             isInteracting.current = true;
             setTimeout(() => {

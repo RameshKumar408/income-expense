@@ -41,7 +41,9 @@ export default function AppWrapper({ children }) {
 
   return (
     <LoaderProvider>
-      {children}
+      <div className="app-container">
+        {children}
+      </div>
       <BottomNavBar />
     </LoaderProvider>
   )

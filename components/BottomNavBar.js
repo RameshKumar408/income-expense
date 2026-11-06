@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
@@ -173,17 +173,96 @@ export default function BottomNavBar() {
     };
   }, []);
 
+  const navRef = useRef(null);
+  const [optimisticPath, setOptimisticPath] = useState(null);
+  const [bubbleStyle, setBubbleStyle] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    opacity: 0,
+    isReady: false,
+  });
+
+  useEffect(() => {
+    setOptimisticPath(null);
+  }, [pathname]);
+
+  const activePath = optimisticPath || pathname;
+  const isHome = activePath === "/createDetail";
+  const isDrive = activePath === "/authorize";
+  const isHistory =
+    activePath === "/viewDetails" || activePath.startsWith("/editDetails");
+  const isSettings = activePath === "/settings";
+
+  const updateBubblePosition = useCallback((immediate = false) => {
+    if (!navRef.current) return;
+    const activeEl = navRef.current.querySelector(".bottom-nav-item.active");
+    if (!activeEl) {
+      setBubbleStyle((prev) => ({ ...prev, opacity: 0 }));
+      return;
+    }
+
+    const navRect = navRef.current.getBoundingClientRect();
+    const itemRect = activeEl.getBoundingClientRect();
+
+    const x = itemRect.left - navRect.left;
+    const y = itemRect.top - navRect.top;
+    const width = itemRect.width;
+    const height = itemRect.height;
+
+    setBubbleStyle((prev) => ({
+      x,
+      y,
+      width,
+      height,
+      opacity: 1,
+      isReady: immediate ? true : prev.isReady,
+    }));
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateBubblePosition(false);
+      requestAnimationFrame(() => {
+        setBubbleStyle((prev) => ({ ...prev, isReady: true }));
+      });
+    }, 40);
+
+    const handleResize = () => {
+      updateBubblePosition(false);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [updateBubblePosition]);
+
+  useEffect(() => {
+    updateBubblePosition(false);
+  }, [pathname, role, optimisticPath, isKeyboardOpen, isModalOpen, updateBubblePosition]);
+
+  useEffect(() => {
+    if (!navRef.current || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => {
+      updateBubblePosition(false);
+    });
+    ro.observe(navRef.current);
+    return () => ro.disconnect();
+  }, [updateBubblePosition]);
+
   if (!pathname || HIDE_ON_PATHS.includes(pathname)) {
     return null;
   }
 
-  const isHome = pathname === "/createDetail";
-  const isDrive = pathname === "/authorize";
-  const isHistory =
-    pathname === "/viewDetails" || pathname.startsWith("/editDetails");
-  const isSettings = pathname === "/settings";
+  const handleTabClick = (targetPath) => {
+    setOptimisticPath(targetPath);
+  };
 
   const handleHistoryClick = (e) => {
+    setOptimisticPath("/viewDetails");
     if (pathname === "/viewDetails") {
       // Dispatches event to viewDetails page to toggle or focus search
       e.preventDefault();
@@ -195,15 +274,28 @@ export default function BottomNavBar() {
 
   return (
     <nav
-      className={`bottom-nav ${isHistory ? "history-bottom-nav" : ""} ${isKeyboardOpen ? "keyboard-hidden" : ""} ${isModalOpen ? "modal-hidden" : ""}`}
+      ref={navRef}
+      className={`bottom-nav bottom-navigation ${isHistory ? "history-bottom-nav" : ""} ${isKeyboardOpen ? "keyboard-hidden" : ""} ${isModalOpen ? "modal-hidden" : ""}`}
       style={shouldHide ? { display: "none" } : undefined}
       aria-label="Main actions"
     >
+      <div
+        className={`bottom-nav-bubble ${bubbleStyle.isReady ? "has-transition" : ""}`}
+        style={{
+          transform: `translate3d(${bubbleStyle.x}px, ${bubbleStyle.y}px, 0)`,
+          width: bubbleStyle.width > 0 ? `${bubbleStyle.width}px` : "0px",
+          height: bubbleStyle.height > 0 ? `${bubbleStyle.height}px` : "0px",
+          opacity: bubbleStyle.opacity,
+        }}
+        aria-hidden="true"
+      />
+
       <Link
         className={`bottom-nav-item ${isHome ? "active" : ""}`}
         href="/createDetail"
         prefetch={true}
         aria-label="Create details"
+        onClick={() => handleTabClick("/createDetail")}
       >
         <HomeOutlinedIcon />
       </Link>
@@ -214,6 +306,7 @@ export default function BottomNavBar() {
           href="/authorize"
           prefetch={true}
           aria-label="Google drive"
+          onClick={() => handleTabClick("/authorize")}
         >
           <ExploreOutlinedIcon />
         </Link>
@@ -234,6 +327,7 @@ export default function BottomNavBar() {
         href="/settings"
         prefetch={true}
         aria-label="Settings"
+        onClick={() => handleTabClick("/settings")}
       >
         <SettingsIcon />
       </Link>
