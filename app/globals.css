@@ -27,7 +27,7 @@ input,
 button,
 select,
 textarea {
-    font-family: var(--font-family-base);
+    font-family: var(--font-family-base) !important;
 }
 
 /* Enforce Montserrat across all Material UI components */
@@ -295,6 +295,20 @@ body {
     box-shadow:
         inset 0 1px 2px rgba(255, 255, 255, 0.1),
         0 12px 32px rgba(212, 160, 23, 0.25) !important;
+}
+
+/* Swiftly hide and collapse old dismissed toasts when a new toast arrives */
+.Toastify__toast[data-in="false"] {
+    opacity: 0 !important;
+    max-height: 0 !important;
+    min-height: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+    transition: opacity 0.15s ease, max-height 0.15s ease, min-height 0.15s ease, margin 0.15s ease, padding 0.15s ease !important;
 }
 
 .liquid-toast-body,

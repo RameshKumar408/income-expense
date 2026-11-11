@@ -86,7 +86,7 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-title" content="Expenses" />
         <meta name="theme-color" content="#000000" />
       </head>
-      <body className={`${inter.className} ${inter.variable} ${dmSans.variable} ${manrope.variable} ${plusJakartaSans.variable}`}>
+      <body className={`${inter.variable} ${dmSans.variable} ${manrope.variable} ${plusJakartaSans.variable}`}>
         <ToastContainer 
           closeOnClick 
           theme="dark" 
