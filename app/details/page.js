@@ -584,6 +584,8 @@ export default function Analytics() {
                 display: "flex",
                 flexDirection: "column",
                 overflow: "hidden",
+                background: "#000000",
+                backgroundColor: "#000000",
               }}
             >
               <div className="record-detail-head" style={{ flexShrink: 0 }}>

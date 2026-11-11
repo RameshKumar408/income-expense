@@ -1723,27 +1723,28 @@ body:has([contenteditable="true"]:focus) .bottom-navigation,
 .record-detail-overlay {
   position: fixed;
   inset: 0;
-  z-index: 38;
+  z-index: 10000;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   padding: 14px 14px calc(14px + env(safe-area-inset-bottom, 0px)) 14px;
-  border: 2px var(--border-input);
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .record-detail-sheet {
   box-sizing: border-box;
   width: min(100%, 430px);
   padding: 18px 18px calc(18px + env(safe-area-inset-bottom, 0px)) 18px;
-  border: 1px solid var(--border-input);
+  border: 1px solid rgba(212, 160, 23, 0.35);
   border-radius: 20px 20px 16px 16px;
   color: var(--text-primary);
-  background: rgba(10, 10, 10, 0.4);
-  backdrop-filter: blur(30px) saturate(140%);
-  -webkit-backdrop-filter: blur(30px) saturate(140%);
+  background: #000000 !important;
   box-shadow:
-    0 -20px 50px rgba(212, 160, 23, 0.1),
-    inset 0 1px 0 rgba(212, 160, 23, 0.15);
+    0 -12px 40px rgba(0, 0, 0, 0.95),
+    0 0 24px rgba(212, 160, 23, 0.12),
+    inset 0 1px 0 rgba(212, 160, 23, 0.2);
 }
 
 .record-detail-head {
