@@ -17,6 +17,10 @@
     --font-family-base: var(--font-plus-jakarta-sans), 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
+[data-font="Comic Sans MS"] {
+    --font-family-base: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', 'Comic Neue', cursive, sans-serif;
+}
+
 html,
 body,
 input,

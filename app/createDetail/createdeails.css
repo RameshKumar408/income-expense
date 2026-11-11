@@ -517,6 +517,7 @@
   font-weight: 700;
 }
 
+.add-data-btn,
 .add-data-btn.MuiButton-root {
   width: 100%;
   min-height: 72px;
@@ -540,8 +541,12 @@
   transition:
     transform 0.2s,
     box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.add-data-btn:hover,
 .add-data-btn.MuiButton-root:hover {
   background: linear-gradient(
     90deg,
@@ -553,6 +558,38 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
     0 16px 32px rgba(212, 160, 23, 0.4);
+}
+
+.add-data-btn.is-submitting {
+  opacity: 0.95;
+}
+
+.submit-btn-loader {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  line-height: 1;
+}
+
+.submit-btn-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(26, 16, 0, 0.25);
+  border-top-color: #1a1000;
+  border-radius: 50%;
+  animation: submit-btn-spin 0.7s linear infinite;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+@keyframes submit-btn-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .swipe-up-switch-hint {
@@ -657,6 +694,29 @@ body:has([contenteditable="true"]:focus) .bottom-navigation,
   top: 0;
   left: 0;
   border-radius: 999px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, width, height;
+}
+
+.bottom-nav-bubble.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.bottom-nav-bubble.has-transition {
+  transition:
+    transform 0.38s cubic-bezier(0.34, 1.45, 0.64, 1),
+    width 0.25s ease,
+    height 0.25s ease;
+}
+
+.bottom-nav-bubble-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
   background: linear-gradient(
     145deg,
     var(--brand-gradient-start),
@@ -665,17 +725,18 @@ body:has([contenteditable="true"]:focus) .bottom-navigation,
   box-shadow:
     0 8px 24px rgba(212, 160, 23, 0.4),
     inset 0 2px 4px rgba(255, 255, 255, 0.3);
-  pointer-events: none;
-  z-index: 1;
-  will-change: transform, width, height;
+  animation: bubbleBloom 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.bottom-nav-bubble.has-transition {
-  transition:
-    transform 0.38s cubic-bezier(0.34, 1.45, 0.64, 1),
-    width 0.25s ease,
-    height 0.25s ease,
-    opacity 0.2s ease;
+@keyframes bubbleBloom {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .bottom-nav-item {
@@ -1884,11 +1945,18 @@ body:has([contenteditable="true"]:focus) .bottom-navigation,
     font-size: 12px;
   }
 
+  .add-data-btn,
   .add-data-btn.MuiButton-root {
     min-height: 48px;
     margin-top: 2px;
     border-radius: 12px;
     font-size: 14px;
+  }
+
+  .submit-btn-spinner {
+    width: 20px;
+    height: 20px;
+    border-width: 2.5px;
   }
 
   .bottom-nav,
@@ -2507,6 +2575,10 @@ body:has([contenteditable="true"]:focus) .bottom-navigation,
 
   .bottom-nav-bubble {
     border-radius: 16px;
+  }
+
+  .bottom-nav-bubble-inner {
+    border-radius: 16px;
     background: rgba(255, 255, 255, 0.08);
     box-shadow: none;
   }
@@ -2683,6 +2755,10 @@ body:has([contenteditable="true"]:focus) .bottom-navigation,
   }
 
   .bottom-nav-bubble {
+    border-radius: 16px;
+  }
+
+  .bottom-nav-bubble-inner {
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.08);
     box-shadow: none;
@@ -3340,5 +3416,343 @@ body:has([contenteditable="true"]:focus) .bottom-navigation,
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* ==========================================================================
+   iOS Inset Grouped Settings
+   ========================================================================== */
+
+.ios-settings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 100%;
+}
+
+.ios-settings-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.ios-settings-section-title {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #d4a017;
+  margin: 0 0 10px 14px;
+}
+
+.ios-settings-card {
+  background: rgba(12, 14, 20, 0.65);
+  backdrop-filter: blur(28px) saturate(150%);
+  -webkit-backdrop-filter: blur(28px) saturate(150%);
+  border: 1px solid rgba(212, 160, 23, 0.22);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.ios-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  min-height: 52px;
+  gap: 12px;
+  transition: background-color 0.15s ease;
+}
+
+.ios-settings-row:not(:last-child) {
+  border-bottom: 1px solid rgba(212, 160, 23, 0.12);
+}
+
+.ios-settings-row.clickable {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.ios-settings-row.clickable:active {
+  background-color: rgba(212, 160, 23, 0.06);
+}
+
+.ios-settings-row-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ios-settings-icon-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  background: rgba(212, 160, 23, 0.12);
+  border: 1px solid rgba(212, 160, 23, 0.25);
+  color: #d4a017;
+}
+
+.ios-settings-icon-pill.danger {
+  background: rgba(255, 69, 91, 0.12);
+  border: 1px solid rgba(255, 69, 91, 0.3);
+  color: #ff455b;
+}
+
+.ios-settings-row-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ios-settings-row-subtext {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 500;
+}
+
+.ios-settings-row-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Profile Card */
+.ios-profile-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 16px;
+  border-bottom: 1px solid rgba(212, 160, 23, 0.12);
+}
+
+.ios-profile-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd88a, #d4a017 60%, #805200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #111111;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 18px rgba(212, 160, 23, 0.4);
+  flex-shrink: 0;
+}
+
+.ios-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ios-profile-email {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ios-role-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  width: fit-content;
+}
+
+.ios-role-pill.admin {
+  background: rgba(212, 160, 23, 0.2);
+  color: #ffd88a;
+  border: 1px solid rgba(212, 160, 23, 0.45);
+}
+
+.ios-role-pill.member {
+  background: rgba(212, 160, 23, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(212, 160, 23, 0.25);
+}
+
+/* Toggle Switch */
+.ios-toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.ios-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.ios-toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 30px;
+  border: 1px solid rgba(212, 160, 23, 0.25);
+}
+
+.ios-toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 24px;
+  width: 24px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #ffffff;
+  transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.ios-toggle-switch input:checked + .ios-toggle-slider {
+  background: linear-gradient(135deg, #ffd88a, #d4a017);
+  border-color: #ffd88a;
+  box-shadow: 0 0 16px rgba(212, 160, 23, 0.4);
+}
+
+.ios-toggle-switch input:checked + .ios-toggle-slider:before {
+  transform: translateX(20px);
+  background-color: #111111;
+}
+
+/* Logout Confirmation Modal */
+.ios-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 999999;
+  padding: 16px;
+  animation: fadeInConfirm 0.2s ease;
+}
+
+.ios-confirm-card {
+  width: 100%;
+  max-width: 420px;
+  background: #141418;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
+  animation: slideUpConfirm 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-bottom: max(12px, env(safe-area-inset-bottom, 12px));
+}
+
+.ios-confirm-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 69, 91, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.ios-confirm-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.ios-confirm-card p {
+  margin: 0 0 22px 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.45;
+}
+
+.ios-confirm-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.ios-confirm-btn {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.ios-confirm-btn:active {
+  transform: scale(0.98);
+}
+
+.ios-confirm-btn.danger {
+  background: #ff455b;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(255, 69, 91, 0.35);
+}
+
+.ios-confirm-btn.cancel {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+@keyframes fadeInConfirm {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpConfirm {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

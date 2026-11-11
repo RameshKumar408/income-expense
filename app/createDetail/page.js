@@ -66,6 +66,9 @@ export default function Home() {
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("Expense");
   const [TimeStamp, setTimeStamp] = useState(dayjs().valueOf());
+  const [submittingCount, setSubmittingCount] = useState(0);
+  const isSubmitting = submittingCount > 0;
+  const topicInputRef = useRef(null);
 
   const [selectedDateError, setSelectedDateError] = useState("");
   const [topicError, setTopicError] = useState("");
@@ -360,105 +363,162 @@ export default function Home() {
     },
   };
 
+  const restoreFields = (data) => {
+    if (!data) return;
+    setTopic(data.rawTopic ?? data.Title ?? "");
+    setDescription(data.rawDescription ?? data.Description ?? "");
+    setAmount(data.rawAmount ?? data.Amount ?? "");
+    setType(data.rawType ?? data.Type ?? "Expense");
+    if (data.rawDateValue) {
+      setDateValue(data.rawDateValue);
+    }
+    if (data.rawSelectedDate) {
+      setSelectedDate(data.rawSelectedDate);
+    }
+    if (data.rawTimeStamp) {
+      setTimeStamp(data.rawTimeStamp);
+    }
+    setTimeout(() => {
+      topicInputRef.current?.focus?.();
+    }, 50);
+  };
+
   const handleSubmit = async (e) => {
     try {
-      e?.preventDefault();
+      e?.preventDefault?.();
       if (selectedDate == "" || selectedDate == undefined) {
         setSelectedDateError("Please Select Date");
-      } else if (topic == "") {
+        return;
+      }
+      if (topic == "" || !topic.trim()) {
         setTopicError("Please Enter Topic");
-      } else if (amount == "" || amount == 0) {
+        return;
+      }
+      if (amount == "" || amount == 0) {
         setAmountError("Please Enter Amount");
-      } else if (type == "") {
+        return;
+      }
+      if (type == "") {
         setTypeError("Please Select Type");
-      } else {
-        const payload = {
-          Title: topic,
-          Amount: amount,
-          Type: type,
-          Description: description,
-          Date: selectedDate,
-          TimeStamp: TimeStamp,
-        };
+        return;
+      }
 
-        const activeToken = window.localStorage.getItem("token") || "";
-        const activeEmail =
-          window.localStorage.getItem("activeAccount") ||
-          currentUser?.email ||
-          "";
+      const submittedData = {
+        Title: topic.trim(),
+        Amount: amount,
+        Type: type,
+        Description: description ? description.trim() : "",
+        Date: selectedDate,
+        TimeStamp: TimeStamp,
+        rawTopic: topic,
+        rawAmount: amount,
+        rawDescription: description,
+        rawType: type,
+        rawDateValue: dateValue,
+        rawSelectedDate: selectedDate,
+        rawTimeStamp: TimeStamp,
+      };
 
-        const resetForm = () => {
-          setDateValue(dayjs());
-          setSelectedDate(dayjs().format("YYYY-MM-DD"));
-          setTopic("");
-          setDescription("");
-          setAmount("");
-          setType("Expense");
-          setTimeStamp(dayjs().valueOf());
-          setSelectedDateError("");
-          setTopicError("");
-          setDescriptionError("");
-          setAmountError("");
-          setTypeError("");
-          setIsSuggestionsExpanded(false);
-          hideLoader();
-          if (typeof document !== "undefined") {
-            document.activeElement?.blur?.();
-          }
-          if (typeof window !== "undefined") {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            setTimeout(() => {
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }, 100);
-          }
-        };
+      const payload = {
+        Title: submittedData.Title,
+        Amount: submittedData.Amount,
+        Type: submittedData.Type,
+        Description: submittedData.Description,
+        Date: submittedData.Date,
+        TimeStamp: submittedData.TimeStamp,
+      };
 
-        // If currently offline, queue immediately without waiting on network timeout
-        if (typeof navigator !== "undefined" && !navigator.onLine) {
-          enqueueOfflineTransaction(payload, {
-            email: activeEmail,
-            token: activeToken,
-          });
-          resetForm();
+      const activeToken = window.localStorage.getItem("token") || "";
+      const activeEmail =
+        window.localStorage.getItem("activeAccount") ||
+        currentUser?.email ||
+        "";
+
+      // Immediately clear inputs so the user can enter next data while this request is adding
+      setDateValue(dayjs());
+      setSelectedDate(dayjs().format("YYYY-MM-DD"));
+      setTimeStamp(dayjs().valueOf());
+      setTopic("");
+      setDescription("");
+      setAmount("");
+      setType("Expense");
+      setSelectedDateError("");
+      setTopicError("");
+      setDescriptionError("");
+      setAmountError("");
+      setTypeError("");
+      setIsSuggestionsExpanded(false);
+
+      // Re-focus topic input so the user can seamlessly type next data immediately
+      // setTimeout(() => {
+      //   topicInputRef.current?.focus?.();
+      // }, 50);
+
+      // Increment submitting count to show loader on the submit button (not full screen)
+      setSubmittingCount((prev) => prev + 1);
+
+      // If currently offline, queue immediately without waiting on network timeout
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        const queued = enqueueOfflineTransaction(payload, {
+          email: activeEmail,
+          token: activeToken,
+        });
+        if (queued) {
           toast.info(
             `Saved offline for ${activeEmail}. Will auto-sync when online 📶`,
           );
-          return;
+        } else {
+          restoreFields(submittedData);
+          toast.error("Failed to save data. Previous inputs restored.");
         }
+        setSubmittingCount((prev) => Math.max(0, prev - 1));
+        return;
+      }
 
-        showLoader();
-        try {
-          const res = await fetch(`${constant?.Live_url}/api/incomes`, {
-            method: "POST",
-            headers: {
-              "Content-type": "application/json",
-              authorization: activeToken,
-            },
-            body: JSON.stringify(payload),
-          });
+      // Online submission (runs in background without blocking UI or showing full-screen loader)
+      try {
+        const res = await fetch(`${constant?.Live_url}/api/incomes`, {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            authorization: activeToken,
+          },
+          body: JSON.stringify(payload),
+        });
 
-          if (res?.ok) {
-            toast.success("Created Successfully");
-            clearRangeDataCache();
-            resetForm();
-          } else {
-            hideLoader();
-            toast.error("Something went wrong");
-          }
-        } catch (fetchErr) {
-          // If network failed mid-request (e.g. signal dropped), save to offline queue
-          enqueueOfflineTransaction(payload, {
-            email: activeEmail,
-            token: activeToken,
-          });
-          resetForm();
+        if (res?.ok) {
+          toast.success("Created Successfully");
+          clearRangeDataCache();
+        } else {
+          restoreFields(submittedData);
+          let errMsg = "Failed to create data. Previous inputs restored.";
+          try {
+            const errJson = await res.json();
+            if (errJson?.message) {
+              errMsg = `${errJson.message}. Previous inputs restored.`;
+            }
+          } catch (_) {}
+          toast.error(errMsg);
+        }
+      } catch (fetchErr) {
+        console.error("Data creation error:", fetchErr);
+        // Fallback to offline queue if network disconnected
+        const queued = enqueueOfflineTransaction(payload, {
+          email: activeEmail,
+          token: activeToken,
+        });
+        if (queued) {
           toast.info(
             `Saved offline for ${activeEmail}. Will auto-sync when online 📶`,
           );
+        } else {
+          restoreFields(submittedData);
+          toast.error("Failed to create data. Previous inputs restored.");
         }
+      } finally {
+        setSubmittingCount((prev) => Math.max(0, prev - 1));
       }
     } catch (error) {
-      hideLoader();
       console.log("🚀 ~ handleSubmit ~ error:", error);
     }
   };
@@ -943,12 +1003,19 @@ export default function Home() {
                 Title<span>*</span>
               </label>
               <LiquidTextField
+                inputRef={topicInputRef}
                 value={topic}
                 placeholder="Title"
                 variant="outlined"
                 onChange={(e) => {
                   setTopic(e.target.value);
                   setTopicError("");
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleSubmit(e);
+                  }
                 }}
                 fullWidth
                 InputProps={{
@@ -1051,6 +1118,12 @@ export default function Home() {
                   setDescription(e.target.value);
                   setDescriptionError("");
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit(e);
+                  }
+                }}
                 fullWidth
                 InputProps={{
                   endAdornment: description
@@ -1080,7 +1153,13 @@ export default function Home() {
                   variant="outlined"
                   onChange={(e) => {
                     setAmount(e.target.value);
-                    setAmountError();
+                    setAmountError("");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSubmit(e);
+                    }
                   }}
                   fullWidth
                   InputProps={{
@@ -1116,7 +1195,19 @@ export default function Home() {
               </div>
             </div>
 
-            <PrimaryButton type="submit">Add Data</PrimaryButton>
+            <PrimaryButton
+              type="submit"
+              className={`add-data-btn ${isSubmitting ? "is-submitting" : ""}`}
+              aria-busy={isSubmitting}
+            >
+              {isSubmitting ? (
+                <span className="submit-btn-loader" aria-label="Adding...">
+                  <span className="submit-btn-spinner" />
+                </span>
+              ) : (
+                "Add Data"
+              )}
+            </PrimaryButton>
 
             {/* {isMobile && accounts.length > 1 && (
               <div

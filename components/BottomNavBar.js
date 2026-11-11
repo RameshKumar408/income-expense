@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useLayoutEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
+
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const HIDE_ON_PATHS = ["/", "/register", "/authtoken", "/details"];
 
@@ -180,8 +183,8 @@ export default function BottomNavBar() {
     y: 0,
     width: 0,
     height: 0,
-    opacity: 0,
-    isReady: false,
+    hasPosition: false,
+    hasTransition: false,
   });
 
   useEffect(() => {
@@ -195,16 +198,22 @@ export default function BottomNavBar() {
     activePath === "/viewDetails" || activePath.startsWith("/editDetails");
   const isSettings = activePath === "/settings";
 
-  const updateBubblePosition = useCallback((immediate = false) => {
+  const updateBubblePosition = useCallback((enableTransition = false) => {
     if (!navRef.current) return;
     const activeEl = navRef.current.querySelector(".bottom-nav-item.active");
     if (!activeEl) {
-      setBubbleStyle((prev) => ({ ...prev, opacity: 0 }));
+      setBubbleStyle((prev) => ({ ...prev, hasPosition: false }));
       return;
     }
 
     const navRect = navRef.current.getBoundingClientRect();
     const itemRect = activeEl.getBoundingClientRect();
+
+    // If navbar or active tab is hidden (e.g. modal open, keyboard open, display: none),
+    // getBoundingClientRect returns 0. NEVER overwrite valid coordinates with 0!
+    if (navRect.width === 0 || itemRect.width === 0) {
+      return;
+    }
 
     const x = itemRect.left - navRect.left;
     const y = itemRect.top - navRect.top;
@@ -216,21 +225,26 @@ export default function BottomNavBar() {
       y,
       width,
       height,
-      opacity: 1,
-      isReady: immediate ? true : prev.isReady,
+      hasPosition: true,
+      hasTransition: enableTransition || prev.hasTransition,
     }));
   }, []);
 
-  useEffect(() => {
+  const shouldHide = isKeyboardOpen || isModalOpen;
+
+  // Synchronous measurement before first paint: places bubble directly at active tab with NO transition
+  useIsomorphicLayoutEffect(() => {
+    updateBubblePosition(false);
+
+    // After initial placement and entrance bloom, enable smooth slide transitions for tab switching
     const timer = setTimeout(() => {
-      updateBubblePosition(false);
-      requestAnimationFrame(() => {
-        setBubbleStyle((prev) => ({ ...prev, isReady: true }));
-      });
-    }, 40);
+      setBubbleStyle((prev) => ({ ...prev, hasTransition: true }));
+    }, 200);
 
     const handleResize = () => {
-      updateBubblePosition(false);
+      if (!shouldHide) {
+        updateBubblePosition(false);
+      }
     };
 
     window.addEventListener("resize", handleResize);
@@ -238,20 +252,29 @@ export default function BottomNavBar() {
       clearTimeout(timer);
       window.removeEventListener("resize", handleResize);
     };
-  }, [updateBubblePosition]);
+  }, [shouldHide, updateBubblePosition]);
 
-  useEffect(() => {
-    updateBubblePosition(false);
-  }, [pathname, role, optimisticPath, isKeyboardOpen, isModalOpen, updateBubblePosition]);
+  // When active route or role updates, glide smoothly to the new tab
+  useIsomorphicLayoutEffect(() => {
+    if (shouldHide) return;
+    updateBubblePosition(Boolean(optimisticPath));
+  }, [pathname, role, optimisticPath, shouldHide, updateBubblePosition]);
 
   useEffect(() => {
     if (!navRef.current || typeof ResizeObserver === "undefined") return;
-    const ro = new ResizeObserver(() => {
-      updateBubblePosition(false);
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width === 0 && entry.contentRect.height === 0) {
+          return;
+        }
+      }
+      if (!shouldHide) {
+        updateBubblePosition(false);
+      }
     });
     ro.observe(navRef.current);
     return () => ro.disconnect();
-  }, [updateBubblePosition]);
+  }, [shouldHide, updateBubblePosition]);
 
   if (!pathname || HIDE_ON_PATHS.includes(pathname)) {
     return null;
@@ -270,8 +293,6 @@ export default function BottomNavBar() {
     }
   };
 
-  const shouldHide = isKeyboardOpen || isModalOpen;
-
   return (
     <nav
       ref={navRef}
@@ -280,15 +301,18 @@ export default function BottomNavBar() {
       aria-label="Main actions"
     >
       <div
-        className={`bottom-nav-bubble ${bubbleStyle.isReady ? "has-transition" : ""}`}
+        className={`bottom-nav-bubble ${bubbleStyle.hasTransition ? "has-transition" : ""} ${bubbleStyle.hasPosition ? "is-visible" : ""}`}
         style={{
           transform: `translate3d(${bubbleStyle.x}px, ${bubbleStyle.y}px, 0)`,
           width: bubbleStyle.width > 0 ? `${bubbleStyle.width}px` : "0px",
           height: bubbleStyle.height > 0 ? `${bubbleStyle.height}px` : "0px",
-          opacity: bubbleStyle.opacity,
+          opacity: bubbleStyle.hasPosition ? 1 : 0,
+          visibility: bubbleStyle.hasPosition ? "visible" : "hidden",
         }}
         aria-hidden="true"
-      />
+      >
+        <div className="bottom-nav-bubble-inner" />
+      </div>
 
       <Link
         className={`bottom-nav-item ${isHome ? "active" : ""}`}
