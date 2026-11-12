@@ -23,6 +23,7 @@ import {
   syncOfflineTransactions,
 } from "@/libs/offlineSync";
 import { clearRangeDataCache } from "@/libs/dataCache";
+import { triggerHaptic } from "@/libs/haptics";
 
 const FONT_OPTIONS = [
   { label: "Inter", value: "Inter", font: "var(--font-inter), sans-serif" },
@@ -132,8 +133,8 @@ export default function SettingsPage() {
     const nextVal = !hapticsEnabled;
     setHapticsEnabled(nextVal);
     window.localStorage.setItem("hapticsEnabled", nextVal ? "1" : "0");
-    if (nextVal && navigator?.vibrate) {
-      navigator.vibrate(25);
+    if (nextVal) {
+      triggerHaptic(30);
     }
     toast.success(
       nextVal ? "Haptic vibrations enabled" : "Haptic vibrations disabled",

@@ -4,6 +4,7 @@ import { LoaderProvider } from './context/LoaderContext'
 import { useEffect } from 'react'
 import { toast } from 'react-toastify'
 import '@/libs/setupToast'
+import '@/libs/haptics'
 import { syncOfflineTransactions } from '@/libs/offlineSync'
 import BottomNavBar from '@/components/BottomNavBar'
 

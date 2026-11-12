@@ -48,6 +48,7 @@ import { useLoader } from "@/app/context/LoaderContext";
 import dayjs from "dayjs";
 import { clearRangeDataCache, fetchDeduplicated } from "@/libs/dataCache";
 import { enqueueOfflineTransaction } from "@/libs/offlineSync";
+import { triggerHaptic } from "@/libs/haptics";
 
 export default function Home() {
   const router = useRouter();
@@ -488,6 +489,7 @@ export default function Home() {
 
         if (res?.ok) {
           toast.success("Created Successfully");
+          triggerHaptic(12);
           clearRangeDataCache();
         } else {
           restoreFields(submittedData);
