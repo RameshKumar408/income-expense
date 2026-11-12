@@ -48,6 +48,11 @@ const FONT_OPTIONS = [
     font: "'Plus Jakarta Sans', sans-serif",
   },
   {
+    label: "Playfair Display",
+    value: "Playfair Display",
+    font: "'Playfair Display', Georgia, serif",
+  },
+  {
     label: "Comic Sans MS",
     value: "Comic Sans MS",
     font: "'Comic Sans MS', 'Comic Sans', cursive, sans-serif",
@@ -593,7 +598,7 @@ export default function SettingsPage() {
                   : "Mobile Web Browser"}
               </span>
             </div>
-            <div>Expenses Tracker • Version 1.110</div>
+            <div>Expenses Tracker • Version 1.112</div>
           </div>
         </div>
       </main>
