@@ -48,7 +48,6 @@ import { useLoader } from "@/app/context/LoaderContext";
 import dayjs from "dayjs";
 import { clearRangeDataCache, fetchDeduplicated } from "@/libs/dataCache";
 import { enqueueOfflineTransaction } from "@/libs/offlineSync";
-import { triggerHaptic } from "@/libs/haptics";
 import { animatePillToInput, cleanupFlyingPills } from "@/libs/animatePill";
 
 export default function Home() {
@@ -500,7 +499,6 @@ export default function Home() {
 
         if (res?.ok) {
           toast.success("Created Successfully");
-          triggerHaptic(12);
           clearRangeDataCache();
         } else {
           restoreFields(submittedData);
@@ -762,9 +760,6 @@ export default function Home() {
         accounts.length > 1
       ) {
         setShowAccountMenu(true);
-        if (typeof navigator !== "undefined" && navigator.vibrate) {
-          navigator.vibrate(12);
-        }
       }
       touchStartY.current = 0;
       touchDeltaY.current = 0;

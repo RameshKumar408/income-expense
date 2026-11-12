@@ -43,7 +43,7 @@ export const metadata = {
   appleWebApp: {
     capable: true,
     title: "Expenses",
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "black",
   },
 };
 
@@ -81,12 +81,16 @@ export default function RootLayout({ children }) {
           }}
         />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
         <meta name="apple-mobile-web-app-title" content="Expenses" />
         <meta name="theme-color" content="#000000" />
       </head>
-      <body className={`${inter.variable} ${dmSans.variable} ${manrope.variable} ${plusJakartaSans.variable}`}>
+      <body
+        className={`${inter.variable} ${dmSans.variable} ${manrope.variable} ${plusJakartaSans.variable}`}
+        suppressHydrationWarning
+      >
         <ToastContainer 
           closeOnClick 
           theme="dark" 

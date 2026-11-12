@@ -1,5 +1,3 @@
-import { triggerHaptic } from "./haptics";
-
 const activePills = new Set();
 
 export function cleanupFlyingPills() {
@@ -21,8 +19,6 @@ export function animatePillToInput({
   text,
   onComplete,
 }) {
-  triggerHaptic(12);
-
   const prefersReducedMotion =
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -96,22 +92,76 @@ export function animatePillToInput({
     try {
       flyingPill.remove();
     } catch (e) {}
-
     onComplete?.();
 
-    // Trigger arrival accent glow on the input container
     const containerEl =
-      targetInputEl.closest(".MuiOutlinedInput-root") || targetInputEl;
+      targetInputEl.closest(".MuiOutlinedInput-root") ||
+      targetInputEl.parentElement ||
+      targetInputEl;
+
     if (containerEl) {
+      // 1. Hardware-accelerated Web Animations API directly on input container
+      try {
+        containerEl.animate(
+          [
+            {
+              boxShadow:
+                "inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 0 0 rgba(212, 160, 23, 0)",
+              backgroundColor: "rgba(255, 255, 255, 0.04)",
+            },
+            {
+              boxShadow:
+                "inset 0 1px 4px rgba(255, 255, 255, 0.35), 0 0 32px rgba(212, 160, 23, 0.9), 0 0 16px rgba(255, 215, 0, 0.8)",
+              backgroundColor: "rgba(212, 160, 23, 0.18)",
+            },
+            {
+              boxShadow:
+                "inset 0 1px 2px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.4)",
+              backgroundColor: "rgba(255, 255, 255, 0.03)",
+            },
+          ],
+          {
+            duration: 1000,
+            easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+          },
+        );
+      } catch (e) {}
+
+      // 2. Animate fieldset outline where MUI actually renders the border
+      const fieldsetEl = containerEl.querySelector("fieldset");
+      if (fieldsetEl) {
+        try {
+          fieldsetEl.animate(
+            [
+              {
+                borderColor: "rgba(212, 160, 23, 0.45)",
+                borderWidth: "1.5px",
+              },
+              {
+                borderColor: "#ffd700",
+                borderWidth: "2.5px",
+              },
+              {
+                borderColor: "rgba(212, 160, 23, 0.45)",
+                borderWidth: "1.5px",
+              },
+            ],
+            {
+              duration: 1000,
+              easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+            },
+          );
+        } catch (e) {}
+      }
+
+      // 3. Fallback CSS animation class with reflow
       containerEl.classList.remove("input-arrival-glow");
       void containerEl.offsetWidth; // Force reflow
       containerEl.classList.add("input-arrival-glow");
       setTimeout(() => {
         containerEl.classList.remove("input-arrival-glow");
-      }, 500);
+      }, 1200);
     }
-
-    triggerHaptic(10);
   };
 
   animation.onfinish = finish;

@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import FontDownloadOutlinedIcon from "@mui/icons-material/FontDownloadOutlined";
-import VibrationIcon from "@mui/icons-material/Vibration";
 import WifiIcon from "@mui/icons-material/Wifi";
 import WifiOffIcon from "@mui/icons-material/WifiOff";
 import SyncIcon from "@mui/icons-material/Sync";
@@ -23,7 +22,6 @@ import {
   syncOfflineTransactions,
 } from "@/libs/offlineSync";
 import { clearRangeDataCache } from "@/libs/dataCache";
-import { triggerHaptic } from "@/libs/haptics";
 
 const FONT_OPTIONS = [
   { label: "Inter", value: "Inter", font: "var(--font-inter), sans-serif" },
@@ -61,7 +59,6 @@ export default function SettingsPage() {
 
   // Preference State
   const [selectedFont, setSelectedFont] = useState("Inter");
-  const [hapticsEnabled, setHapticsEnabled] = useState(true);
 
   // Connection & Offline State
   const [isOnline, setIsOnline] = useState(true);
@@ -77,13 +74,11 @@ export default function SettingsPage() {
     const list = JSON.parse(window.localStorage.getItem("accounts") || "[]");
     const currentRole = window.localStorage.getItem("roles") || "";
     const savedFont = window.localStorage.getItem("appFont") || "Inter";
-    const savedHaptics = window.localStorage.getItem("hapticsEnabled");
 
     setActiveAccount(currentActive);
     setAccounts(list);
     setRole(currentRole);
     setSelectedFont(savedFont);
-    setHapticsEnabled(savedHaptics !== "0");
 
     // Network & Offline Status
     setIsOnline(navigator.onLine);
@@ -127,18 +122,6 @@ export default function SettingsPage() {
       document.documentElement.setAttribute("data-font", newFont);
     }
     toast.success(`Font changed to ${newFont}`);
-  };
-
-  const handleToggleHaptics = () => {
-    const nextVal = !hapticsEnabled;
-    setHapticsEnabled(nextVal);
-    window.localStorage.setItem("hapticsEnabled", nextVal ? "1" : "0");
-    if (nextVal) {
-      triggerHaptic(30);
-    }
-    toast.success(
-      nextVal ? "Haptic vibrations enabled" : "Haptic vibrations disabled",
-    );
   };
 
   const handleSwitchAccount = (account) => {
@@ -432,34 +415,6 @@ export default function SettingsPage() {
                   </FormControl>
                 </div>
               </div>
-
-              {/* Haptic Vibrations Row */}
-              <div className="ios-settings-row">
-                <div className="ios-settings-row-left">
-                  <div className="ios-settings-icon-pill">
-                    <VibrationIcon sx={{ fontSize: 18 }} />
-                  </div>
-                  <div>
-                    <div className="ios-settings-row-label">
-                      Haptic Vibrations
-                    </div>
-                    <div className="ios-settings-row-subtext">
-                      Touch feedback for gestures & taps
-                    </div>
-                  </div>
-                </div>
-                <div className="ios-settings-row-right">
-                  <label className="ios-toggle-switch">
-                    <input
-                      type="checkbox"
-                      checked={hapticsEnabled}
-                      onChange={handleToggleHaptics}
-                      aria-label="Toggle Haptic Feedback"
-                    />
-                    <span className="ios-toggle-slider" />
-                  </label>
-                </div>
-              </div>
             </div>
           </section>
 
@@ -625,7 +580,7 @@ export default function SettingsPage() {
                   : "Mobile Web Browser"}
               </span>
             </div>
-            <div>Expenses Tracker • Version 1.107</div>
+            <div>Expenses Tracker • Version 1.108</div>
           </div>
         </div>
       </main>

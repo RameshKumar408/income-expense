@@ -7,6 +7,9 @@
     overflow: hidden;
     z-index: 0;
     pointer-events: none;
+    /* Completely mask out bubbles from top header and toast notification zone */
+    mask-image: linear-gradient(to bottom, transparent 0px, transparent 150px, black 220px);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0px, transparent 150px, black 220px);
 }
 
 .bubble {

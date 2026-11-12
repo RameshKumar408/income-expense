@@ -1,13 +1,18 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useState, useRef, useCallback } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useRef,
+  useCallback,
+} from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { triggerHaptic } from "@/libs/haptics";
 
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -283,12 +288,10 @@ export default function BottomNavBar() {
 
   const handleTabClick = (targetPath) => {
     setOptimisticPath(targetPath);
-    triggerHaptic(12);
   };
 
   const handleHistoryClick = (e) => {
     setOptimisticPath("/viewDetails");
-    triggerHaptic(12);
     if (pathname === "/viewDetails") {
       // Dispatches event to viewDetails page to toggle or focus search
       e.preventDefault();

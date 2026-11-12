@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 
 const FilterBottomSheet = dynamic(
   () => import("@/components/FilterBottomSheet"),
-  { ssr: false }
+  { ssr: false },
 );
 import SearchIcon from "@mui/icons-material/Search";
 import LiquidTextField from "@/components/LiquidTextField";
@@ -599,16 +599,39 @@ export default function Page() {
     const headerEl = headerRef.current;
     if (!headerEl || typeof window === "undefined") return;
 
+    if (showSearch || showMonthDropdown) {
+      currentTranslateRef.current = 0;
+      headerEl.style.transition =
+        "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)";
+      headerEl.style.transform = "translate3d(0, 0px, 0)";
+      headerEl.style.pointerEvents = "auto";
+    }
+
+    lastScrollYRef.current = Math.max(
+      0,
+      window.scrollY || window.pageYOffset || 0,
+    );
+
     let rafId = null;
-    let snapTimeout = null;
 
     const onScroll = () => {
-      const currentScrollY = window.scrollY;
+      const rawScrollY = window.scrollY || window.pageYOffset || 0;
+      const currentScrollY = Math.max(0, rawScrollY);
       const deltaY = currentScrollY - lastScrollYRef.current;
       lastScrollYRef.current = currentScrollY;
 
-      // If at or near top, rubber-banding on iOS, loading, searching, or dropdown open: keep fully visible
-      if (currentScrollY <= 10 || loading || showSearch || showMonthDropdown) {
+      // If at or near top (e.g. top of page or iOS rubber-banding), keep fully visible
+      if (currentScrollY <= 4) {
+        currentTranslateRef.current = 0;
+        headerEl.style.transition =
+          "transform 0.15s cubic-bezier(0.16, 1, 0.3, 1)";
+        headerEl.style.transform = "translate3d(0, 0px, 0)";
+        headerEl.style.pointerEvents = "auto";
+        return;
+      }
+
+      // If loading, searching, or dropdown is open: keep fully visible
+      if (loading || showSearch || showMonthDropdown) {
         currentTranslateRef.current = 0;
         headerEl.style.transition =
           "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)";
@@ -639,7 +662,7 @@ export default function Page() {
       headerEl.style.transition = "none";
       const headerHeight = headerEl.offsetHeight || 180;
 
-      // Calculate new translation
+      // Calculate new translation strictly clamped to [-headerHeight, 0]
       let nextTranslate = currentTranslateRef.current - deltaY;
       if (nextTranslate > 0) nextTranslate = 0;
       if (nextTranslate < -headerHeight) nextTranslate = -headerHeight;
@@ -648,34 +671,6 @@ export default function Page() {
       headerEl.style.transform = `translate3d(0, ${nextTranslate}px, 0)`;
       headerEl.style.pointerEvents =
         nextTranslate <= -headerHeight ? "none" : "auto";
-
-      // Settle smoothly when scroll movement ends
-      if (snapTimeout) clearTimeout(snapTimeout);
-      snapTimeout = setTimeout(() => {
-        if (typeof window === "undefined") return;
-        const scrollY = window.scrollY;
-        if (scrollY <= 10) {
-          currentTranslateRef.current = 0;
-          headerEl.style.transition =
-            "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)";
-          headerEl.style.transform = "translate3d(0, 0px, 0)";
-          headerEl.style.pointerEvents = "auto";
-        } else if (
-          currentTranslateRef.current !== 0 &&
-          currentTranslateRef.current !== -headerHeight
-        ) {
-          if (currentTranslateRef.current > -headerHeight * 0.45) {
-            currentTranslateRef.current = 0;
-          } else {
-            currentTranslateRef.current = -headerHeight;
-          }
-          headerEl.style.transition =
-            "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)";
-          headerEl.style.transform = `translate3d(0, ${currentTranslateRef.current}px, 0)`;
-          headerEl.style.pointerEvents =
-            currentTranslateRef.current <= -headerHeight ? "none" : "auto";
-        }
-      }, 140);
     };
 
     const handleScroll = () => {
@@ -686,7 +681,6 @@ export default function Page() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       if (rafId) cancelAnimationFrame(rafId);
-      if (snapTimeout) clearTimeout(snapTimeout);
       window.removeEventListener("scroll", handleScroll);
     };
   }, [loading, showSearch, showMonthDropdown]);
@@ -727,7 +721,9 @@ export default function Page() {
       }
     };
     window.addEventListener("click", handleClickOutside);
-    window.addEventListener("touchstart", handleClickOutside, { passive: true });
+    window.addEventListener("touchstart", handleClickOutside, {
+      passive: true,
+    });
     return () => {
       window.removeEventListener("click", handleClickOutside);
       window.removeEventListener("touchstart", handleClickOutside);
@@ -907,7 +903,6 @@ export default function Page() {
     if (pullDistance >= 60 && !isRefreshing) {
       setIsRefreshing(true);
       setPullDistance(60);
-      if (navigator.vibrate) navigator.vibrate(50);
 
       await getDetails({ requestRole: role, userId: selectedUser });
 
