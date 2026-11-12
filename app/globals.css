@@ -6,15 +6,15 @@
 }
 
 [data-font="DM Sans"] {
-    --font-family-base: var(--font-dm-sans), 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-family-base: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 [data-font="Manrope"] {
-    --font-family-base: var(--font-manrope), 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-family-base: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 [data-font="Plus Jakarta Sans"] {
-    --font-family-base: var(--font-plus-jakarta-sans), 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-family-base: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 [data-font="Comic Sans MS"] {
@@ -48,6 +48,8 @@ textarea {
 
 html {
     height: 100%;
+    background-color: #000000;
+    color-scheme: dark;
 }
 
 body {

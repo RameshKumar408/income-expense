@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
@@ -10,9 +10,17 @@ import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
 import PieChartIcon from "@mui/icons-material/PieChart";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import dynamic from "next/dynamic";
 import GlowingBubbles from "@/components/GlowingBubbles";
-import { getCachedRangeData, setCachedRangeData } from "@/libs/dataCache";
+import { getCachedRangeData, setCachedRangeData, clearRangeDataCache } from "@/libs/dataCache";
+import { decodeToken } from "@/libs/jwt";
+import { toast } from "react-toastify";
 
 const Pie = dynamic(
   () => import("../../components/Charts").then((mod) => mod.Pie),
@@ -34,6 +42,17 @@ export default function Analytics() {
   const [role, setRole] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
+  // Multi-account states
+  const [currentUser, setCurrentUser] = useState(null);
+  const [accounts, setAccounts] = useState([]);
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const accountRef = useRef(null);
+
+  const isMobile = useMediaQuery("(max-width:520px)", { noSsr: true });
+  const touchStartY = useRef(0);
+  const touchDeltaY = useRef(0);
+  const wasAtBottomOnStart = useRef(false);
+
   useEffect(() => {
     const token = window?.localStorage?.getItem("token");
     if (!token) {
@@ -42,7 +61,41 @@ export default function Analytics() {
     setRole(window?.localStorage?.getItem("roles"));
   }, [router]);
 
-  const getData = useCallback(async () => {
+  const loadAccounts = useCallback(() => {
+    try {
+      const stored = window.localStorage.getItem("accounts");
+      const list = stored ? JSON.parse(stored) : [];
+      setAccounts(list);
+
+      const activeEmail = window.localStorage.getItem("activeAccount");
+      const token = window.localStorage.getItem("token");
+
+      const active =
+        list.find((a) => a.email == activeEmail) ||
+        list.find((a) => a.token == token) ||
+        list[0];
+      if (active) {
+        setCurrentUser(active);
+        if (active.email != activeEmail) {
+          window.localStorage.setItem("activeAccount", active.email);
+        }
+      } else if (token) {
+        const decoded = decodeToken(token);
+        if (decoded) {
+          setCurrentUser({
+            email: decoded.email,
+            name: decoded.name,
+            token: token,
+            role: decoded.role,
+          });
+        }
+      }
+    } catch (error) {
+      console.log("🚀 ~ loadAccounts ~ error:", error);
+    }
+  }, []);
+
+  const getData = useCallback(async (overrideToken = null) => {
     try {
       setLoading(true);
       let queryFrom = null;
@@ -66,7 +119,8 @@ export default function Analytics() {
         To: toTimestamp,
       };
 
-      const token = window?.localStorage?.getItem("token") || "";
+      const token =
+        overrideToken || window?.localStorage?.getItem("token") || "";
       const cacheKey = `${fromTimestamp}_${toTimestamp}__self_${token}`;
 
       // Stale-While-Revalidate: Instant render from cache, zero skeletons
@@ -110,6 +164,120 @@ export default function Analytics() {
       setLoading(false);
     }
   }, [router]);
+
+  const switchAccount = (account) => {
+    clearRangeDataCache();
+    window.localStorage.setItem("token", account.token);
+    window.localStorage.setItem("roles", account.role);
+    window.localStorage.setItem("activeAccount", account.email);
+    setCurrentUser(account);
+    setRole(account.role);
+    setShowAccountMenu(false);
+    toast.success(`Switched to ${account.name || account.email}`);
+    getData(account.token);
+  };
+
+  const removeAccount = (account, e) => {
+    e.stopPropagation();
+    const list = JSON.parse(window.localStorage.getItem("accounts") || "[]");
+    const remaining = list.filter((a) => a.email != account.email);
+    window.localStorage.setItem("accounts", JSON.stringify(remaining));
+    setAccounts(remaining);
+    if (account.email == currentUser?.email) {
+      if (remaining.length > 0) {
+        switchAccount(remaining[0]);
+      } else {
+        window.localStorage.removeItem("token");
+        window.localStorage.removeItem("roles");
+        window.localStorage.removeItem("activeAccount");
+        router.push("/");
+      }
+    } else {
+      toast.success(`Removed ${account.email}`);
+    }
+  };
+
+  const addAccount = () => {
+    router.push("/?add=1");
+  };
+
+  const logoutAccount = () => {
+    const activeEmail = window.localStorage.getItem("activeAccount");
+    const list = JSON.parse(window.localStorage.getItem("accounts") || "[]");
+    if (list.length > 1) {
+      const remaining = list.filter((a) => a.email != activeEmail);
+      window.localStorage.setItem("accounts", JSON.stringify(remaining));
+      setAccounts(remaining);
+      const next = remaining[0];
+      switchAccount(next);
+      toast.info(`Removed account. Switched to ${next.email}`);
+    } else {
+      window.localStorage.setItem("accounts", JSON.stringify([]));
+      window.localStorage.removeItem("token");
+      window.localStorage.removeItem("roles");
+      window.localStorage.removeItem("activeAccount");
+      router.push("/");
+    }
+  };
+
+  useEffect(() => {
+    loadAccounts();
+    const handleClick = (e) => {
+      if (accountRef.current && !accountRef.current.contains(e.target)) {
+        setShowAccountMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [loadAccounts]);
+
+  // Mobile swipe to open account switcher
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const handleTouchStart = (e) => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      const isAtTop = scrollY <= 5;
+      const windowHeight = window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+      const isAtBottom = windowHeight + scrollY >= docHeight - 15;
+
+      wasAtBottomOnStart.current = isAtBottom;
+      if (isAtTop || isAtBottom) {
+        touchStartY.current = e.touches[0].clientY;
+      } else {
+        touchStartY.current = 0;
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (!touchStartY.current) return;
+      touchDeltaY.current = e.touches[0].clientY - touchStartY.current;
+    };
+
+    const handleTouchEnd = () => {
+      if (
+        wasAtBottomOnStart.current &&
+        touchDeltaY.current > 55 &&
+        accounts.length > 1
+      ) {
+        setShowAccountMenu(true);
+      }
+      touchStartY.current = 0;
+      touchDeltaY.current = 0;
+      wasAtBottomOnStart.current = false;
+    };
+
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [isMobile, accounts.length]);
 
   useEffect(() => {
     getData();
@@ -260,9 +428,11 @@ export default function Analytics() {
         <header
           className="history-header"
           style={{
-            display: "grid",
-            gridTemplateColumns: "1fr auto 1fr",
+            display: "flex",
             alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+            marginBottom: "24px",
           }}
         >
           <div
@@ -270,13 +440,13 @@ export default function Analytics() {
               flexDirection: "row",
               alignItems: "center",
               display: "flex",
+              gap: "8px",
             }}
           >
             <button
               type="button"
               onClick={() => router.back()}
               style={{
-                justifySelf: "start",
                 background: "transparent",
                 border: "none",
                 color: "var(--text-secondary)",
@@ -284,16 +454,13 @@ export default function Analytics() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                padding: "0",
+                padding: "4px",
               }}
               aria-label="Go back"
             >
               <ArrowBackIcon />
             </button>
-            <div
-              className="history-title-wrap"
-              style={{ marginLeft: 10, justifySelf: "center" }}
-            >
+            <div className="history-title-wrap">
               <span className="history-title-icon">
                 <img
                   src="/icon.png"
@@ -310,7 +477,171 @@ export default function Analytics() {
               <h1>Analytics</h1>
             </div>
           </div>
-          <div />
+
+          <div className="account-wrapper" ref={accountRef}>
+            <button
+              type="button"
+              className={`account-pill ${showAccountMenu ? "active" : ""}`}
+              onClick={() => setShowAccountMenu(!showAccountMenu)}
+            >
+              <div className="account-avatar">
+                {currentUser?.name?.substring(0, 1).toUpperCase() || "AK"}
+              </div>
+              <span>{currentUser?.name || "Account"}</span>
+              {showAccountMenu ? (
+                <ExpandLessIcon fontSize="small" />
+              ) : (
+                <ExpandMoreIcon fontSize="small" />
+              )}
+            </button>
+
+            {showAccountMenu && accounts.length > 0 && (
+              <>
+                {/* Desktop Menu */}
+                <div className="account-menu desktop-account-menu">
+                  {accounts.map((acc) => {
+                    const isActive = acc.email == currentUser?.email;
+                    return (
+                      <button
+                        key={acc.email}
+                        className={`account-menu-item ${isActive ? "active" : ""}`}
+                        type="button"
+                        onClick={() => {
+                          if (!isActive) switchAccount(acc);
+                        }}
+                      >
+                        <div className="account-menu-avatar">
+                          {acc.name?.substring(0, 1).toUpperCase() || "AK"}
+                        </div>
+                        <div className="account-menu-info">
+                          <span className="account-menu-name">
+                            {acc.name}
+                          </span>
+                          <span className="account-menu-email">
+                            {acc.accountType || "Personal Account"}
+                          </span>
+                        </div>
+                        {isActive && (
+                          <CheckCircleIcon
+                            className="account-menu-check"
+                            fontSize="small"
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
+                  <div className="account-menu-divider" />
+                  <button
+                    className="account-menu-action"
+                    type="button"
+                    onClick={addAccount}
+                  >
+                    <AddCircleOutlineIcon fontSize="small" />
+                    <span>Add Account</span>
+                  </button>
+
+                  <button
+                    className="account-menu-action"
+                    type="button"
+                    onClick={logoutAccount}
+                  >
+                    <LogoutOutlinedIcon fontSize="small" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+
+                {/* Mobile Bottom Sheet Modal */}
+                <div className="mobile-account-container">
+                  <div
+                    className="mobile-account-backdrop"
+                    onClick={() => setShowAccountMenu(false)}
+                  />
+                  <div
+                    className="mobile-account-sheet"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Switch Account"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div
+                      className="sheet-handle"
+                      onClick={() => setShowAccountMenu(false)}
+                    />
+                    <h2 className="sheet-title">Switch Account</h2>
+                    <div className="sheet-account-list">
+                      {accounts.map((acc) => {
+                        const isActive = acc.email === currentUser?.email;
+                        return (
+                          <div
+                            key={acc.email}
+                            className={`sheet-account-item ${isActive ? "active" : ""}`}
+                            onClick={() => {
+                              if (!isActive) switchAccount(acc);
+                              else setShowAccountMenu(false);
+                            }}
+                          >
+                            <span className="sheet-account-email">
+                              {acc.email}
+                            </span>
+                            {isActive ? (
+                              <div
+                                className="sheet-account-check"
+                                aria-label="Active Account"
+                              >
+                                <svg
+                                  width="12"
+                                  height="12"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="#ffffff"
+                                  strokeWidth="3.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                className="sheet-account-remove"
+                                aria-label={`Remove ${acc.email}`}
+                                onClick={(e) => removeAccount(acc, e)}
+                              >
+                                <svg
+                                  width="18"
+                                  height="18"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="#ff3b30"
+                                  strokeWidth="2.4"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <line x1="18" y1="6" x2="6" y2="18" />
+                                  <line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <button
+                      type="button"
+                      className="sheet-add-account-btn"
+                      onClick={() => {
+                        setShowAccountMenu(false);
+                        addAccount();
+                      }}
+                    >
+                      Add Account
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </header>
 
         {loading ? (

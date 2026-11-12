@@ -24,6 +24,9 @@ export default function FilterBottomSheet({
   setRangeError,
   availableYears,
   MONTH_NAMES,
+  availableCategories = [],
+  draftCategories = [],
+  setDraftCategories,
   onReset,
   onApply,
 }) {
@@ -420,6 +423,57 @@ export default function FilterBottomSheet({
                   <span>⚠️ {rangeError}</span>
                 </div>
               )}
+            </div>
+          )}
+
+          {availableCategories && availableCategories.length > 0 && (
+            <div className="filter-category-section">
+              <div className="filter-category-header">
+                <span className="filter-group-title">
+                  Filter by Category (
+                  {draftCategories.length > 0
+                    ? `${draftCategories.length} selected`
+                    : "All"}
+                  )
+                </span>
+                {draftCategories.length > 0 && (
+                  <button
+                    type="button"
+                    className="filter-category-clear-btn"
+                    onClick={() => setDraftCategories([])}
+                  >
+                    Clear selection
+                  </button>
+                )}
+              </div>
+              <div className="filter-category-chips">
+                {availableCategories.map((cat) => {
+                  const name = typeof cat === "string" ? cat : cat.name;
+                  const count = typeof cat === "object" ? cat.count : null;
+                  const isSelected = draftCategories.includes(name);
+
+                  return (
+                    <button
+                      key={name}
+                      type="button"
+                      className={`filter-category-chip ${isSelected ? "selected" : ""}`}
+                      onClick={() => {
+                        setDraftCategories((prev) =>
+                          isSelected
+                            ? prev.filter((c) => c !== name)
+                            : [...prev, name],
+                        );
+                      }}
+                    >
+                      {isSelected && <span className="chip-check">✓</span>}
+                      <span>{name}</span>
+                      {count != null && (
+                        <span className="chip-count">{count}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

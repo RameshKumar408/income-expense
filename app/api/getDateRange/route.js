@@ -88,8 +88,11 @@ export async function POST(req) {
       },
     };
 
-    if (text && typeof text === "string" && text.trim()) {
-      query.Title = { $regex: text.trim(), $options: "i" };
+    const trimmedText = typeof text === "string" ? text.trim() : "";
+    if (trimmedText) {
+      const escapedText = trimmedText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const searchRegex = { $regex: escapedText, $options: "i" };
+      query.$or = [{ Title: searchRegex }, { Description: searchRegex }];
     }
 
     const resp = await Income.find(query).sort({ TimeStamp: -1 }).lean();
@@ -100,8 +103,12 @@ export async function POST(req) {
       { TimeStamp: { $gte: fromNum, $lte: toNum } },
     ];
 
-    if (text && typeof text === "string" && text.trim()) {
-      matchStages.push({ Title: { $regex: text.trim(), $options: "i" } });
+    if (trimmedText) {
+      const escapedText = trimmedText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const searchRegex = { $regex: escapedText, $options: "i" };
+      matchStages.push({
+        $or: [{ Title: searchRegex }, { Description: searchRegex }],
+      });
     }
 
     const payloads = [

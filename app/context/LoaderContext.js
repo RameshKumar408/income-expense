@@ -19,7 +19,7 @@ export function LoaderProvider({ children }) {
     // Safety fallback: if no data fetch resolves, dismiss splash after 3.5 seconds
     const timer = setTimeout(() => {
       setInitialLoading(false);
-    }, 3500);
+    }, 300);
     return () => clearTimeout(timer);
   }, []);
 

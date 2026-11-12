@@ -238,6 +238,12 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const token = window.localStorage.getItem("token");
+    if (!token) {
+      router.push("/");
+      return;
+    }
+
     const storedSuggestions = window.localStorage.getItem("titleSuggestions");
     if (storedSuggestions) {
       try {
@@ -250,7 +256,7 @@ export default function Home() {
       hasFetchedTitles.current = true;
       fetchTitles();
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     return () => {

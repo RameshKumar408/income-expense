@@ -10,6 +10,12 @@ const withPWA = withPWAInit({
   reloadOnOnline: true,
   workboxOptions: {
     disableDevLogs: true,
+    additionalManifestEntries: [
+      { url: "/createDetail", revision: "1.0" },
+      { url: "/viewDetails", revision: "1.0" },
+      { url: "/settings", revision: "1.0" },
+      { url: "/manifest.json", revision: "1.0" },
+    ],
     runtimeCaching: [
       {
         urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,

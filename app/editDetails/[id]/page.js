@@ -463,10 +463,19 @@ export default function Home({ params }) {
         <header className="expense-header">
           <div className="expense-title-wrap">
             <button
-              className="expense-back-btn"
               type="button"
-              aria-label="Go back"
               onClick={() => router.back()}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "var(--text-secondary)",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "4px",
+              }}
+              aria-label="Go back"
             >
               <ArrowBackIcon />
             </button>

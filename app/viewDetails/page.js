@@ -157,10 +157,22 @@ export default function Page() {
   );
   const [draftTo, setDraftTo] = useState(dayjs().format("YYYY-MM-DD"));
   const [rangeError, setRangeError] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [draftCategories, setDraftCategories] = useState([]);
 
   const [searchText, setSearchText] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const searchInputRef = useRef(null);
+  const debounceTimerRef = useRef(null);
+
+  // Cleanup pending search debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleOpenSearch = (e) => {
     if (e && e.preventDefault) {
@@ -187,6 +199,9 @@ export default function Page() {
   };
 
   const handleCloseSearch = () => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
     setShowSearch(false);
     setSearchText("");
     isInteracting.current = true;
@@ -222,6 +237,16 @@ export default function Page() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState("");
   const [sortKey, setSortKey] = useState("date");
+  const [sortDirection, setSortDirection] = useState("desc");
+
+  const handleSortClick = (key) => {
+    if (sortKey === key) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDirection(key === "title" ? "asc" : "desc");
+    }
+  };
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [expandedCardId, setExpandedCardId] = useState(null);
   const [swipedCardId, setSwipedCardId] = useState(null);
@@ -568,24 +593,81 @@ export default function Page() {
     [getDetails],
   );
 
-  const filteredDatas = useMemo(() => {
-    const list = [...(datas || [])];
-    if (sortKey == "title") {
-      return list.sort((a, b) =>
-        `${a?.Title || ""}`.localeCompare(`${b?.Title || ""}`),
-      );
-    }
-    if (sortKey == "amount") {
-      return list.sort(
-        (a, b) => Number(b?.Amount || 0) - Number(a?.Amount || 0),
-      );
-    }
-    return list.sort(
-      (a, b) => Number(b?.TimeStamp || 0) - Number(a?.TimeStamp || 0),
-    );
-  }, [datas, sortKey]);
+  const availableCategories = useMemo(() => {
+    const map = new Map();
+    (datas || []).forEach((row) => {
+      const title = row?.Title?.trim();
+      if (title) {
+        map.set(title, (map.get(title) || 0) + 1);
+      }
+    });
+    return Array.from(map.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+  }, [datas]);
 
-  const totalBalance = totalCount?.netIncome || 0;
+  const handleToggleCategory = (catName) => {
+    setSelectedCategories((prev) =>
+      prev.includes(catName)
+        ? prev.filter((c) => c !== catName)
+        : [...prev, catName],
+    );
+  };
+
+  const filteredDatas = useMemo(() => {
+    let list = [...(datas || [])];
+
+    if (selectedCategories.length > 0) {
+      const selectedSet = new Set(
+        selectedCategories.map((c) => c.toLowerCase()),
+      );
+      list = list.filter((item) => {
+        const title = (item?.Title || "").trim().toLowerCase();
+        return selectedSet.has(title);
+      });
+    }
+
+    const isAsc = sortDirection === "asc";
+
+    if (sortKey === "title") {
+      return list.sort((a, b) => {
+        const titleA = (a?.Title || "").toLowerCase();
+        const titleB = (b?.Title || "").toLowerCase();
+        const cmp = isAsc
+          ? titleA.localeCompare(titleB)
+          : titleB.localeCompare(titleA);
+        if (cmp !== 0) return cmp;
+        return Number(b?.TimeStamp || 0) - Number(a?.TimeStamp || 0);
+      });
+    }
+
+    if (sortKey === "amount") {
+      return list.sort((a, b) => {
+        const amtA = Number(a?.Amount || 0);
+        const amtB = Number(b?.Amount || 0);
+        const diff = isAsc ? amtA - amtB : amtB - amtA;
+        if (diff !== 0) return diff;
+        return Number(b?.TimeStamp || 0) - Number(a?.TimeStamp || 0);
+      });
+    }
+
+    // Default: 'date' (by TimeStamp)
+    return list.sort((a, b) => {
+      const timeA = Number(a?.TimeStamp || 0);
+      const timeB = Number(b?.TimeStamp || 0);
+      return isAsc ? timeA - timeB : timeB - timeA;
+    });
+  }, [datas, sortKey, sortDirection, selectedCategories]);
+
+  const totalBalance = useMemo(() => {
+    if (selectedCategories.length > 0) {
+      return filteredDatas.reduce((acc, row) => {
+        const amt = Number(row?.Amount || 0);
+        return row?.Type === "Income" ? acc + amt : acc - amt;
+      }, 0);
+    }
+    return totalCount?.netIncome || 0;
+  }, [selectedCategories, filteredDatas, totalCount]);
 
   useEffect(() => {
     router.prefetch("/createDetail");
@@ -747,6 +829,7 @@ export default function Page() {
     setSelectedMonth(monthStr);
     setFrom(fromStr);
     setTo(toStr);
+    setSelectedCategories([]);
     setShowMonthDropdown(false);
 
     const fromTimestamp = monthObj.startOf("month").startOf("day").valueOf();
@@ -768,6 +851,7 @@ export default function Page() {
     setDraftYear(currentM.year());
     setDraftFrom(from);
     setDraftTo(to);
+    setDraftCategories([...selectedCategories]);
     setRangeError("");
     setShowFilterModal(true);
   };
@@ -787,12 +871,14 @@ export default function Page() {
     setSelectedMonth(currentMonthStr);
     setFrom(defaultFrom);
     setTo(defaultTo);
+    setSelectedCategories([]);
 
     setDraftMode("month");
     setDraftMonth(currentMonthObj.month());
     setDraftYear(currentMonthObj.year());
     setDraftFrom(defaultFrom);
     setDraftTo(defaultTo);
+    setDraftCategories([]);
     setRangeError("");
     setShowFilterModal(false);
 
@@ -811,6 +897,8 @@ export default function Page() {
   };
 
   const handleApplyFilter = () => {
+    setSelectedCategories(draftCategories);
+
     if (draftMode === "range") {
       if (dayjs(draftFrom).isAfter(dayjs(draftTo), "day")) {
         setRangeError("Start date cannot be later than end date");
@@ -863,8 +951,24 @@ export default function Page() {
     getDetails({ requestRole: role, userId: selectedUser });
   }, [from, to, filterMode, selectedMonth, selectedUser, role, getDetails]);
 
+  const handleSearchChange = (e) => {
+    const val = e.target.value;
+    setSearchText(val);
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      getDetails({ text: val, requestRole: role, userId: selectedUser });
+    }, 350);
+  };
+
   const submitSearch = (e) => {
     e?.preventDefault();
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
     getDetails({ text: searchText, requestRole: role, userId: selectedUser });
   };
 
@@ -1055,11 +1159,9 @@ export default function Page() {
               >
                 <LiquidTextField
                   value={searchText}
-                  placeholder="Search title"
+                  placeholder="Search title or description"
                   type="search"
-                  onChange={(e) => {
-                    setSearchText(e.target.value);
-                  }}
+                  onChange={handleSearchChange}
                   inputRef={searchInputRef}
                   fullWidth
                   sx={{
@@ -1222,6 +1324,11 @@ export default function Page() {
               aria-label="Open filter options"
             >
               <FilterListIcon />
+              {selectedCategories.length > 0 && (
+                <span className="filter-active-count">
+                  {selectedCategories.length}
+                </span>
+              )}
             </button>
 
             {showMonthDropdown && (
@@ -1288,31 +1395,79 @@ export default function Page() {
             )}
           </div>
 
+          {/* {availableCategories && availableCategories.length > 0 && (
+            <div className="history-category-bar">
+              <div
+                className="history-category-scroll"
+                role="group"
+                aria-label="Filter by category"
+              >
+                <button
+                  type="button"
+                  className={`history-category-pill ${selectedCategories.length === 0 ? "active" : ""}`}
+                  onClick={() => setSelectedCategories([])}
+                >
+                  {selectedCategories.length === 0 && (
+                    <span className="pill-active-dot" />
+                  )}
+                  <span>All</span>
+                  <span className="pill-count">{datas?.length || 0}</span>
+                </button>
+                {availableCategories.map((cat) => {
+                  const isSelected = selectedCategories.includes(cat.name);
+                  return (
+                    <button
+                      key={cat.name}
+                      type="button"
+                      className={`history-category-pill ${isSelected ? "active" : ""}`}
+                      onClick={() => handleToggleCategory(cat.name)}
+                    >
+                      {isSelected && <span className="pill-active-dot" />}
+                      <span>{cat.name}</span>
+                      <span className="pill-count">{cat.count}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )} */}
+
           <div className="history-sort-row" aria-label="Sort history">
             <button
               type="button"
-              onClick={() => {
-                setSortKey("title");
-              }}
+              onClick={() => handleSortClick("title")}
+              title={`Sort by Title (${sortKey === "title" ? (sortDirection === "asc" ? "A to Z" : "Z to A") : "A to Z"})`}
             >
-              Title <span className={sortKey == "title" ? "active" : ""}></span>
+              Title{" "}
+              <span
+                className={`${sortKey === "title" ? "active" : ""} ${
+                  sortKey === "title" && sortDirection === "asc" ? "asc" : ""
+                }`}
+              />
             </button>
             <button
               type="button"
-              onClick={() => {
-                setSortKey("date");
-              }}
+              onClick={() => handleSortClick("date")}
+              title={`Sort by Date (${sortKey === "date" ? (sortDirection === "desc" ? "Newest first" : "Oldest first") : "Newest first"})`}
             >
-              Date <span className={sortKey == "date" ? "active" : ""}></span>
+              Date{" "}
+              <span
+                className={`${sortKey === "date" ? "active" : ""} ${
+                  sortKey === "date" && sortDirection === "asc" ? "asc" : ""
+                }`}
+              />
             </button>
             <button
               type="button"
-              onClick={() => {
-                setSortKey("amount");
-              }}
+              onClick={() => handleSortClick("amount")}
+              title={`Sort by Amount (${sortKey === "amount" ? (sortDirection === "desc" ? "Highest first" : "Lowest first") : "Highest first"})`}
             >
               Amount{" "}
-              <span className={sortKey == "amount" ? "active" : ""}></span>
+              <span
+                className={`${sortKey === "amount" ? "active" : ""} ${
+                  sortKey === "amount" && sortDirection === "asc" ? "asc" : ""
+                }`}
+              />
             </button>
           </div>
         </div>
@@ -1755,6 +1910,9 @@ export default function Page() {
             setRangeError={setRangeError}
             availableYears={availableYears}
             MONTH_NAMES={MONTH_NAMES}
+            availableCategories={availableCategories}
+            draftCategories={draftCategories}
+            setDraftCategories={setDraftCategories}
             onReset={handleResetFilter}
             onApply={handleApplyFilter}
           />

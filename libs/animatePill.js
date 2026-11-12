@@ -81,18 +81,18 @@ export function animatePillToInput({
       },
     ],
     {
-      duration: 500,
+      duration: 350,
       easing: "cubic-bezier(0.16, 1, 0.3, 1)",
       fill: "forwards",
     },
   );
 
   const finish = () => {
+    onComplete?.();
     activePills.delete(flyingPill);
     try {
       flyingPill.remove();
     } catch (e) {}
-    onComplete?.();
 
     const containerEl =
       targetInputEl.closest(".MuiOutlinedInput-root") ||

@@ -14,6 +14,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
+import CloseIcon from "@mui/icons-material/Close";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -22,23 +23,25 @@ import {
   syncOfflineTransactions,
 } from "@/libs/offlineSync";
 import { clearRangeDataCache } from "@/libs/dataCache";
+import GlowingBubbles from "@/components/GlowingBubbles";
+import { loadDynamicFont } from "@/app/AppWrapper";
 
 const FONT_OPTIONS = [
-  { label: "Inter", value: "Inter", font: "var(--font-inter), sans-serif" },
+  { label: "Inter", value: "Inter", font: "var(--font-inter), 'Inter', sans-serif" },
   {
     label: "DM Sans",
     value: "DM Sans",
-    font: "var(--font-dm-sans), sans-serif",
+    font: "'DM Sans', sans-serif",
   },
   {
     label: "Manrope",
     value: "Manrope",
-    font: "var(--font-manrope), sans-serif",
+    font: "'Manrope', sans-serif",
   },
   {
     label: "Plus Jakarta Sans",
     value: "Plus Jakarta Sans",
-    font: "var(--font-plus-jakarta-sans), sans-serif",
+    font: "'Plus Jakarta Sans', sans-serif",
   },
   {
     label: "Comic Sans MS",
@@ -120,6 +123,9 @@ export default function SettingsPage() {
     window.localStorage.setItem("appFont", newFont);
     if (typeof document !== "undefined") {
       document.documentElement.setAttribute("data-font", newFont);
+      if (newFont !== "Inter" && newFont !== "Comic Sans MS") {
+        loadDynamicFont(newFont);
+      }
     }
     toast.success(`Font changed to ${newFont}`);
   };
@@ -134,6 +140,24 @@ export default function SettingsPage() {
     setRole(account.role);
     setShowAccountsDropdown(false);
     toast.success(`Switched to ${account.email}`);
+  };
+
+  const handleRemoveAccount = (accountToRemove, e) => {
+    e?.stopPropagation?.();
+    const list = JSON.parse(window.localStorage.getItem("accounts") || "[]");
+    const updated = list.filter((a) => a.email !== accountToRemove.email);
+    window.localStorage.setItem("accounts", JSON.stringify(updated));
+    setAccounts(updated);
+
+    if (accountToRemove.email === activeAccount) {
+      if (updated.length > 0) {
+        handleSwitchAccount(updated[0]);
+      } else {
+        handleConfirmLogout();
+      }
+    } else {
+      toast.success(`Removed ${accountToRemove.email}`);
+    }
   };
 
   const addAccount = () => {
@@ -187,6 +211,7 @@ export default function SettingsPage() {
 
   return (
     <div className="create-detail-page">
+      <GlowingBubbles />
       <main className="expense-shell settings-shell">
         <header className="settings-header">
           <span className="settings-title-icon">
@@ -213,109 +238,93 @@ export default function SettingsPage() {
           >
             <div className="ios-settings-section-title">Account</div>
             <div className="ios-settings-card">
+              {/* Active Hero Profile Banner */}
               <div className="ios-profile-banner">
                 <div className="ios-profile-avatar">{initialLetter}</div>
                 <div className="ios-profile-info">
                   <span className="ios-profile-email">
                     {activeAccount || "Logged in"}
                   </span>
-                  <span
-                    className={`ios-role-pill ${role === "admin" ? "admin" : "member"}`}
-                  >
-                    {role === "admin" ? "Admin" : "Member"}
-                  </span>
+                  <div className="ios-profile-badges">
+                    <span
+                      className={`ios-role-pill ${role === "admin" ? "admin" : "member"}`}
+                    >
+                      {role === "admin" ? "Admin" : "Member"}
+                    </span>
+                    <span className="ios-active-pill">
+                      <span className="active-dot" />
+                      Active
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              {/* Multi-Account Switcher (if user has > 1 account) */}
-              {accounts.length > 1 && (
-                <div
-                  style={{ borderTop: "1px solid rgba(255, 255, 255, 0.06)" }}
-                >
-                  <div
-                    className="ios-settings-row clickable"
-                    onClick={() => setShowAccountsDropdown((prev) => !prev)}
-                  >
-                    <div className="ios-settings-row-left">
-                      <div className="ios-settings-icon-pill">
-                        <SwapHorizIcon sx={{ fontSize: 18 }} />
-                      </div>
-                      <span className="ios-settings-row-label">
-                        Switch Account
-                      </span>
-                    </div>
-                    <div className="ios-settings-row-right">
-                      <span className="ios-settings-row-subtext">
-                        {accounts.length} Saved
-                      </span>
-                      <KeyboardArrowDownIcon
-                        sx={{
-                          fontSize: 20,
-                          color: "rgba(212, 160, 23, 0.7)",
-                          transform: showAccountsDropdown
-                            ? "rotate(180deg)"
-                            : "rotate(0deg)",
-                          transition: "transform 0.25s ease",
-                        }}
-                      />
-                    </div>
+              {/* Other Saved Accounts (if user has other accounts) */}
+              {accounts.filter((a) => a.email !== activeAccount).length > 0 && (
+                <div className="ios-other-accounts-group">
+                  <div className="ios-accounts-subheader">
+                    <span>Other Accounts</span>
+                    <span className="ios-accounts-count">
+                      {accounts.length} Saved
+                    </span>
                   </div>
 
-                  {showAccountsDropdown && (
-                    <div style={{ backgroundColor: "rgba(0, 0, 0, 0.35)" }}>
-                      {accounts.map((acc) => {
-                        const isActive = acc.email === activeAccount;
-                        return (
-                          <div
-                            key={acc.email}
-                            className="ios-settings-row clickable"
-                            onClick={() => handleSwitchAccount(acc)}
-                            style={{
-                              paddingLeft: "24px",
-                              backgroundColor: isActive
-                                ? "rgba(212, 160, 23, 0.1)"
-                                : "transparent",
-                              borderBottom: "1px solid rgba(212, 160, 23, 0.1)",
-                            }}
-                          >
-                            <div className="ios-settings-row-left">
-                              <span
-                                style={{
-                                  fontSize: "14px",
-                                  fontWeight: isActive ? 700 : 500,
-                                  color: isActive
-                                    ? "#ffd88a"
-                                    : "rgba(255, 255, 255, 0.8)",
-                                }}
-                              >
-                                {acc.email}
-                              </span>
-                              {acc.role === "admin" && (
-                                <span className="ios-role-pill admin">
-                                  Admin
-                                </span>
-                              )}
-                            </div>
-                            <div className="ios-settings-row-right">
-                              {isActive && (
-                                <CheckIcon
-                                  sx={{ fontSize: 18, color: "#d4a017" }}
-                                />
-                              )}
-                            </div>
+                  {accounts
+                    .filter((a) => a.email !== activeAccount)
+                    .map((acc) => {
+                      const accInitial = (acc.email || "U")
+                        .charAt(0)
+                        .toUpperCase();
+                      return (
+                        <div
+                          key={acc.email}
+                          className="ios-other-account-item"
+                          onClick={() => handleSwitchAccount(acc)}
+                        >
+                          <div className="ios-other-account-avatar">
+                            {accInitial}
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                          <div className="ios-other-account-info">
+                            <span className="ios-other-account-email">
+                              {acc.email}
+                            </span>
+                            {acc.role === "admin" && (
+                              <span className="ios-role-pill admin">Admin</span>
+                            )}
+                          </div>
+                          <div className="ios-other-account-actions">
+                            <button
+                              type="button"
+                              className="ios-switch-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSwitchAccount(acc);
+                              }}
+                              aria-label={`Switch to ${acc.email}`}
+                            >
+                              <SwapHorizIcon sx={{ fontSize: 16 }} />
+                              <span>Switch</span>
+                            </button>
+                            <button
+                              type="button"
+                              className="ios-remove-account-btn"
+                              onClick={(e) => handleRemoveAccount(acc, e)}
+                              aria-label={`Remove ${acc.email}`}
+                              title="Remove account"
+                            >
+                              <CloseIcon sx={{ fontSize: 16 }} />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
                 </div>
               )}
 
               {/* Add Account Row */}
               <div
-                className="ios-settings-row clickable"
+                className="ios-settings-row clickable ios-add-account-row"
                 onClick={addAccount}
-                style={{ borderTop: "1px solid rgba(212, 160, 23, 0.12)" }}
               >
                 <div className="ios-settings-row-left">
                   <div className="ios-settings-icon-pill">
@@ -580,7 +589,7 @@ export default function SettingsPage() {
                   : "Mobile Web Browser"}
               </span>
             </div>
-            <div>Expenses Tracker • Version 1.108</div>
+            <div>Expenses Tracker • Version 1.109</div>
           </div>
         </div>
       </main>
