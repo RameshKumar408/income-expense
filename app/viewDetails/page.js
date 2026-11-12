@@ -1395,7 +1395,7 @@ export default function Page() {
             )}
           </div>
 
-          {/* {availableCategories && availableCategories.length > 0 && (
+          {availableCategories && availableCategories.length > 0 && (
             <div className="history-category-bar">
               <div
                 className="history-category-scroll"
@@ -1407,11 +1407,7 @@ export default function Page() {
                   className={`history-category-pill ${selectedCategories.length === 0 ? "active" : ""}`}
                   onClick={() => setSelectedCategories([])}
                 >
-                  {selectedCategories.length === 0 && (
-                    <span className="pill-active-dot" />
-                  )}
-                  <span>All</span>
-                  <span className="pill-count">{datas?.length || 0}</span>
+                  <span className="pill-name">All</span>
                 </button>
                 {availableCategories.map((cat) => {
                   const isSelected = selectedCategories.includes(cat.name);
@@ -1422,15 +1418,14 @@ export default function Page() {
                       className={`history-category-pill ${isSelected ? "active" : ""}`}
                       onClick={() => handleToggleCategory(cat.name)}
                     >
-                      {isSelected && <span className="pill-active-dot" />}
-                      <span>{cat.name}</span>
+                      <span className="pill-name">{cat.name}</span>
                       <span className="pill-count">{cat.count}</span>
                     </button>
                   );
                 })}
               </div>
             </div>
-          )} */}
+          )}
 
           <div className="history-sort-row" aria-label="Sort history">
             <button

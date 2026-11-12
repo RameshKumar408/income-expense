@@ -3514,7 +3514,7 @@ body:has([contenteditable="true"]:focus) .bottom-navigation,
 
 .history-category-bar {
   width: 100%;
-  margin-bottom: 16px;
+  margin: 6px 0 14px 0;
   position: relative;
 }
 
@@ -3523,7 +3523,7 @@ body:has([contenteditable="true"]:focus) .bottom-navigation,
   align-items: center;
   gap: 8px;
   overflow-x: auto;
-  padding: 2px 2px 6px 2px;
+  padding: 4px 2px 8px 2px;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
@@ -3535,33 +3535,29 @@ body:has([contenteditable="true"]:focus) .bottom-navigation,
 .history-category-pill {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  height: 36px;
-  padding: 0 13px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.88);
+  justify-content: center;
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 9999px;
+  background: #161618;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
   font-family: inherit;
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: 0.2px;
   white-space: nowrap;
   cursor: pointer;
-  backdrop-filter: blur(14px) saturate(150%);
-  -webkit-backdrop-filter: blur(14px) saturate(150%);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.08),
-    0 2px 8px rgba(0, 0, 0, 0.35);
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
   -webkit-user-select: none;
   flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 .history-category-pill:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(212, 160, 23, 0.4);
+  background: #202024;
+  border-color: rgba(255, 255, 255, 0.22);
   color: #ffffff;
 }
 
@@ -3570,50 +3566,29 @@ body:has([contenteditable="true"]:focus) .bottom-navigation,
 }
 
 .history-category-pill.active {
-  background: linear-gradient(
-    135deg,
-    rgba(212, 160, 23, 0.22) 0%,
-    rgba(212, 160, 23, 0.08) 100%
-  );
-  border: 1.5px solid rgba(212, 160, 23, 0.85);
-  color: #ffd88a;
+  background: #0d0d0f;
+  border: 1.5px solid #e5a93c;
+  color: #ffd269;
   font-weight: 700;
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.2),
-    0 0 16px rgba(212, 160, 23, 0.22),
-    0 3px 10px rgba(0, 0, 0, 0.4);
+    0 0 12px rgba(229, 169, 60, 0.42),
+    inset 0 0 4px rgba(229, 169, 60, 0.15);
 }
 
-.history-category-pill .pill-active-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #d4a017;
-  box-shadow: 0 0 8px #d4a017;
-  flex-shrink: 0;
+.history-category-pill .pill-name {
+  color: inherit;
 }
 
 .history-category-pill .pill-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1;
+  margin-left: 7px;
+  color: #8e8e93;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .history-category-pill.active .pill-count {
-  background: rgba(212, 160, 23, 0.3);
-  border: 1px solid rgba(212, 160, 23, 0.55);
-  color: #ffffff;
-  font-weight: 800;
+  color: #ffd88a;
+  opacity: 0.9;
 }
 
 /* Counter badge on FilterBottomSheet trigger button */

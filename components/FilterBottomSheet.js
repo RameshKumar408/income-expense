@@ -318,11 +318,10 @@ export default function FilterBottomSheet({
                         margin: "0 !important",
                         padding: "0 !important",
                       },
-                      "& input[type=date]::-webkit-calendar-picker-indicator":
-                        {
-                          display: "none",
-                          WebkitAppearance: "none",
-                        },
+                      "& input[type=date]::-webkit-calendar-picker-indicator": {
+                        display: "none",
+                        WebkitAppearance: "none",
+                      },
                     }}
                     InputProps={{
                       endAdornment: (
@@ -393,11 +392,10 @@ export default function FilterBottomSheet({
                         margin: "0 !important",
                         padding: "0 !important",
                       },
-                      "& input[type=date]::-webkit-calendar-picker-indicator":
-                        {
-                          display: "none",
-                          WebkitAppearance: "none",
-                        },
+                      "& input[type=date]::-webkit-calendar-picker-indicator": {
+                        display: "none",
+                        WebkitAppearance: "none",
+                      },
                     }}
                     InputProps={{
                       endAdornment: (
@@ -479,18 +477,10 @@ export default function FilterBottomSheet({
         </div>
 
         <div className="filter-sheet-actions">
-          <button
-            type="button"
-            className="filter-btn-reset"
-            onClick={onReset}
-          >
+          <button type="button" className="filter-btn-reset" onClick={onReset}>
             Reset
           </button>
-          <button
-            type="button"
-            className="filter-btn-apply"
-            onClick={onApply}
-          >
+          <button type="button" className="filter-btn-apply" onClick={onApply}>
             Apply Filter
           </button>
         </div>
@@ -498,4 +488,3 @@ export default function FilterBottomSheet({
     </div>
   );
 }
-

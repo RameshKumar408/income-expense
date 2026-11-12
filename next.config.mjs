@@ -15,6 +15,8 @@ const withPWA = withPWAInit({
       { url: "/viewDetails", revision: "1.0" },
       { url: "/settings", revision: "1.0" },
       { url: "/manifest.json", revision: "1.0" },
+      { url: "/icon-192.png", revision: "1.0" },
+      { url: "/apple-touch-icon.png", revision: "1.0" },
     ],
     runtimeCaching: [
       {
@@ -85,6 +87,50 @@ const nextConfig = {
     '@mui/material': {
       transform: '@mui/material/{{member}}',
     },
+  },
+  async headers() {
+    return [
+      {
+        // Next.js content-hashed static assets (chunks, CSS, media)
+        source: "/_next/static/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        // Static images and fonts in /public
+        source: "/:all*(png|jpg|jpeg|webp|svg|ico|woff|woff2)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        // PWA Manifest must revalidate so updates are detected immediately
+        source: "/manifest.json",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, must-revalidate",
+          },
+        ],
+      },
+      {
+        // Service worker script must never be cached by HTTP cache
+        source: "/sw.js",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, must-revalidate",
+          },
+        ],
+      },
+    ];
   },
 };
 

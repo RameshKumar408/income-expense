@@ -1,134 +1,257 @@
 .bubbles-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 0;
-    pointer-events: none;
-    /* Completely mask out bubbles from top header and toast notification zone */
-    mask-image: linear-gradient(to bottom, transparent 0px, transparent 150px, black 220px);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0px, transparent 150px, black 220px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+  /* Completely mask out bubbles from top header and toast notification zone */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 150px,
+    black 220px
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 150px,
+    black 220px
+  );
 }
 
 .bubble {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(14px);
-    opacity: 0.55;
-    animation: float-bubble 15s infinite ease-in-out alternate;
-    box-shadow: 0 0 20px rgba(212, 160, 23, 0.4);
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(14px);
+  opacity: 0.55;
+  animation: float-bubble 15s infinite ease-in-out alternate;
+  box-shadow: 0 0 20px rgba(212, 160, 23, 0.4);
 }
 
 .bubble-1 {
-    width: 110px; height: 110px;
-    background: radial-gradient(circle, var(--brand-gradient-start) 10%, transparent 80%);
-    top: 10%; left: 10%;
-    animation-duration: 12s; animation-delay: 0s;
+  width: 110px;
+  height: 110px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-start) 10%,
+    transparent 80%
+  );
+  top: 10%;
+  left: 10%;
+  animation-duration: 12s;
+  animation-delay: 0s;
 }
 
 .bubble-2 {
-    width: 150px; height: 150px;
-    background: radial-gradient(circle, var(--brand-gradient-mid) 10%, transparent 80%);
-    top: 15%; left: 50%;
-    animation-duration: 18s; animation-delay: -3s;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-mid) 10%,
+    transparent 80%
+  );
+  top: 15%;
+  left: 50%;
+  animation-duration: 18s;
+  animation-delay: -3s;
 }
 
 .bubble-3 {
-    width: 90px; height: 90px;
-    background: radial-gradient(circle, var(--brand-gradient-end) 10%, transparent 80%);
-    top: 5%; right: 15%;
-    animation-duration: 14s; animation-delay: -7s;
+  width: 90px;
+  height: 90px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-end) 10%,
+    transparent 80%
+  );
+  top: 5%;
+  right: 15%;
+  animation-duration: 14s;
+  animation-delay: -7s;
 }
 
 .bubble-4 {
-    width: 130px; height: 130px;
-    background: radial-gradient(circle, var(--brand-gradient-start) 10%, transparent 80%);
-    top: 35%; left: 20%;
-    animation-duration: 16s; animation-delay: -1s;
+  width: 130px;
+  height: 130px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-start) 10%,
+    transparent 80%
+  );
+  top: 35%;
+  left: 20%;
+  animation-duration: 16s;
+  animation-delay: -1s;
 }
 
 .bubble-5 {
-    width: 80px; height: 80px;
-    background: radial-gradient(circle, var(--brand-gradient-mid) 10%, transparent 80%);
-    top: 25%; left: 45%;
-    animation-duration: 10s; animation-delay: -5s;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-mid) 10%,
+    transparent 80%
+  );
+  top: 25%;
+  left: 45%;
+  animation-duration: 10s;
+  animation-delay: -5s;
 }
 
 .bubble-6 {
-    width: 120px; height: 120px;
-    background: radial-gradient(circle, var(--brand-gradient-end) 10%, transparent 80%);
-    top: 30%; right: 10%;
-    animation-duration: 20s; animation-delay: -12s;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-end) 10%,
+    transparent 80%
+  );
+  top: 30%;
+  right: 10%;
+  animation-duration: 20s;
+  animation-delay: -12s;
 }
 
 .bubble-7 {
-    width: 100px; height: 100px;
-    background: radial-gradient(circle, var(--brand-gradient-start) 10%, transparent 80%);
-    top: 55%; left: 10%;
-    animation-duration: 15s; animation-delay: -2s;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-start) 10%,
+    transparent 80%
+  );
+  top: 55%;
+  left: 10%;
+  animation-duration: 15s;
+  animation-delay: -2s;
 }
 
 .bubble-8 {
-    width: 140px; height: 140px;
-    background: radial-gradient(circle, var(--brand-gradient-mid) 10%, transparent 80%);
-    top: 50%; left: 60%;
-    animation-duration: 19s; animation-delay: -9s;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-mid) 10%,
+    transparent 80%
+  );
+  top: 50%;
+  left: 60%;
+  animation-duration: 19s;
+  animation-delay: -9s;
 }
 
 .bubble-9 {
-    width: 100px; height: 100px;
-    background: radial-gradient(circle, var(--brand-gradient-start) 10%, transparent 80%);
-    top: 60%; right: 20%;
-    animation-duration: 13s; animation-delay: -2s;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-start) 10%,
+    transparent 80%
+  );
+  top: 60%;
+  right: 20%;
+  animation-duration: 13s;
+  animation-delay: -2s;
 }
 
 .bubble-10 {
-    width: 120px; height: 120px;
-    background: radial-gradient(circle, var(--brand-gradient-end) 10%, transparent 80%);
-    top: 75%; left: 15%;
-    animation-duration: 16s; animation-delay: -4s;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-end) 10%,
+    transparent 80%
+  );
+  top: 75%;
+  left: 15%;
+  animation-duration: 16s;
+  animation-delay: -4s;
 }
 
 .bubble-11 {
-    width: 130px; height: 130px;
-    background: radial-gradient(circle, var(--brand-gradient-start) 10%, transparent 80%);
-    top: 70%; left: 40%;
-    animation-duration: 17s; animation-delay: -6s;
+  width: 130px;
+  height: 130px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-start) 10%,
+    transparent 80%
+  );
+  top: 70%;
+  left: 40%;
+  animation-duration: 17s;
+  animation-delay: -6s;
 }
 
 .bubble-12 {
-    width: 90px; height: 90px;
-    background: radial-gradient(circle, var(--brand-gradient-mid) 10%, transparent 80%);
-    top: 80%; right: 15%;
-    animation-duration: 11s; animation-delay: -3s;
+  width: 90px;
+  height: 90px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-mid) 10%,
+    transparent 80%
+  );
+  top: 80%;
+  right: 15%;
+  animation-duration: 11s;
+  animation-delay: -3s;
 }
 
 .bubble-13 {
-    width: 110px; height: 110px;
-    background: radial-gradient(circle, var(--brand-gradient-end) 10%, transparent 80%);
-    top: 90%; left: 5%;
-    animation-duration: 14s; animation-delay: -8s;
+  width: 110px;
+  height: 110px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-end) 10%,
+    transparent 80%
+  );
+  top: 90%;
+  left: 5%;
+  animation-duration: 14s;
+  animation-delay: -8s;
 }
 
 .bubble-14 {
-    width: 140px; height: 140px;
-    background: radial-gradient(circle, var(--brand-gradient-start) 10%, transparent 80%);
-    top: 95%; left: 50%;
-    animation-duration: 18s; animation-delay: -11s;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-start) 10%,
+    transparent 80%
+  );
+  top: 95%;
+  left: 45%;
+  animation-duration: 18s;
+  animation-delay: -11s;
 }
 
 .bubble-15 {
-    width: 100px; height: 100px;
-    background: radial-gradient(circle, var(--brand-gradient-mid) 10%, transparent 80%);
-    top: 85%; right: 5%;
-    animation-duration: 12s; animation-delay: -1s;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(
+    circle,
+    var(--brand-gradient-mid) 10%,
+    transparent 80%
+  );
+  top: 85%;
+  right: 5%;
+  animation-duration: 12s;
+  animation-delay: -1s;
 }
 
 @keyframes float-bubble {
-    0% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(40px, -60px) scale(1.1); }
-    66% { transform: translate(-30px, -20px) scale(0.9); }
-    100% { transform: translate(20px, -40px) scale(1.05); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(40px, -60px) scale(1.1);
+  }
+  66% {
+    transform: translate(-30px, -20px) scale(0.9);
+  }
+  100% {
+    transform: translate(20px, -40px) scale(1.05);
+  }
 }

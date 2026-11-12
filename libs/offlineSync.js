@@ -122,3 +122,37 @@ export const syncOfflineTransactions = async () => {
   }
 };
 
+/**
+ * Defers offline transaction syncing until browser idle time,
+ * keeping the critical launch path and main thread unblocked.
+ * Returns a cancel function to clear scheduled timers on unmount.
+ */
+export const scheduleOfflineSync = (timeoutMs = 3000) => {
+  if (typeof window === "undefined") return () => {};
+
+  let idleId = null;
+  let timerId = null;
+
+  if ("requestIdleCallback" in window) {
+    idleId = window.requestIdleCallback(
+      () => {
+        syncOfflineTransactions();
+      },
+      { timeout: timeoutMs },
+    );
+  } else {
+    timerId = window.setTimeout(() => {
+      syncOfflineTransactions();
+    }, 1500);
+  }
+
+  return () => {
+    if (idleId && "cancelIdleCallback" in window) {
+      window.cancelIdleCallback(idleId);
+    }
+    if (timerId) {
+      window.clearTimeout(timerId);
+    }
+  };
+};
+

@@ -27,7 +27,11 @@ import GlowingBubbles from "@/components/GlowingBubbles";
 import { loadDynamicFont } from "@/app/AppWrapper";
 
 const FONT_OPTIONS = [
-  { label: "Inter", value: "Inter", font: "var(--font-inter), 'Inter', sans-serif" },
+  {
+    label: "Inter",
+    value: "Inter",
+    font: "var(--font-inter), 'Inter', sans-serif",
+  },
   {
     label: "DM Sans",
     value: "DM Sans",
@@ -589,7 +593,7 @@ export default function SettingsPage() {
                   : "Mobile Web Browser"}
               </span>
             </div>
-            <div>Expenses Tracker • Version 1.109</div>
+            <div>Expenses Tracker • Version 1.110</div>
           </div>
         </div>
       </main>

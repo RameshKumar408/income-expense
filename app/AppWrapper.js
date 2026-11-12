@@ -4,7 +4,7 @@ import { LoaderProvider } from "./context/LoaderContext";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import "@/libs/setupToast";
-import { syncOfflineTransactions } from "@/libs/offlineSync";
+import { scheduleOfflineSync } from "@/libs/offlineSync";
 import BottomNavBar from "@/components/BottomNavBar";
 
 const FONT_URLS = {
@@ -57,17 +57,19 @@ export default function AppWrapper({ children }) {
         window.sessionStorage.removeItem("pendingToastType");
       }
 
-      // Check and sync any pending offline items on mount
-      syncOfflineTransactions();
+      // Check and sync any pending offline items during idle time (unblocks launch)
+      let cancelSchedule = scheduleOfflineSync(3000);
 
       // Automatically sync whenever the network reconnects
       const handleOnline = () => {
-        syncOfflineTransactions();
+        if (cancelSchedule) cancelSchedule();
+        cancelSchedule = scheduleOfflineSync(1500);
       };
 
       window.addEventListener("online", handleOnline);
       return () => {
         window.removeEventListener("online", handleOnline);
+        if (cancelSchedule) cancelSchedule();
       };
     }
   }, []);
