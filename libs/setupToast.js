@@ -53,4 +53,3 @@ export function configureSingleToast() {
 if (typeof window !== "undefined") {
   configureSingleToast();
 }
-
