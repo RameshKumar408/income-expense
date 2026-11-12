@@ -88,8 +88,12 @@ export default function Analytics() {
         body: JSON.stringify(body),
       });
 
-      if (res.status == 400) {
+      if (res.status === 400 || res.status === 401) {
         router.push("/");
+        return;
+      }
+
+      if (!res.ok) {
         return;
       }
 

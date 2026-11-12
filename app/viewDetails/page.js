@@ -512,8 +512,13 @@ export default function Page() {
             body: JSON.stringify(body),
           });
 
-          if (res.status == 400) {
+          if (res.status === 400 || res.status === 401) {
             router.push("/");
+            return null;
+          }
+
+          if (!res.ok) {
+            console.error(`HTTP error ${res.status} from /api/getDateRange`);
             return null;
           }
 

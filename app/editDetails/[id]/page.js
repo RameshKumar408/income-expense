@@ -44,6 +44,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useLoader } from "@/app/context/LoaderContext";
+import { animatePillToInput, cleanupFlyingPills } from "@/libs/animatePill";
 
 export default function Home({ params }) {
   const isMobile = useMediaQuery("(max-width:520px)", { noSsr: true });
@@ -69,6 +70,13 @@ export default function Home({ params }) {
   const [titleSuggestions, setTitleSuggestions] = useState([]);
   const [isSuggestionsExpanded, setIsSuggestionsExpanded] = useState(false);
   const suggestionRowRef = useRef(null);
+  const topicInputRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      cleanupFlyingPills();
+    };
+  }, []);
 
   const displayedSuggestions = useMemo(() => {
     if (!titleSuggestions || titleSuggestions.length === 0) return [];
@@ -514,6 +522,7 @@ export default function Home({ params }) {
               Title<span>*</span>
             </label>
             <LiquidTextField
+              inputRef={topicInputRef}
               value={topic}
               placeholder="Title"
               variant="outlined"
@@ -555,15 +564,22 @@ export default function Home({ params }) {
                         type="button"
                         className={`suggestion-chip ${isActive ? "active" : ""}`}
                         key={item}
-                        onClick={() => {
-                          setTopic(item);
-                          setTopicError("");
+                        onClick={(e) => {
                           if (suggestionRowRef.current) {
                             suggestionRowRef.current.scrollTo({
                               left: 0,
                               behavior: "smooth",
                             });
                           }
+                          animatePillToInput({
+                            sourceEl: e.currentTarget,
+                            targetInputEl: topicInputRef.current,
+                            text: item,
+                            onComplete: () => {
+                              setTopic(item);
+                              setTopicError("");
+                            },
+                          });
                         }}
                       >
                         {item}

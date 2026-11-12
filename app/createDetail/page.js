@@ -49,6 +49,7 @@ import dayjs from "dayjs";
 import { clearRangeDataCache, fetchDeduplicated } from "@/libs/dataCache";
 import { enqueueOfflineTransaction } from "@/libs/offlineSync";
 import { triggerHaptic } from "@/libs/haptics";
+import { animatePillToInput, cleanupFlyingPills } from "@/libs/animatePill";
 
 export default function Home() {
   const router = useRouter();
@@ -182,6 +183,10 @@ export default function Home() {
           return null;
         }
 
+        if (!res.ok) {
+          return null;
+        }
+
         return await res.json();
       });
 
@@ -246,6 +251,12 @@ export default function Home() {
       hasFetchedTitles.current = true;
       fetchTitles();
     }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      cleanupFlyingPills();
+    };
   }, []);
 
   const inputSx = {
@@ -1053,15 +1064,22 @@ export default function Home() {
                           type="button"
                           className={`suggestion-chip ${isActive ? "active" : ""}`}
                           key={item}
-                          onClick={() => {
-                            setTopic(item);
-                            setTopicError("");
+                          onClick={(e) => {
                             if (suggestionRowRef.current) {
                               suggestionRowRef.current.scrollTo({
                                 left: 0,
                                 behavior: "smooth",
                               });
                             }
+                            animatePillToInput({
+                              sourceEl: e.currentTarget,
+                              targetInputEl: topicInputRef.current,
+                              text: item,
+                              onComplete: () => {
+                                setTopic(item);
+                                setTopicError("");
+                              },
+                            });
                           }}
                         >
                           {item}
