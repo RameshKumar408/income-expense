@@ -598,7 +598,7 @@ export default function SettingsPage() {
                   : "Mobile Web Browser"}
               </span>
             </div>
-            <div>Expenses Tracker • Version 1.112</div>
+            <div>Expenses Tracker • Version 1.113</div>
           </div>
         </div>
       </main>

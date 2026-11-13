@@ -1140,7 +1140,7 @@ export default function Home() {
                   setDescriptionError("");
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
+                  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
                     e.preventDefault();
                     handleSubmit(e);
                   }
