@@ -433,6 +433,7 @@ export default function Analytics() {
             justifyContent: "space-between",
             width: "100%",
             marginBottom: "24px",
+            marginTop: "8px",
           }}
         >
           <div

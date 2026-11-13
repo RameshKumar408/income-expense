@@ -92,6 +92,12 @@ export default function BottomNavBar() {
     let blurTimer2 = null;
 
     const checkKeyboard = () => {
+      // On desktop / tablet web view (width >= 768px), the navbar is a permanent left sidebar, never hide it
+      if (typeof window !== "undefined" && window.innerWidth >= 768) {
+        setIsKeyboardOpen(false);
+        return;
+      }
+
       const activeEl = document.activeElement;
       const isInputActive = isKeyboardInput(activeEl);
 
@@ -125,6 +131,11 @@ export default function BottomNavBar() {
     };
 
     const handleFocusIn = (e) => {
+      // On desktop / tablet web view (width >= 768px), never hide the sidebar
+      if (typeof window !== "undefined" && window.innerWidth >= 768) {
+        return;
+      }
+
       if (
         isKeyboardInput(e.target) ||
         isKeyboardInput(document.activeElement)
@@ -154,9 +165,18 @@ export default function BottomNavBar() {
       checkKeyboard();
     };
 
+    const handleWindowResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsKeyboardOpen(false);
+      } else {
+        checkKeyboard();
+      }
+    };
+
     // Use capture phase on document to catch all events immediately
     document.addEventListener("focusin", handleFocusIn, true);
     document.addEventListener("focusout", handleFocusOut, true);
+    window.addEventListener("resize", handleWindowResize);
 
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", handleViewportChange);
@@ -169,6 +189,7 @@ export default function BottomNavBar() {
       window.removeEventListener("storage", readRole);
       document.removeEventListener("focusin", handleFocusIn, true);
       document.removeEventListener("focusout", handleFocusOut, true);
+      window.removeEventListener("resize", handleWindowResize);
       if (window.visualViewport) {
         window.visualViewport.removeEventListener(
           "resize",

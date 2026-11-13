@@ -28,7 +28,7 @@ export const metadata = {
   appleWebApp: {
     capable: true,
     title: "Expenses",
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     startupImage: [
       {
         url: "/apple-touch-icon.png",
@@ -47,13 +47,13 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" data-font="Inter" suppressHydrationWarning>
+    <html
+      lang="en"
+      data-font="Inter"
+      suppressHydrationWarning
+      style={{ backgroundColor: "#000000", color: "#ffffff" }}
+    >
       <head>
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `html,body{background-color:#000000!important;color:#ffffff;}`,
-          }}
-        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -87,17 +87,19 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-startup-image" href="/apple-touch-icon.png" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Expenses" />
         <meta name="theme-color" content="#000000" />
       </head>
       <body
         className={inter.variable}
+        style={{ backgroundColor: "#000000", color: "#ffffff" }}
         suppressHydrationWarning
       >
         <ToastContainer 
           closeOnClick 
           theme="dark" 
+          hideProgressBar={true}
           toastClassName="liquid-toast-container"
           bodyClassName="liquid-toast-body"
         />

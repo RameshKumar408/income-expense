@@ -13,18 +13,18 @@ export default function LiquidTextField(props) {
             fontSize: { xs: '16px', sm: '20px' },
             minHeight: { xs: '48px', sm: '66px' },
             transition: 'all 0.3s ease',
-            '& fieldset': {
+            '& fieldset, & .MuiOutlinedInput-notchedOutline': {
                 borderColor: 'rgba(212, 160, 23, 0.45)',
                 borderWidth: '1.5px',
             },
-            '&:hover fieldset': {
+            '&:hover fieldset, &:hover .MuiOutlinedInput-notchedOutline': {
                 borderColor: 'rgba(212, 160, 23, 0.45)',
             },
             '&.Mui-focused': {
                 backgroundColor: 'rgba(255, 255, 255, 0.08)',
                 boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 0 20px rgba(212, 160, 23, 0.2)',
             },
-            '&.Mui-focused fieldset': {
+            '&.Mui-focused fieldset, &.Mui-focused .MuiOutlinedInput-notchedOutline': {
                 borderColor: 'rgba(212, 160, 23, 1)',
                 borderWidth: '1.5px',
             },
@@ -65,8 +65,10 @@ export default function LiquidTextField(props) {
         },
     };
 
-    // Merge sx prop if provided
-    const combinedSx = props.sx ? { ...liquidSx, ...props.sx } : liquidSx;
+    // Safely merge sx prop if provided without wiping nested classes
+    const combinedSx = props.sx
+        ? [liquidSx, ...(Array.isArray(props.sx) ? props.sx : [props.sx])]
+        : liquidSx;
 
-    return <TextField {...props} sx={combinedSx} />;
+    return <TextField suppressHydrationWarning {...props} sx={combinedSx} />;
 }

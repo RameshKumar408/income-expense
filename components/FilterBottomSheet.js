@@ -30,6 +30,29 @@ export default function FilterBottomSheet({
   onReset,
   onApply,
 }) {
+  const updateDatesForMonthYear = (month, year) => {
+    const mStr = `${year}-${String(month + 1).padStart(2, "0")}-01`;
+    const mObj = dayjs(mStr);
+    if (mObj.isValid()) {
+      setDraftFrom(mObj.startOf("month").format("YYYY-MM-DD"));
+      setDraftTo(mObj.endOf("month").format("YYYY-MM-DD"));
+    }
+  };
+
+  const handleMonthChange = (e) => {
+    const newMonth = Number(e.target.value);
+    setDraftMonth(newMonth);
+    updateDatesForMonthYear(newMonth, draftYear);
+    if (setRangeError) setRangeError("");
+  };
+
+  const handleYearChange = (e) => {
+    const newYear = Number(e.target.value);
+    setDraftYear(newYear);
+    updateDatesForMonthYear(draftMonth, newYear);
+    if (setRangeError) setRangeError("");
+  };
+
   return (
     <div
       className="history-filter-modal-overlay"
@@ -67,6 +90,13 @@ export default function FilterBottomSheet({
             className={`filter-mode-tab ${draftMode === "month" ? "active" : ""}`}
             onClick={() => {
               setDraftMode("month");
+              if (draftFrom) {
+                const d = dayjs(draftFrom);
+                if (d.isValid()) {
+                  setDraftMonth(d.month());
+                  setDraftYear(d.year());
+                }
+              }
               setRangeError("");
             }}
           >
@@ -79,6 +109,7 @@ export default function FilterBottomSheet({
             className={`filter-mode-tab ${draftMode === "range" ? "active" : ""}`}
             onClick={() => {
               setDraftMode("range");
+              updateDatesForMonthYear(draftMonth, draftYear);
               setRangeError("");
             }}
           >
@@ -96,7 +127,7 @@ export default function FilterBottomSheet({
                   <span className="filter-select-label">Month</span>
                   <Select
                     value={draftMonth}
-                    onChange={(e) => setDraftMonth(Number(e.target.value))}
+                    onChange={handleMonthChange}
                     fullWidth
                     sx={{
                       color: "#ffffff",
@@ -167,7 +198,7 @@ export default function FilterBottomSheet({
                   <span className="filter-select-label">Year</span>
                   <Select
                     value={draftYear}
-                    onChange={(e) => setDraftYear(Number(e.target.value))}
+                    onChange={handleYearChange}
                     fullWidth
                     sx={{
                       color: "#ffffff",

@@ -53,7 +53,6 @@ export default function AppWrapper({ children }) {
 
       // Proactively check for app and service worker updates on launch and resume
       let handleVisibilityChange = null;
-      let handleControllerChange = null;
       if ("serviceWorker" in navigator) {
         const checkForUpdate = () => {
           navigator.serviceWorker.getRegistration().then((reg) => {
@@ -73,16 +72,6 @@ export default function AppWrapper({ children }) {
           }
         };
         document.addEventListener("visibilitychange", handleVisibilityChange);
-
-        // When a new service worker takes control (via skipWaiting), reload once to apply update
-        let hasReloaded = false;
-        handleControllerChange = () => {
-          if (!hasReloaded) {
-            hasReloaded = true;
-            window.location.reload();
-          }
-        };
-        navigator.serviceWorker.addEventListener("controllerchange", handleControllerChange);
       }
 
       return () => {
@@ -90,9 +79,6 @@ export default function AppWrapper({ children }) {
         if (cancelSchedule) cancelSchedule();
         if (handleVisibilityChange) {
           document.removeEventListener("visibilitychange", handleVisibilityChange);
-        }
-        if (handleControllerChange && "serviceWorker" in navigator) {
-          navigator.serviceWorker.removeEventListener("controllerchange", handleControllerChange);
         }
       };
     }

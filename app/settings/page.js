@@ -703,7 +703,7 @@ export default function SettingsPage() {
                 }
               }}
             >
-              Expenses Tracker • Version 1.114
+              Expenses Tracker • Version 1.115
             </div>
           </div>
         </div>

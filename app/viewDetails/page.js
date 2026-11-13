@@ -122,7 +122,7 @@ export default function Page() {
   const [from, setFrom] = useState(
     dayjs().startOf("month").format("YYYY-MM-DD"),
   );
-  const [to, setTo] = useState(dayjs().format("YYYY-MM-DD"));
+  const [to, setTo] = useState(dayjs().endOf("month").format("YYYY-MM-DD"));
 
   // History filtering states: Month-wise vs Custom Date Range
   const [filterMode, setFilterMode] = useState("month"); // 'month' | 'range'
@@ -155,7 +155,9 @@ export default function Page() {
   const [draftFrom, setDraftFrom] = useState(
     dayjs().startOf("month").format("YYYY-MM-DD"),
   );
-  const [draftTo, setDraftTo] = useState(dayjs().format("YYYY-MM-DD"));
+  const [draftTo, setDraftTo] = useState(
+    dayjs().endOf("month").format("YYYY-MM-DD"),
+  );
   const [rangeError, setRangeError] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [draftCategories, setDraftCategories] = useState([]);
@@ -849,8 +851,13 @@ export default function Page() {
     const currentM = dayjs(`${selectedMonth || dayjs().format("YYYY-MM")}-01`);
     setDraftMonth(currentM.month());
     setDraftYear(currentM.year());
-    setDraftFrom(from);
-    setDraftTo(to);
+    if (filterMode === "month") {
+      setDraftFrom(currentM.startOf("month").format("YYYY-MM-DD"));
+      setDraftTo(currentM.endOf("month").format("YYYY-MM-DD"));
+    } else {
+      setDraftFrom(from);
+      setDraftTo(to);
+    }
     setDraftCategories([...selectedCategories]);
     setRangeError("");
     setShowFilterModal(true);
@@ -1394,38 +1401,6 @@ export default function Page() {
               </div>
             )}
           </div>
-
-          {availableCategories && availableCategories.length > 0 && (
-            <div className="history-category-bar">
-              <div
-                className="history-category-scroll"
-                role="group"
-                aria-label="Filter by category"
-              >
-                <button
-                  type="button"
-                  className={`history-category-pill ${selectedCategories.length === 0 ? "active" : ""}`}
-                  onClick={() => setSelectedCategories([])}
-                >
-                  <span className="pill-name">All</span>
-                </button>
-                {availableCategories.map((cat) => {
-                  const isSelected = selectedCategories.includes(cat.name);
-                  return (
-                    <button
-                      key={cat.name}
-                      type="button"
-                      className={`history-category-pill ${isSelected ? "active" : ""}`}
-                      onClick={() => handleToggleCategory(cat.name)}
-                    >
-                      <span className="pill-name">{cat.name}</span>
-                      <span className="pill-count">{cat.count}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
 
           <div className="history-sort-row" aria-label="Sort history">
             <button

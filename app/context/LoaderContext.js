@@ -13,31 +13,64 @@ const LoaderContext = createContext();
 
 export function LoaderProvider({ children }) {
   const [loading, setLoading] = useState(0);
-  const [initialLoading, setInitialLoading] = useState(() => {
-    if (typeof window !== "undefined") {
-      // If already initialized in this session, never show splash again during tab navigation
-      if (
-        window.__appInitialized ||
-        window.sessionStorage.getItem("app_initialized")
-      ) {
-        return false;
-      }
-    }
-    return true;
-  });
+  const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.__appInitialized = true;
-      try {
-        window.sessionStorage.setItem("app_initialized", "true");
-      } catch (e) {}
+    let isAlreadyInit = false;
+    try {
+      isAlreadyInit =
+        typeof window !== "undefined" &&
+        (Boolean(window.__appInitialized) ||
+          window.sessionStorage.getItem("app_initialized") === "true");
+    } catch (e) {
+      isAlreadyInit = false;
     }
-    const timer = setTimeout(() => {
+
+    if (isAlreadyInit) {
+      // If the app was already visited in this session, dismiss splash immediately on refresh
       setInitialLoading(false);
-    }, 300);
-    return () => clearTimeout(timer);
+    } else {
+      // First cold visit: show smooth 300ms intro splash
+      const timer = setTimeout(() => {
+        setInitialLoading(false);
+      }, 300);
+
+      try {
+        if (typeof window !== "undefined") {
+          window.__appInitialized = true;
+          window.sessionStorage.setItem("app_initialized", "true");
+        }
+      } catch (e) {}
+
+      return () => clearTimeout(timer);
+    }
+
+    try {
+      if (typeof window !== "undefined") {
+        window.__appInitialized = true;
+        window.sessionStorage.setItem("app_initialized", "true");
+      }
+    } catch (e) {}
   }, []);
+
+  // Failsafe watchdog: never allow splash screen to stay visible for more than 1.5s under any circumstance
+  useEffect(() => {
+    if (!initialLoading) return;
+    const safetyTimer = setTimeout(() => {
+      setInitialLoading(false);
+    }, 1500);
+    return () => clearTimeout(safetyTimer);
+  }, [initialLoading]);
+
+  // Global loader watchdog: reset loading count if stuck > 10s
+  useEffect(() => {
+    if (loading <= 0) return;
+    const safetyTimer = setTimeout(() => {
+      setLoading(0);
+      setInitialLoading(false);
+    }, 10000);
+    return () => clearTimeout(safetyTimer);
+  }, [loading]);
 
   useEffect(() => {
     if (loading > 0 || initialLoading) {
@@ -85,6 +118,11 @@ export function LoaderProvider({ children }) {
           style={{
             background: initialLoading ? "#000000" : "rgba(0, 0, 0, 0.72)",
             zIndex: 99999,
+          }}
+          onClick={() => {
+            if (initialLoading) {
+              setInitialLoading(false);
+            }
           }}
           onTouchMove={(e) => e.preventDefault()}
         >

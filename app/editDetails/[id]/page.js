@@ -643,6 +643,7 @@ export default function Home({ params }) {
               variant="outlined"
               multiline
               minRows={isShortMobile ? 2 : isMobile ? 3 : 4}
+              maxRows={isShortMobile ? 2 : isMobile ? 3 : 4}
               onChange={(e) => {
                 setDescription(e.target.value);
                 setDescriptionError("");
