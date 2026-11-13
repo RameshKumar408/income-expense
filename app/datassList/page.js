@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import constant from "@/constant";
 import './datasslist.css'
-import img from '../../public/images.png'
 import pdf from '../../public/pdf.webp'
 import Image from 'next/image'
 import file from '../../public/file.webp'
@@ -235,7 +234,7 @@ export default function Home() {
                                 return (
                                     <div key={index}>
                                         <div className="card" onClick={() => { setSelecData(data); handleOpen() }}>
-                                            <Image className="card2" alt={data?.name?.split(".")[1]} src={data.name?.split(".")[1] == "pdf" ? pdf : data.name?.split(".")[1] == "jpg" || data.name?.split(".")[1] == "jpeg" || data.name?.split(".")[1] == "png" ? img : file} />
+                                            <Image className="card2" alt={data?.name?.split(".")[1]} src={data.name?.split(".")[1] == "pdf" ? pdf : file} />
                                             <div>{data?.name}</div>
                                         </div >
                                         {/* <div key={index}>{data.id}............ {data.name}</div> */}
@@ -323,7 +322,7 @@ export default function Home() {
                                 return (
                                     <div key={index}>
                                         <div className="card" onClick={() => { setSelecData(data); handleFolderFilesOpen() }}>
-                                            <Image className="card2" alt={data?.name?.split(".")[1]} src={data.name?.split(".")[1] == "pdf" ? pdf : data.name?.split(".")[1] == "jpg" || data.name?.split(".")[1] == "jpeg" || data.name?.split(".")[1] == "png" ? img : file} />
+                                            <Image className="card2" alt={data?.name?.split(".")[1]} src={data.name?.split(".")[1] == "pdf" ? pdf : file} />
                                             <div>{data?.name}</div>
                                         </div >
                                     </div>
