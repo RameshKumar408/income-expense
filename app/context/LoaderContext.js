@@ -13,10 +13,26 @@ const LoaderContext = createContext();
 
 export function LoaderProvider({ children }) {
   const [loading, setLoading] = useState(0);
-  const [initialLoading, setInitialLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      // If already initialized in this session, never show splash again during tab navigation
+      if (
+        window.__appInitialized ||
+        window.sessionStorage.getItem("app_initialized")
+      ) {
+        return false;
+      }
+    }
+    return true;
+  });
 
   useEffect(() => {
-    // Safety fallback: if no data fetch resolves, dismiss splash after 3.5 seconds
+    if (typeof window !== "undefined") {
+      window.__appInitialized = true;
+      try {
+        window.sessionStorage.setItem("app_initialized", "true");
+      } catch (e) {}
+    }
     const timer = setTimeout(() => {
       setInitialLoading(false);
     }, 300);
@@ -47,6 +63,12 @@ export function LoaderProvider({ children }) {
   const hideLoader = useCallback(() => {
     setLoading((p) => Math.max(0, p - 1));
     setInitialLoading(false); // Hide splash screen when first data fetch completes
+    if (typeof window !== "undefined") {
+      window.__appInitialized = true;
+      try {
+        window.sessionStorage.setItem("app_initialized", "true");
+      } catch (e) {}
+    }
   }, []);
 
   const value = useMemo(

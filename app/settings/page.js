@@ -15,6 +15,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import CloseIcon from "@mui/icons-material/Close";
+import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -77,6 +78,7 @@ export default function SettingsPage() {
   const [offlineCount, setOfflineCount] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [isClearingCache, setIsClearingCache] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -186,6 +188,49 @@ export default function SettingsPage() {
       toast.error("Failed to sync offline items");
     } finally {
       setIsSyncing(false);
+    }
+  };
+
+  const handleClearCache = async () => {
+    if (isClearingCache) return;
+    try {
+      setIsClearingCache(true);
+
+      // 1. Purge all Service Worker caches (precaches, pages, static assets, RSC)
+      if (typeof window !== "undefined" && "caches" in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map((name) => caches.delete(name)));
+      }
+
+      // 2. Clear range data cache in memory and sessionStorage
+      clearRangeDataCache();
+
+      // 3. Clear session storage
+      if (typeof window !== "undefined") {
+        window.sessionStorage.clear();
+      }
+
+      // 4. Clear temporary suggestion cache (preserve auth tokens, accounts, roles, font, offline queue)
+      if (typeof window !== "undefined") {
+        window.localStorage.removeItem("titleSuggestions");
+      }
+
+      // 5. Trigger service worker update check if supported
+      if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (reg) {
+          await reg.update().catch(() => {});
+        }
+      }
+
+      toast.success("Cache cleared! Reloading fresh version...");
+      setTimeout(() => {
+        window.location.reload();
+      }, 700);
+    } catch (err) {
+      console.error("Failed to clear cache:", err);
+      toast.error("Failed to clear cache fully");
+      setIsClearingCache(false);
     }
   };
 
@@ -537,6 +582,45 @@ export default function SettingsPage() {
                   )}
                 </div>
               </div>
+
+              {/* Clear App Cache Row */}
+              <div
+                className="ios-settings-row clickable"
+                onClick={handleClearCache}
+              >
+                <div className="ios-settings-row-left">
+                  <div className="ios-settings-icon-pill">
+                    <DeleteSweepIcon sx={{ fontSize: 18 }} />
+                  </div>
+                  <div>
+                    <div className="ios-settings-row-label">
+                      Clear App Cache
+                    </div>
+                    <div className="ios-settings-row-subtext">
+                      Purge cached pages & reload fresh version
+                    </div>
+                  </div>
+                </div>
+                <div className="ios-settings-row-right">
+                  <button
+                    type="button"
+                    disabled={isClearingCache}
+                    style={{
+                      background: "rgba(255, 255, 255, 0.08)",
+                      border: "1px solid rgba(212, 160, 23, 0.4)",
+                      color: "#ffd88a",
+                      fontWeight: 700,
+                      fontSize: "12px",
+                      padding: "5px 12px",
+                      borderRadius: "8px",
+                      cursor: isClearingCache ? "not-allowed" : "pointer",
+                      opacity: isClearingCache ? 0.6 : 1,
+                    }}
+                  >
+                    {isClearingCache ? "Clearing..." : "Clear"}
+                  </button>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -598,7 +682,29 @@ export default function SettingsPage() {
                   : "Mobile Web Browser"}
               </span>
             </div>
-            <div>Expenses Tracker • Version 1.113</div>
+            <div
+              style={{ cursor: "pointer" }}
+              title="Tap to check for updates"
+              onClick={async () => {
+                try {
+                  if ("serviceWorker" in navigator) {
+                    const reg = await navigator.serviceWorker.getRegistration();
+                    if (reg) {
+                      await reg.update();
+                      toast.info("Checking for updates...");
+                    } else {
+                      window.location.reload();
+                    }
+                  } else {
+                    window.location.reload();
+                  }
+                } catch {
+                  window.location.reload();
+                }
+              }}
+            >
+              Expenses Tracker • Version 1.114
+            </div>
           </div>
         </div>
       </main>

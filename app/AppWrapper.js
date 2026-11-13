@@ -44,9 +44,56 @@ export default function AppWrapper({ children }) {
       };
 
       window.addEventListener("online", handleOnline);
+
+      // Clean up legacy stale caches from older PWA configurations
+      if ("caches" in window) {
+        caches.delete("pages-rsc-cache").catch(() => {});
+        caches.delete("start-url").catch(() => {});
+      }
+
+      // Proactively check for app and service worker updates on launch and resume
+      let handleVisibilityChange = null;
+      let handleControllerChange = null;
+      if ("serviceWorker" in navigator) {
+        const checkForUpdate = () => {
+          navigator.serviceWorker.getRegistration().then((reg) => {
+            if (reg) {
+              reg.update().catch(() => {});
+            }
+          });
+        };
+
+        // Check update on app mount
+        checkForUpdate();
+
+        // Check update when app resumes from background (iOS Safari / PWA)
+        handleVisibilityChange = () => {
+          if (document.visibilityState === "visible") {
+            checkForUpdate();
+          }
+        };
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        // When a new service worker takes control (via skipWaiting), reload once to apply update
+        let hasReloaded = false;
+        handleControllerChange = () => {
+          if (!hasReloaded) {
+            hasReloaded = true;
+            window.location.reload();
+          }
+        };
+        navigator.serviceWorker.addEventListener("controllerchange", handleControllerChange);
+      }
+
       return () => {
         window.removeEventListener("online", handleOnline);
         if (cancelSchedule) cancelSchedule();
+        if (handleVisibilityChange) {
+          document.removeEventListener("visibilitychange", handleVisibilityChange);
+        }
+        if (handleControllerChange && "serviceWorker" in navigator) {
+          navigator.serviceWorker.removeEventListener("controllerchange", handleControllerChange);
+        }
       };
     }
   }, []);

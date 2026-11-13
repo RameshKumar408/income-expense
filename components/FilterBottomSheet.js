@@ -234,35 +234,6 @@ export default function FilterBottomSheet({
                   </Select>
                 </div>
               </div>
-
-              <div className="filter-preview-banner">
-                <CalendarTodayOutlinedIcon
-                  sx={{ fontSize: 18, color: "var(--brand-gold)" }}
-                />
-                <div>
-                  <strong>
-                    {MONTH_NAMES[draftMonth]} {draftYear}
-                  </strong>
-                  <span>
-                    {dayjs(
-                      `${draftYear}-${String(draftMonth + 1).padStart(2, "0")}-01`,
-                    )
-                      .startOf("month")
-                      .format("DD MMM YYYY")}{" "}
-                    to{" "}
-                    {dayjs(
-                      `${draftYear}-${String(draftMonth + 1).padStart(2, "0")}-01`,
-                    )
-                      .endOf("month")
-                      .format("DD MMM YYYY")}{" "}
-                    (
-                    {dayjs(
-                      `${draftYear}-${String(draftMonth + 1).padStart(2, "0")}-01`,
-                    ).daysInMonth()}{" "}
-                    days)
-                  </span>
-                </div>
-              </div>
             </div>
           ) : (
             <div className="filter-custom-range-group">

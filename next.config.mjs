@@ -5,19 +5,11 @@ const withPWA = withPWAInit({
   disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
-  reloadOnOnline: true,
+  cacheOnFrontEndNav: false,
+  aggressiveFrontEndNavCaching: false,
+  reloadOnOnline: false,
   workboxOptions: {
     disableDevLogs: true,
-    additionalManifestEntries: [
-      { url: "/createDetail", revision: "1.0" },
-      { url: "/viewDetails", revision: "1.0" },
-      { url: "/settings", revision: "1.0" },
-      { url: "/manifest.json", revision: "1.0" },
-      { url: "/icon-192.png", revision: "1.0" },
-      { url: "/apple-touch-icon.png", revision: "1.0" },
-    ],
     runtimeCaching: [
       {
         urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
@@ -65,12 +57,13 @@ const withPWA = withPWAInit({
             url.pathname.startsWith("/_next/data/")
           );
         },
-        handler: "StaleWhileRevalidate",
+        handler: "NetworkFirst",
         options: {
-          cacheName: "pages-rsc-cache",
+          cacheName: "pages-rsc-cache-v2",
+          networkTimeoutSeconds: 3,
           expiration: {
-            maxEntries: 64,
-            maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+            maxEntries: 32,
+            maxAgeSeconds: 60 * 60 * 24, // 1 day
           },
         },
       },
