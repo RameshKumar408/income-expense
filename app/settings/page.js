@@ -215,11 +215,11 @@ export default function SettingsPage() {
         window.localStorage.removeItem("titleSuggestions");
       }
 
-      // 5. Trigger service worker update check if supported
+      // 5. Unregister all active service workers so a brand new instance installs cleanly on reload
       if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-        const reg = await navigator.serviceWorker.getRegistration();
-        if (reg) {
-          await reg.update().catch(() => {});
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const reg of registrations) {
+          await reg.unregister().catch(() => {});
         }
       }
 
