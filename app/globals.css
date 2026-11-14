@@ -405,16 +405,17 @@ body {
   color: #d4a017 !important;
 }
 
-/* Progress bar styling - hidden */
-.Toastify__progress-bar {
-  display: none !important;
-}
-
+/* Progress bar styling - keep rendered for react-toastify timer animation but visually hidden */
+.Toastify__progress-bar,
+.Toastify__progress-bar--wrp,
 .Toastify__progress-bar--success,
 .Toastify__progress-bar--error,
 .Toastify__progress-bar--info,
 .Toastify__progress-bar--warning {
-  display: none !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  pointer-events: none !important;
 }
 
 /* Override toastify SVG icon colors */

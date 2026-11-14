@@ -97,6 +97,7 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning
       >
         <ToastContainer 
+          autoClose={3000}
           closeOnClick 
           theme="dark" 
           hideProgressBar={true}
