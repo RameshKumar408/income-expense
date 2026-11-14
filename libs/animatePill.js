@@ -9,10 +9,6 @@ export function cleanupFlyingPills() {
   activePills.clear();
 }
 
-/**
- * Smoothly animates a suggestion chip pill to the target input field using
- * hardware-accelerated Web Animations API.
- */
 export function animatePillToInput({
   sourceEl,
   targetInputEl,

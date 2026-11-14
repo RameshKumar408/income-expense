@@ -25,9 +25,7 @@ export const enqueueOfflineTransaction = (payload, accountInfo = {}) => {
   try {
     const queue = getOfflineQueue();
     const token =
-      accountInfo.token ||
-      window.localStorage.getItem("token") ||
-      "";
+      accountInfo.token || window.localStorage.getItem("token") || "";
     const email =
       accountInfo.email ||
       window.localStorage.getItem("activeAccount") ||
@@ -69,7 +67,6 @@ export const syncOfflineTransactions = async () => {
     for (const item of queue) {
       try {
         if (!item.accountToken) {
-          // Cannot sync without token; skip invalid item
           continue;
         }
 
@@ -88,14 +85,13 @@ export const syncOfflineTransactions = async () => {
             syncedAccounts.add(item.accountEmail);
           }
         } else if (res.status === 401 || res.status === 403) {
-          // Account token expired/invalid, discard to avoid poison pill
-          console.warn(`Offline item for ${item.accountEmail} unauthorized; discarding`);
+          console.warn(
+            `Offline item for ${item.accountEmail} unauthorized; discarding`,
+          );
         } else {
-          // Server error or temporary failure: keep in queue for next retry
           remainingQueue.push(item);
         }
       } catch (itemErr) {
-        // Network drop during sync: keep in queue
         remainingQueue.push(item);
       }
     }
@@ -122,11 +118,6 @@ export const syncOfflineTransactions = async () => {
   }
 };
 
-/**
- * Defers offline transaction syncing until browser idle time,
- * keeping the critical launch path and main thread unblocked.
- * Returns a cancel function to clear scheduled timers on unmount.
- */
 export const scheduleOfflineSync = (timeoutMs = 3000) => {
   if (typeof window === "undefined") return () => {};
 
@@ -155,4 +146,3 @@ export const scheduleOfflineSync = (timeoutMs = 3000) => {
     }
   };
 };
-

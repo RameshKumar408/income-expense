@@ -1,14 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState, useRef } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
-import SearchIcon from "@mui/icons-material/Search";
-import SettingsIcon from "@mui/icons-material/Settings";
-import PieChartIcon from "@mui/icons-material/PieChart";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -18,7 +12,11 @@ import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import dynamic from "next/dynamic";
 import GlowingBubbles from "@/components/GlowingBubbles";
-import { getCachedRangeData, setCachedRangeData, clearRangeDataCache } from "@/libs/dataCache";
+import {
+  getCachedRangeData,
+  setCachedRangeData,
+  clearRangeDataCache,
+} from "@/libs/dataCache";
 import { decodeToken } from "@/libs/jwt";
 import { toast } from "react-toastify";
 
@@ -95,75 +93,78 @@ export default function Analytics() {
     }
   }, []);
 
-  const getData = useCallback(async (overrideToken = null) => {
-    try {
-      setLoading(true);
-      let queryFrom = null;
-      let queryTo = null;
-
-      if (typeof window !== "undefined") {
-        const searchParams = new URLSearchParams(window.location.search);
-        queryFrom = searchParams.get("from");
-        queryTo = searchParams.get("to");
-      }
-
-      const fromTimestamp = queryFrom
-        ? dayjs(queryFrom).startOf("day").valueOf()
-        : dayjs().startOf("month").valueOf();
-      const toTimestamp = queryTo
-        ? dayjs(queryTo).endOf("day").valueOf()
-        : dayjs().endOf("month").valueOf();
-
-      const body = {
-        From: fromTimestamp,
-        To: toTimestamp,
-      };
-
-      const token =
-        overrideToken || window?.localStorage?.getItem("token") || "";
-      const cacheKey = `${fromTimestamp}_${toTimestamp}__self_${token}`;
-
-      // Stale-While-Revalidate: Instant render from cache, zero skeletons
-      const cached = getCachedRangeData(cacheKey);
-      if (cached) {
-        setDatas(cached.topics || []);
-        setLoading(false);
-      } else {
+  const getData = useCallback(
+    async (overrideToken = null) => {
+      try {
         setLoading(true);
+        let queryFrom = null;
+        let queryTo = null;
+
+        if (typeof window !== "undefined") {
+          const searchParams = new URLSearchParams(window.location.search);
+          queryFrom = searchParams.get("from");
+          queryTo = searchParams.get("to");
+        }
+
+        const fromTimestamp = queryFrom
+          ? dayjs(queryFrom).startOf("day").valueOf()
+          : dayjs().startOf("month").valueOf();
+        const toTimestamp = queryTo
+          ? dayjs(queryTo).endOf("day").valueOf()
+          : dayjs().endOf("month").valueOf();
+
+        const body = {
+          From: fromTimestamp,
+          To: toTimestamp,
+        };
+
+        const token =
+          overrideToken || window?.localStorage?.getItem("token") || "";
+        const cacheKey = `${fromTimestamp}_${toTimestamp}__self_${token}`;
+
+        // Stale-While-Revalidate: Instant render from cache, zero skeletons
+        const cached = getCachedRangeData(cacheKey);
+        if (cached) {
+          setDatas(cached.topics || []);
+          setLoading(false);
+        } else {
+          setLoading(true);
+        }
+
+        const res = await fetch(`/api/getDateRange`, {
+          method: "POST",
+          cache: "no-store",
+          headers: {
+            "Content-type": "application/json",
+            authorization: token,
+          },
+          body: JSON.stringify(body),
+        });
+
+        if (res.status === 400 || res.status === 401) {
+          router.push("/");
+          return;
+        }
+
+        if (!res.ok) {
+          return;
+        }
+
+        const response = await res.json();
+        const freshTopics = response?.topics || [];
+        setDatas(freshTopics);
+        setCachedRangeData(cacheKey, {
+          topics: freshTopics,
+          totalCount: response?.totalCount?.[0] || null,
+        });
+      } catch (error) {
+        console.log("Error loading topics: ", error);
+      } finally {
+        setLoading(false);
       }
-
-      const res = await fetch(`/api/getDateRange`, {
-        method: "POST",
-        cache: "no-store",
-        headers: {
-          "Content-type": "application/json",
-          authorization: token,
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (res.status === 400 || res.status === 401) {
-        router.push("/");
-        return;
-      }
-
-      if (!res.ok) {
-        return;
-      }
-
-      const response = await res.json();
-      const freshTopics = response?.topics || [];
-      setDatas(freshTopics);
-      setCachedRangeData(cacheKey, {
-        topics: freshTopics,
-        totalCount: response?.totalCount?.[0] || null,
-      });
-    } catch (error) {
-      console.log("Error loading topics: ", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
+    },
+    [router],
+  );
 
   const switchAccount = (account) => {
     clearRangeDataCache();
@@ -515,9 +516,7 @@ export default function Analytics() {
                           {acc.name?.substring(0, 1).toUpperCase() || "AK"}
                         </div>
                         <div className="account-menu-info">
-                          <span className="account-menu-name">
-                            {acc.name}
-                          </span>
+                          <span className="account-menu-name">{acc.name}</span>
                           <span className="account-menu-email">
                             {acc.accountType || "Personal Account"}
                           </span>

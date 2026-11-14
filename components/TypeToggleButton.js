@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import styles from './TypeToggleButton.module.css';
+import React, { useState, useRef, useEffect } from "react";
+import styles from "./TypeToggleButton.module.css";
 
-/**
- * Ionicons swap-horizontal SVG icon (exact Ionicons 5 representation)
- */
-function IoniconsSwapHorizontal({ size = 20, color = 'currentColor', className }) {
+function IoniconsSwapHorizontal({
+  size = 20,
+  color = "currentColor",
+  className,
+}) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -49,34 +50,30 @@ export default function TypeToggleButton({
   ariaLabel,
   disabled = false,
 }) {
-  // Normalize isIncome
   const isIncome =
-    typeof value === 'object' && value !== null
-      ? value.value === 1 || String(value.label).toLowerCase() === 'income'
-      : typeof value === 'number'
-      ? value === 1
-      : String(value).toLowerCase() === 'income';
+    typeof value === "object" && value !== null
+      ? value.value === 1 || String(value.label).toLowerCase() === "income"
+      : typeof value === "number"
+        ? value === 1
+        : String(value).toLowerCase() === "income";
 
-  // Label text
   const label =
-    typeof value === 'object' && value !== null && value.label
+    typeof value === "object" && value !== null && value.label
       ? value.label
       : isIncome
-      ? 'Income'
-      : typeof value === 'string' && value
-      ? value
-      : 'Expense';
+        ? "Income"
+        : typeof value === "string" && value
+          ? value
+          : "Expense";
 
-  // Color tokens matching React Native and web theme
-  const greenColor = propColors?.green || '#05B534';
-  const errorColor = propColors?.error || '#FC3728';
+  const greenColor = propColors?.green || "#05B534";
+  const errorColor = propColors?.error || "#FC3728";
   const activeColor = isIncome ? greenColor : errorColor;
 
   const backgroundColor = isIncome
-    ? 'rgba(5, 181, 52, 0.05)'
-    : 'rgba(252, 55, 40, 0.05)';
+    ? "rgba(5, 181, 52, 0.05)"
+    : "rgba(252, 55, 40, 0.05)";
 
-  // Scale animation on press (simulating RN Animated.sequence scale)
   const [isPressed, setIsPressed] = useState(false);
   const pressTimeoutRef = useRef(null);
 
@@ -101,7 +98,7 @@ export default function TypeToggleButton({
 
   const handleKeyDown = (e) => {
     if (disabled) return;
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       handlePress();
     }
@@ -116,7 +113,9 @@ export default function TypeToggleButton({
   }, []);
 
   return (
-    <div className={`${styles.scaleWrapper} ${isPressed ? styles.isPressed : ''}`}>
+    <div
+      className={`${styles.scaleWrapper} ${isPressed ? styles.isPressed : ""}`}
+    >
       <button
         type="button"
         id={id}
@@ -124,7 +123,7 @@ export default function TypeToggleButton({
         disabled={disabled}
         onClick={handlePress}
         onKeyDown={handleKeyDown}
-        className={`${styles.container} ${compact ? styles.compact : ''} ${className || ''}`}
+        className={`${styles.container} ${compact ? styles.compact : ""} ${className || ""}`}
         style={{
           borderColor: activeColor,
           backgroundColor: backgroundColor,
@@ -133,7 +132,7 @@ export default function TypeToggleButton({
       >
         <div className={styles.textWrapper}>
           <span
-            key={isIncome ? 'income' : 'expense'}
+            key={isIncome ? "income" : "expense"}
             className={styles.text}
             style={{ color: activeColor }}
           >

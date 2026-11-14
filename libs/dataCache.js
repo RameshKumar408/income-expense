@@ -1,6 +1,5 @@
 const CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes
 
-// In-memory cache + sessionStorage fallback for instant retrieval across pages
 const memoryCache = new Map();
 const inFlightRequests = new Map();
 
@@ -23,13 +22,11 @@ export const fetchDeduplicated = (cacheKey, fetchFn) => {
 
 export const getCachedRangeData = (cacheKey) => {
   try {
-    // 1. Check in-memory map first
     const mem = memoryCache.get(cacheKey);
     if (mem && Date.now() - mem.timestamp < CACHE_TTL_MS) {
       return mem.data;
     }
 
-    // 2. Check sessionStorage
     if (typeof window !== "undefined") {
       const stored = window.sessionStorage.getItem(`range_cache_${cacheKey}`);
       if (stored) {
@@ -51,7 +48,10 @@ export const setCachedRangeData = (cacheKey, data) => {
     const entry = { data, timestamp: Date.now() };
     memoryCache.set(cacheKey, entry);
     if (typeof window !== "undefined") {
-      window.sessionStorage.setItem(`range_cache_${cacheKey}`, JSON.stringify(entry));
+      window.sessionStorage.setItem(
+        `range_cache_${cacheKey}`,
+        JSON.stringify(entry),
+      );
     }
   } catch (e) {
     console.error("Cache write error:", e);
@@ -75,4 +75,3 @@ export const clearRangeDataCache = () => {
     console.error("Cache clear error:", e);
   }
 };
-

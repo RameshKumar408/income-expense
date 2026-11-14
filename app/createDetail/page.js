@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-
 const DateTimePicker = dynamic(
   () =>
     import("@mui/x-date-pickers/DateTimePicker").then(

@@ -53,7 +53,6 @@ export default function BottomNavBar() {
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Modal / Bottom sheet detection
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -77,7 +76,6 @@ export default function BottomNavBar() {
     };
   }, []);
 
-  // Keyboard detection (optimized for iPhone Safari / Standalone PWA)
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -92,7 +90,6 @@ export default function BottomNavBar() {
     let blurTimer2 = null;
 
     const checkKeyboard = () => {
-      // On desktop / tablet web view (width >= 768px), the navbar is a permanent left sidebar, never hide it
       if (typeof window !== "undefined" && window.innerWidth >= 768) {
         setIsKeyboardOpen(false);
         return;
@@ -101,24 +98,19 @@ export default function BottomNavBar() {
       const activeEl = document.activeElement;
       const isInputActive = isKeyboardInput(activeEl);
 
-      // If an input is actively focused, the keyboard is definitely open on mobile
       if (isInputActive) {
         setIsKeyboardOpen(true);
         return;
       }
 
-      // Visual viewport shrink check
       if (window.visualViewport) {
         const vvHeight = window.visualViewport.height;
         const winHeight = window.innerHeight;
         const screenHeight = window.screen?.height || 0;
 
-        // Safari browser mode: layout viewport remains full, visual viewport shrinks
         const isShrunkRelative = winHeight - vvHeight > 120;
-        // iOS PWA standalone mode: innerHeight shrinks to vvHeight, but screen.height is fixed
         const isShrunkScreen =
           screenHeight > 0 && vvHeight < screenHeight * 0.75;
-        // iOS Safari upward scroll offset when keyboard opens
         const isOffset = (window.visualViewport.offsetTop || 0) > 40;
 
         if (isShrunkRelative || isShrunkScreen || isOffset) {
@@ -131,7 +123,6 @@ export default function BottomNavBar() {
     };
 
     const handleFocusIn = (e) => {
-      // On desktop / tablet web view (width >= 768px), never hide the sidebar
       if (typeof window !== "undefined" && window.innerWidth >= 768) {
         return;
       }
@@ -173,7 +164,6 @@ export default function BottomNavBar() {
       }
     };
 
-    // Use capture phase on document to catch all events immediately
     document.addEventListener("focusin", handleFocusIn, true);
     document.addEventListener("focusout", handleFocusOut, true);
     window.addEventListener("resize", handleWindowResize);
@@ -236,8 +226,6 @@ export default function BottomNavBar() {
     const navRect = navRef.current.getBoundingClientRect();
     const itemRect = activeEl.getBoundingClientRect();
 
-    // If navbar or active tab is hidden (e.g. modal open, keyboard open, display: none),
-    // getBoundingClientRect returns 0. NEVER overwrite valid coordinates with 0!
     if (navRect.width === 0 || itemRect.width === 0) {
       return;
     }
@@ -259,11 +247,9 @@ export default function BottomNavBar() {
 
   const shouldHide = isKeyboardOpen || isModalOpen;
 
-  // Synchronous measurement before first paint: places bubble directly at active tab with NO transition
   useIsomorphicLayoutEffect(() => {
     updateBubblePosition(false);
 
-    // After initial placement and entrance bloom, enable smooth slide transitions for tab switching
     const timer = setTimeout(() => {
       setBubbleStyle((prev) => ({ ...prev, hasTransition: true }));
     }, 200);
@@ -281,7 +267,6 @@ export default function BottomNavBar() {
     };
   }, [shouldHide, updateBubblePosition]);
 
-  // When active route or role updates, glide smoothly to the new tab
   useIsomorphicLayoutEffect(() => {
     if (shouldHide) return;
     updateBubblePosition(Boolean(optimisticPath));
@@ -314,7 +299,6 @@ export default function BottomNavBar() {
   const handleHistoryClick = (e) => {
     setOptimisticPath("/viewDetails");
     if (pathname === "/viewDetails") {
-      // Dispatches event to viewDetails page to toggle or focus search
       e.preventDefault();
       window.dispatchEvent(new CustomEvent("open-history-search"));
     }

@@ -10,9 +10,7 @@ import WifiIcon from "@mui/icons-material/Wifi";
 import WifiOffIcon from "@mui/icons-material/WifiOff";
 import SyncIcon from "@mui/icons-material/Sync";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
-import CheckIcon from "@mui/icons-material/Check";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
@@ -703,7 +701,7 @@ export default function SettingsPage() {
                 }
               }}
             >
-              Expenses Tracker • Version 1.117
+              Expenses Tracker • Version 1.118
             </div>
           </div>
         </div>

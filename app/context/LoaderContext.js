@@ -8,7 +8,6 @@ import {
   useMemo,
   useState,
 } from "react";
-
 const LoaderContext = createContext();
 
 export function LoaderProvider({ children }) {
