@@ -24,6 +24,7 @@ import {
 import { clearRangeDataCache } from "@/libs/dataCache";
 import GlowingBubbles from "@/components/GlowingBubbles";
 import { loadDynamicFont } from "@/app/AppWrapper";
+import colors from "@/colors";
 
 const FONT_OPTIONS = [
   {
@@ -388,7 +389,7 @@ export default function SettingsPage() {
                 </div>
                 <div className="ios-settings-row-right">
                   <ChevronRightIcon
-                    sx={{ fontSize: 20, color: "rgba(212, 160, 23, 0.6)" }}
+                    sx={{ fontSize: 20, color: colors.border.inputHover }}
                   />
                 </div>
               </div>
@@ -417,45 +418,45 @@ export default function SettingsPage() {
                       onChange={handleFontChange}
                       aria-label="Select App Font"
                       sx={{
-                        color: "#ffffff",
-                        backgroundColor: "rgba(0, 0, 0, 0.3)",
+                        color: colors.text.primary,
+                        backgroundColor: colors.background.overlayLight,
                         borderRadius: "10px",
                         fontSize: "14px",
                         fontWeight: 600,
                         height: "36px",
                         minWidth: "140px",
                         "& .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "rgba(212, 160, 23, 0.4)",
+                          borderColor: colors.border.input,
                         },
                         "&:hover .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "rgba(212, 160, 23, 0.8)",
+                          borderColor: colors.border.inputFocus,
                         },
                         "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                          borderColor: "#d4a017",
+                          borderColor: colors.brand.primary,
                         },
                         "& .MuiSvgIcon-root": {
-                          color: "#d4a017",
+                          color: colors.brand.primary,
                         },
                       }}
                       MenuProps={{
                         PaperProps: {
                           sx: {
-                            backgroundColor: "rgba(12, 14, 20, 0.95)",
+                            backgroundColor: colors.background.surfaceHigh,
                             backdropFilter: "blur(24px)",
-                            color: "#ffffff",
-                            border: "1px solid rgba(212, 160, 23, 0.3)",
+                            color: colors.text.primary,
+                            border: `1px solid ${colors.glass.glow}`,
                             borderRadius: "14px",
-                            boxShadow: "0 12px 36px rgba(0, 0, 0, 0.8)",
+                            boxShadow: `0 12px 36px ${colors.background.overlayDark}`,
                             mt: 1,
                             "& .MuiMenuItem-root": {
                               fontSize: "14px",
                               padding: "10px 16px",
                               "&:hover": {
-                                backgroundColor: "rgba(212, 160, 23, 0.15)",
+                                backgroundColor: colors.border.subtle,
                               },
                               "&.Mui-selected": {
-                                backgroundColor: "rgba(212, 160, 23, 0.25)",
-                                color: "#ffd88a",
+                                backgroundColor: colors.glass.shadow,
+                                color: colors.brand.highlight,
                                 fontWeight: 700,
                               },
                             },
@@ -510,7 +511,7 @@ export default function SettingsPage() {
                       gap: "6px",
                       fontSize: "13px",
                       fontWeight: 700,
-                      color: isOnline ? "#ffd88a" : "#ff455b",
+                      color: isOnline ? colors.brand.highlight : colors.semantic.expense,
                     }}
                   >
                     <span
@@ -518,10 +519,10 @@ export default function SettingsPage() {
                         width: "8px",
                         height: "8px",
                         borderRadius: "50%",
-                        backgroundColor: isOnline ? "#d4a017" : "#ff455b",
+                        backgroundColor: isOnline ? colors.brand.primary : colors.semantic.expense,
                         boxShadow: isOnline
-                          ? "0 0 8px rgba(212, 160, 23, 0.6)"
-                          : "0 0 8px rgba(255, 69, 91, 0.6)",
+                          ? `0 0 8px ${colors.border.inputHover}`
+                          : `0 0 8px ${colors.semantic.expenseSubtle}`,
                       }}
                     />
                     {isOnline ? "Online" : "Offline"}
@@ -563,9 +564,9 @@ export default function SettingsPage() {
                       onClick={handleManualSync}
                       disabled={isSyncing || !isOnline}
                       style={{
-                        background: "linear-gradient(135deg, #ffd88a, #d4a017)",
+                        background: `linear-gradient(135deg, ${colors.brand.highlight}, ${colors.brand.primary})`,
                         border: "none",
-                        color: "#111111",
+                        color: colors.background.surface,
                         fontWeight: 700,
                         fontSize: "12px",
                         padding: "5px 12px",
@@ -605,8 +606,8 @@ export default function SettingsPage() {
                     disabled={isClearingCache}
                     style={{
                       background: "rgba(255, 255, 255, 0.08)",
-                      border: "1px solid rgba(212, 160, 23, 0.4)",
-                      color: "#ffd88a",
+                      border: `1px solid ${colors.border.input}`,
+                      color: colors.brand.highlight,
                       fontWeight: 700,
                       fontSize: "12px",
                       padding: "5px 12px",
@@ -639,7 +640,7 @@ export default function SettingsPage() {
                   </div>
                   <span
                     className="ios-settings-row-label"
-                    style={{ color: "#ff455b" }}
+                    style={{ color: colors.semantic.expense }}
                   >
                     {accounts.length > 1 ? "Remove This Account" : "Log Out"}
                   </span>
@@ -662,7 +663,7 @@ export default function SettingsPage() {
               gap: "6px",
               marginTop: "8px",
               marginBottom: "36px",
-              color: "rgba(255, 255, 255, 0.4)",
+              color: colors.text.secondary,
               fontSize: "12px",
               fontWeight: "500",
             }}
@@ -671,7 +672,7 @@ export default function SettingsPage() {
               <PhoneIphoneIcon
                 sx={{
                   fontSize: 15,
-                  color: isStandalone ? "#ffd88a" : "rgba(255, 255, 255, 0.4)",
+                  color: isStandalone ? colors.brand.highlight : colors.text.secondary,
                 }}
               />
               <span>
@@ -701,7 +702,7 @@ export default function SettingsPage() {
                 }
               }}
             >
-              Expenses Tracker • Version 1.118
+              Expenses Tracker • Version 1.119
             </div>
           </div>
         </div>
@@ -718,7 +719,7 @@ export default function SettingsPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="ios-confirm-icon-wrap">
-              <LogoutIcon sx={{ fontSize: 28, color: "#ff455b" }} />
+              <LogoutIcon sx={{ fontSize: 28, color: colors.semantic.expense }} />
             </div>
             <h3>{accounts.length > 1 ? "Remove Account?" : "Log Out?"}</h3>
             <p>

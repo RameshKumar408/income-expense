@@ -46,6 +46,7 @@ import dayjs from "dayjs";
 import { clearRangeDataCache, fetchDeduplicated } from "@/libs/dataCache";
 import { enqueueOfflineTransaction } from "@/libs/offlineSync";
 import { animatePillToInput, cleanupFlyingPills } from "@/libs/animatePill";
+import colors from "@/colors";
 
 export default function Home() {
   const router = useRouter();
@@ -263,39 +264,37 @@ export default function Home() {
 
   const inputSx = {
     "& .MuiOutlinedInput-root": {
-      color: "#ffffff",
+      color: colors.text.primary,
       backgroundColor: "rgba(255, 255, 255, 0.03)",
       backdropFilter: "blur(16px) saturate(150%)",
       WebkitBackdropFilter: "blur(16px) saturate(150%)",
-      boxShadow:
-        "inset 0 1px 2px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.4)",
+      boxShadow: `inset 0 1px 2px ${colors.border.glass}, 0 8px 24px rgba(0, 0, 0, 0.4)`,
       borderRadius: { xs: "12px", sm: "14px" },
       fontSize: { xs: "16px", sm: "20px" },
       minHeight: { xs: "48px", sm: "66px" },
       transition: "all 0.3s ease",
       "& fieldset": {
-        borderColor: "rgba(212, 160, 23, 0.35)",
+        borderColor: colors.border.subtle,
         borderWidth: "1.5px",
       },
       "&:hover fieldset": {
-        borderColor: "rgba(212, 160, 23, 0.35)",
+        borderColor: colors.border.subtle,
       },
       "&.Mui-focused": {
         backgroundColor: "rgba(255, 255, 255, 0.08)",
-        boxShadow:
-          "inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 0 20px rgba(212, 160, 23, 0.2)",
+        boxShadow: `inset 0 1px 2px ${colors.border.dividerBright}, 0 0 20px ${colors.glass.glow}`,
       },
       "&.Mui-focused fieldset": {
-        borderColor: "rgba(212, 160, 23, 0.6)",
+        borderColor: colors.border.inputHover,
         borderWidth: "1.5px",
       },
     },
     "& .MuiInputBase-input": {
-      color: "#ffffff",
+      color: colors.text.primary,
       padding: { xs: "11px 13px", sm: "18px 20px" },
     },
     "& .MuiInputBase-input::placeholder": {
-      color: "#8c8c8c",
+      color: colors.text.placeholder,
       opacity: 1,
     },
     "& input[type=number]": {
@@ -307,10 +306,10 @@ export default function Home() {
         margin: 0,
       },
     "& .clear-field-button": {
-      color: "#8c8c8c",
+      color: colors.text.secondary,
       marginRight: { xs: "-4px", sm: "2px" },
       "&:hover": {
-        color: "#ffffff",
+        color: colors.text.primary,
         backgroundColor: "rgba(255, 255, 255, 0.08)",
       },
     },
@@ -333,12 +332,11 @@ export default function Home() {
   );
 
   const selectSx = {
-    color: type == "Expense" ? "#ff3b3f" : "#2fd06f",
+    color: type == "Expense" ? colors.semantic.expenseAlt : colors.semantic.income,
     backgroundColor: "rgba(255, 255, 255, 0.03)",
     backdropFilter: "blur(16px) saturate(150%)",
     WebkitBackdropFilter: "blur(16px) saturate(150%)",
-    boxShadow:
-      "inset 0 1px 2px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.4)",
+    boxShadow: `inset 0 1px 2px ${colors.border.glass}, 0 8px 24px rgba(0, 0, 0, 0.4)`,
     borderRadius: { xs: "12px", sm: "14px" },
     fontSize: { xs: "13px", sm: "20px" },
     fontWeight: 700,
@@ -357,23 +355,23 @@ export default function Home() {
     "& .MuiOutlinedInput-notchedOutline": {
       borderColor:
         type == "Expense"
-          ? "rgba(255, 59, 63, 0.5)"
-          : "rgba(47, 208, 111, 0.5)",
+          ? colors.semantic.expenseSubtle
+          : colors.semantic.incomeSubtle,
       borderWidth: "1.5px",
     },
     "&:hover .MuiOutlinedInput-notchedOutline": {
-      borderColor: type == "Expense" ? "#ff575a" : "#45df82",
+      borderColor: type == "Expense" ? colors.semantic.expenseHover : colors.semantic.income,
     },
     "&.Mui-focused": {
       backgroundColor: "rgba(255, 255, 255, 0.08)",
-      boxShadow: `inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 0 20px ${type == "Expense" ? "rgba(255, 59, 63, 0.2)" : "rgba(47, 208, 111, 0.2)"}`,
+      boxShadow: `inset 0 1px 2px ${colors.border.dividerBright}, 0 0 20px ${type == "Expense" ? colors.semantic.expenseSubtle : colors.glass.glow}`,
     },
     "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-      borderColor: type == "Expense" ? "#ff3b3f" : "#2fd06f",
+      borderColor: type == "Expense" ? colors.semantic.expenseAlt : colors.semantic.income,
       borderWidth: "1.5px",
     },
     "& .MuiSvgIcon-root": {
-      color: type == "Expense" ? "#ff3b3f" : "#2fd06f",
+      color: type == "Expense" ? colors.semantic.expenseAlt : colors.semantic.income,
     },
   };
 
@@ -1097,14 +1095,14 @@ export default function Home() {
                       }
                       sx={{
                         flexShrink: 0,
-                        color: "#d4a017",
-                        backgroundColor: "rgba(0, 0, 0, 0.2)",
-                        border: "1px solid rgba(212, 160, 23, 0.3)",
+                        color: colors.brand.primary,
+                        backgroundColor: colors.background.overlayLight,
+                        border: `1px solid ${colors.glass.glow}`,
 
                         padding: "8px",
                         "&:hover": {
-                          backgroundColor: "rgba(212, 160, 23, 0.1)",
-                          borderColor: "rgba(212, 160, 23, 0.5)",
+                          backgroundColor: colors.border.subtle,
+                          borderColor: colors.border.inputHover,
                         },
                       }}
                     >

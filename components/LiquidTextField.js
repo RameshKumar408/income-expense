@@ -1,40 +1,41 @@
 import React from 'react';
 import TextField from '@mui/material/TextField';
+import colors from '@/colors';
 
 export default function LiquidTextField(props) {
     const liquidSx = {
         '& .MuiOutlinedInput-root': {
-            color: '#ffffff',
+            color: colors.text.primary,
             backgroundColor: 'rgba(255, 255, 255, 0.03)',
             backdropFilter: 'blur(16px) saturate(150%)',
             WebkitBackdropFilter: 'blur(16px) saturate(150%)',
-            boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.4)',
+            boxShadow: `inset 0 1px 2px ${colors.border.glass}, 0 8px 24px rgba(0, 0, 0, 0.4)`,
             borderRadius: { xs: '12px', sm: '14px' },
             fontSize: { xs: '16px', sm: '20px' },
             minHeight: { xs: '48px', sm: '66px' },
             transition: 'all 0.3s ease',
             '& fieldset, & .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'rgba(212, 160, 23, 0.45)',
+                borderColor: colors.border.input,
                 borderWidth: '1.5px',
             },
             '&:hover fieldset, &:hover .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'rgba(212, 160, 23, 0.45)',
+                borderColor: colors.border.input,
             },
             '&.Mui-focused': {
                 backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                boxShadow: 'inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 0 20px rgba(212, 160, 23, 0.2)',
+                boxShadow: `inset 0 1px 2px ${colors.border.dividerBright}, 0 0 20px ${colors.glass.glow}`,
             },
             '&.Mui-focused fieldset, &.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'rgba(212, 160, 23, 1)',
+                borderColor: colors.brand.primary,
                 borderWidth: '1.5px',
             },
         },
         '& .MuiInputBase-input': {
-            color: '#ffffff',
+            color: colors.text.primary,
             padding: { xs: '11px 13px', sm: '18px 20px' },
         },
         '& .MuiInputBase-input::placeholder': {
-            color: 'rgba(255, 255, 255, 0.4)',
+            color: colors.text.placeholder,
             opacity: 1,
         },
         '& input[type=number]': {
@@ -56,10 +57,10 @@ export default function LiquidTextField(props) {
             padding: 0,
         },
         '& .clear-field-button': {
-            color: 'rgba(255, 255, 255, 0.4)',
+            color: colors.text.secondary,
             marginRight: { xs: '-4px', sm: '2px' },
             '&:hover': {
-                color: '#ffffff',
+                color: colors.text.primary,
                 backgroundColor: 'rgba(255, 255, 255, 0.08)',
             },
         },

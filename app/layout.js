@@ -3,8 +3,9 @@ import "./globals.css";
 import "./createDetail/createdeails.css";
 import "./loginRegister.css";
 import "@/components/PrimaryButton.css";
-import { ToastContainer } from 'react-toastify';
-import AppWrapper from './AppWrapper';
+import { ToastContainer } from "react-toastify";
+import AppWrapper from "./AppWrapper";
+import { getCssVariablesCssString } from "@/colors";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,14 +16,14 @@ const inter = Inter({
 export const metadata = {
   title: "Expenses Tracker",
   description: "Track your income and expenses",
-  manifest: '/manifest.json',
+  manifest: "/manifest.json",
   icons: {
     icon: [
-      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icon.png', sizes: '512x512', type: 'image/png' },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
     ],
     apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
   },
   appleWebApp: {
@@ -38,20 +39,25 @@ export const metadata = {
 };
 
 export const viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  viewportFit: 'cover',
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }) {
+  const cssVariablesString = getCssVariablesCssString();
+
   return (
     <html
       lang="en"
       data-font="Inter"
       suppressHydrationWarning
-      style={{ backgroundColor: "#000000", color: "#ffffff" }}
+      style={{
+        backgroundColor: "#000000",
+        color: "#ffffff",
+      }}
     >
       <head>
         <script
@@ -83,23 +89,22 @@ export default function RootLayout({ children }) {
             `,
           }}
         />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="apple-touch-startup-image" href="/apple-touch-icon.png" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Expenses" />
-        <meta name="theme-color" content="#000000" />
       </head>
       <body
         className={inter.variable}
         style={{ backgroundColor: "#000000", color: "#ffffff" }}
         suppressHydrationWarning
       >
-        <ToastContainer 
-          autoClose={3000}
-          closeOnClick 
-          theme="dark" 
+        <style
+          id="theme-root-variables"
+          dangerouslySetInnerHTML={{
+            __html: `:root{${cssVariablesString}}`,
+          }}
+        />
+        <ToastContainer
+          autoClose={2000}
+          closeOnClick
+          theme="dark"
           hideProgressBar={true}
           toastClassName="liquid-toast-container"
           bodyClassName="liquid-toast-body"

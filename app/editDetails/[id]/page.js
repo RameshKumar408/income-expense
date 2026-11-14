@@ -28,6 +28,7 @@ import LiquidTextField from "@/components/LiquidTextField";
 import GlowingBubbles from "@/components/GlowingBubbles";
 import Button from "@mui/material/Button";
 import TypeToggleButton from "@/components/TypeToggleButton";
+import colors from "@/colors";
 
 import useMediaQuery from "@mui/material/useMediaQuery";
 import IconButton from "@mui/material/IconButton";
@@ -260,12 +261,11 @@ export default function Home({ params }) {
   );
 
   const selectSx = {
-    color: type == "Expense" ? "#ff3b3f" : "#2fd06f",
+    color: type == "Expense" ? colors.semantic.expenseAlt : colors.semantic.income,
     backgroundColor: "rgba(255, 255, 255, 0.03)",
     backdropFilter: "blur(16px) saturate(150%)",
     WebkitBackdropFilter: "blur(16px) saturate(150%)",
-    boxShadow:
-      "inset 0 1px 2px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.4)",
+    boxShadow: `inset 0 1px 2px ${colors.border.glass}, 0 8px 24px rgba(0, 0, 0, 0.4)`,
     borderRadius: { xs: "12px", sm: "14px" },
     fontSize: { xs: "13px", sm: "20px" },
     fontWeight: 700,
@@ -284,23 +284,23 @@ export default function Home({ params }) {
     "& .MuiOutlinedInput-notchedOutline": {
       borderColor:
         type == "Expense"
-          ? "rgba(255, 59, 63, 0.5)"
-          : "rgba(47, 208, 111, 0.5)",
+          ? colors.semantic.expenseSubtle
+          : colors.semantic.incomeSubtle,
       borderWidth: "1.5px",
     },
     "&:hover .MuiOutlinedInput-notchedOutline": {
-      borderColor: type == "Expense" ? "#ff575a" : "#45df82",
+      borderColor: type == "Expense" ? colors.semantic.expenseHover : colors.semantic.income,
     },
     "&.Mui-focused": {
       backgroundColor: "rgba(255, 255, 255, 0.08)",
-      boxShadow: `inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 0 20px ${type == "Expense" ? "rgba(255, 59, 63, 0.2)" : "rgba(47, 208, 111, 0.2)"}`,
+      boxShadow: `inset 0 1px 2px ${colors.border.dividerBright}, 0 0 20px ${type == "Expense" ? colors.semantic.expenseSubtle : colors.glass.glow}`,
     },
     "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-      borderColor: type == "Expense" ? "#ff3b3f" : "#2fd06f",
+      borderColor: type == "Expense" ? colors.semantic.expenseAlt : colors.semantic.income,
       borderWidth: "1.5px",
     },
     "& .MuiSvgIcon-root": {
-      color: type == "Expense" ? "#ff3b3f" : "#2fd06f",
+      color: type == "Expense" ? colors.semantic.expenseAlt : colors.semantic.income,
     },
   };
 

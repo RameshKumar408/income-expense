@@ -236,50 +236,9 @@ body {
   }
 }
 
-:root {
-  --bg-main: #000000;
-  --bg-card: #080808;
-  --bg-card-elevated: #0a0a0a;
-  --bg-input: #050505;
-  --bg-pure-black: #000000;
-  --bg-dark-gray: #050505;
-
-  --text-primary: #fcfcfc;
-  --text-secondary: #d4a017;
-  /* Amber Gold */
-  --text-placeholder: #7c7365;
-
-  --accent-expense: #ff455b;
-  --accent-expense-alt: #ff3043;
-  --accent-expense-hover: #e03248;
-
-  --accent-income: #d4a017;
-  /* Amber Gold */
-  --accent-income-hover: #805200;
-  /* Deep Amber */
-
-  --accent-warning: #ffd88a;
-  /* Warm Gold Highlight */
-
-  --border-subtle: rgba(212, 160, 23, 0.15);
-  /* Gold tinted border using D4A017 */
-  --border-input: rgba(212, 160, 23, 0.45);
-  --border-input-hover: rgba(212, 160, 23, 0.65);
-
-  --brand-gradient-start: #ffd88a;
-  /* Warm Gold (Highlight) */
-  --brand-gradient-mid: #d4a017;
-  /* Amber Gold (Main) */
-  --brand-gradient-end: #805200;
-  /* Deep Amber (Shadow) */
-
-  /* Toastify Variables */
-  --toastify-color-dark: rgba(15, 15, 15, 0.75);
-  --toastify-toast-bd-radius: 16px;
-  --toastify-color-success: #2fd06f;
-  --toastify-color-error: #ff5252;
-  --toastify-z-index: 999999;
-}
+/* All CSS custom properties (--color-*, --brand-gradient-*, --bg-*, --accent-*) 
+   are dynamically generated and injected from @/colors.ts via app/layout.js. 
+   Do not declare colors here; edit @/colors.ts directly. */
 
 /* Toastify Overrides for Liquid Glass Theme */
 .Toastify__toast-container {
@@ -287,15 +246,15 @@ body {
 }
 
 .liquid-toast-container {
-  background: #141414 !important;
+  background: var(--color-bg-surface-elevated) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  border: 1.5px solid rgba(212, 160, 23, 0.45) !important;
+  border: 1.5px solid var(--color-border-input) !important;
   border-radius: 16px !important;
-  color: #ffffff !important;
+  color: var(--color-text-primary) !important;
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.1),
-    0 12px 36px rgba(0, 0, 0, 0.85) !important;
+    inset 0 1px 2px var(--color-border-glass),
+    0 12px 36px var(--color-bg-overlay-dark) !important;
   font-family: inherit !important;
   padding: 6px !important;
 }
@@ -346,10 +305,10 @@ body {
 .Toastify__toast--error.liquid-toast-container,
 .Toastify__toast--info.liquid-toast-container,
 .Toastify__toast--warning.liquid-toast-container {
-  border-color: rgba(212, 160, 23, 0.6) !important;
+  border-color: var(--color-glass-border) !important;
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.1),
-    0 12px 32px rgba(212, 160, 23, 0.25) !important;
+    inset 0 1px 2px var(--color-border-glass),
+    0 12px 32px var(--color-glass-shadow) !important;
 }
 
 /* Swiftly hide and collapse old dismissed toasts when a new toast arrives */
@@ -373,9 +332,9 @@ body {
 
 .liquid-toast-body,
 .Toastify__toast-body {
-  font-weight: 600 !important;
-  font-size: 15px !important;
-  padding: 8px 12px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  padding: 0px 5px !important;
   gap: 12px !important;
   margin: 0 !important;
   align-items: center !important;
@@ -395,14 +354,14 @@ body {
 }
 
 .Toastify__close-button {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: var(--color-text-secondary) !important;
   opacity: 1 !important;
   align-self: center !important;
   margin-right: 8px !important;
 }
 
 .Toastify__close-button:hover {
-  color: #d4a017 !important;
+  color: var(--color-brand-primary) !important;
 }
 
 /* Progress bar styling - keep rendered for react-toastify timer animation but visually hidden */
@@ -420,5 +379,5 @@ body {
 
 /* Override toastify SVG icon colors */
 .Toastify__toast-icon svg {
-  fill: #d4a017 !important;
+  fill: var(--color-brand-primary) !important;
 }

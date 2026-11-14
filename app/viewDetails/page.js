@@ -28,6 +28,7 @@ import { toast } from "react-toastify";
 import constant from "@/constant";
 import { useLoader } from "@/app/context/LoaderContext";
 import PrimaryButton from "@/components/PrimaryButton";
+import colors from "@/colors";
 import GlowingBubbles from "@/components/GlowingBubbles";
 import {
   getCachedRangeData,
@@ -1118,7 +1119,7 @@ export default function Page() {
                   isBackgroundFetching ? "Syncing data..." : "Search history"
                 }
                 onClick={handleOpenSearch}
-                style={{ marginLeft: "auto", color: "#d4a017" }}
+                style={{ marginLeft: "auto", color: colors.brand.primary }}
               >
                 {isBackgroundFetching ? (
                   <span className="history-header-spinner" title="Syncing..." />
@@ -1172,27 +1173,25 @@ export default function Page() {
                       backgroundColor: "rgba(255, 255, 255, 0.05)",
                       backdropFilter: "blur(20px) saturate(160%)",
                       WebkitBackdropFilter: "blur(20px) saturate(160%)",
-                      boxShadow:
-                        "inset 0 1px 2px rgba(255, 255, 255, 0.12), 0 8px 32px rgba(0, 0, 0, 0.45)",
+                      boxShadow: `inset 0 1px 2px ${colors.border.dividerBright}, 0 8px 32px ${colors.background.overlay}`,
                       "& fieldset": {
                         borderRadius: "10px",
-                        borderColor: "rgba(212, 160, 23, 0.45)",
+                        borderColor: colors.border.input,
                         borderWidth: "1.5px",
                       },
                       "&:hover fieldset": {
-                        borderColor: "rgba(212, 160, 23, 0.75)",
+                        borderColor: colors.border.inputHover,
                       },
                       "&.Mui-focused": {
                         backgroundColor: "rgba(255, 255, 255, 0.08)",
-                        boxShadow:
-                          "inset 0 1px 2px rgba(255, 255, 255, 0.18), 0 0 24px rgba(212, 160, 23, 0.3)",
+                        boxShadow: `inset 0 1px 2px ${colors.border.dividerBright}, 0 0 24px ${colors.glass.glow}`,
                       },
                       "&.Mui-focused fieldset": {
-                        borderColor: "rgba(212, 160, 23, 1)",
+                        borderColor: colors.brand.primary,
                         borderWidth: "1.5px",
                       },
                       "& .MuiInputBase-input": {
-                        color: "#ffffff",
+                        color: colors.text.primary,
                         background: "transparent !important",
                         padding: { xs: "8px 16px", sm: "12px 20px" },
                       },
@@ -1206,7 +1205,7 @@ export default function Page() {
                           aria-label="Search"
                           edge="end"
                           sx={{
-                            color: "#d4a017",
+                            color: colors.brand.primary,
                             height: "15px",
                             width: "15px",
                             mr: "3px",
@@ -1247,12 +1246,11 @@ export default function Page() {
               aria-label="Select account"
               fullWidth
               sx={{
-                color: "#ffffff",
+                color: colors.text.primary,
                 backgroundColor: "rgba(255, 255, 255, 0.03)",
                 backdropFilter: "blur(16px) saturate(150%)",
                 WebkitBackdropFilter: "blur(16px) saturate(150%)",
-                boxShadow:
-                  "inset 0 1px 2px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.4)",
+                boxShadow: `inset 0 1px 2px ${colors.border.glass}, 0 8px 24px rgba(0, 0, 0, 0.4)`,
                 borderRadius: { xs: "12px", sm: "14px" },
                 fontSize: { xs: "16px", sm: "20px" },
                 fontWeight: 700,
@@ -1260,34 +1258,33 @@ export default function Page() {
                 mb: 2,
                 transition: "all 0.3s ease",
                 "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "rgba(212, 160, 23, 0.45)",
+                  borderColor: colors.border.input,
                   borderWidth: "1.5px",
                 },
                 "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "rgba(212, 160, 23, 0.45)",
+                  borderColor: colors.border.input,
                 },
                 "&.Mui-focused": {
                   backgroundColor: "rgba(255, 255, 255, 0.08)",
-                  boxShadow:
-                    "inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 0 20px rgba(212, 160, 23, 0.2)",
+                  boxShadow: `inset 0 1px 2px ${colors.border.dividerBright}, 0 0 20px ${colors.glass.glow}`,
                 },
                 "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "rgba(212, 160, 23, 0.8)",
+                  borderColor: colors.brand.primary,
                   borderWidth: "1.5px",
                 },
                 "& .MuiSvgIcon-root": {
-                  color: "#d4a017",
+                  color: colors.brand.primary,
                 },
               }}
               MenuProps={{
                 PaperProps: {
                   sx: {
-                    backgroundColor: "rgba(25, 25, 25, 0.65)",
+                    backgroundColor: colors.background.surfaceGlass,
                     backdropFilter: "blur(16px) saturate(150%)",
                     WebkitBackdropFilter: "blur(16px) saturate(150%)",
-                    color: "#ffffff",
-                    border: "1px solid rgba(255, 255, 255, 0.1)",
-                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
+                    color: colors.text.primary,
+                    border: `1px solid ${colors.border.divider}`,
+                    boxShadow: `0 8px 32px ${colors.background.overlay}`,
                   },
                 },
               }}
@@ -1324,11 +1321,6 @@ export default function Page() {
               aria-label="Open filter options"
             >
               <FilterListIcon />
-              {selectedCategories.length > 0 && (
-                <span className="filter-active-count">
-                  {selectedCategories.length}
-                </span>
-              )}
             </button>
 
             {showMonthDropdown && (
@@ -1602,7 +1594,7 @@ export default function Page() {
 
         <div className="history-floating-actions">
           <div className="history-balance">
-            <span style={{ color: "#d4a017" }}>Total balance</span>
+            <span style={{ color: colors.brand.primary }}>Total balance</span>
             <strong>
               ₹<AnimatedNumber value={totalBalance} />
             </strong>
@@ -1626,14 +1618,13 @@ export default function Page() {
             onClose={() => setRecordToDelete(null)}
             PaperProps={{
               sx: {
-                backgroundColor: "rgba(22, 22, 26, 0.96)",
+                backgroundColor: colors.background.surfaceAlt,
                 backdropFilter: "blur(24px) saturate(160%)",
                 WebkitBackdropFilter: "blur(24px) saturate(160%)",
-                color: "#ffffff",
+                color: colors.text.primary,
                 border: "1px solid rgba(255, 59, 48, 0.35)",
                 borderRadius: "20px",
-                boxShadow:
-                  "0 24px 60px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 59, 48, 0.15)",
+                boxShadow: `0 24px 60px ${colors.background.overlayDark}, 0 0 30px rgba(255, 59, 48, 0.15)`,
                 maxWidth: { xs: "92vw", sm: "420px" },
                 width: "100%",
                 padding: { xs: "20px", sm: "24px" },
@@ -1666,14 +1657,14 @@ export default function Page() {
                 }}
               >
                 <DeleteOutlineIcon
-                  sx={{ color: "#ff3b30", fontSize: "32px" }}
+                  sx={{ color: colors.semantic.expense, fontSize: "32px" }}
                 />
               </div>
 
               <h3
                 style={{
                   margin: "0 0 8px",
-                  color: "#ffffff",
+                  color: colors.text.primary,
                   fontSize: "20px",
                   fontWeight: 700,
                   letterSpacing: "-0.02em",
@@ -1684,7 +1675,7 @@ export default function Page() {
 
               <p
                 style={{
-                  color: "rgba(255, 255, 255, 0.65)",
+                  color: colors.text.secondary,
                   margin: "0 0 16px",
                   fontSize: "14px",
                   lineHeight: 1.5,
@@ -1701,7 +1692,7 @@ export default function Page() {
                   padding: "12px 16px",
                   borderRadius: "12px",
                   background: "rgba(255, 255, 255, 0.04)",
-                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  border: `1px solid ${colors.border.divider}`,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
@@ -1719,7 +1710,7 @@ export default function Page() {
                 >
                   <div
                     style={{
-                      color: "#ffffff",
+                      color: colors.text.primary,
                       fontSize: "15px",
                       fontWeight: 600,
                       overflow: "hidden",
@@ -1731,7 +1722,7 @@ export default function Page() {
                   </div>
                   <div
                     style={{
-                      color: "rgba(255, 255, 255, 0.45)",
+                      color: colors.text.placeholder,
                       fontSize: "12px",
                       marginTop: "2px",
                     }}
@@ -1743,7 +1734,9 @@ export default function Page() {
                 <div
                   style={{
                     color:
-                      recordToDelete?.Type === "Income" ? "#22c55e" : "#ff3b30",
+                      recordToDelete?.Type === "Income"
+                        ? colors.semantic.income
+                        : colors.semantic.expense,
                     fontSize: "16px",
                     fontWeight: 700,
                     whiteSpace: "nowrap",
@@ -1762,9 +1755,9 @@ export default function Page() {
                     flex: 1,
                     height: "44px",
                     borderRadius: "12px",
-                    border: "1px solid rgba(255, 255, 255, 0.15)",
+                    border: `1px solid ${colors.border.dividerBright}`,
                     background: "rgba(255, 255, 255, 0.05)",
-                    color: "#ffffff",
+                    color: colors.text.primary,
                     fontSize: "15px",
                     fontWeight: 600,
                     cursor: "pointer",
@@ -1784,7 +1777,7 @@ export default function Page() {
                     border: "none",
                     background:
                       "linear-gradient(135deg, #ff453a 0%, #e02828 100%)",
-                    color: "#ffffff",
+                    color: colors.text.primary,
                     fontSize: "15px",
                     fontWeight: 700,
                     cursor: "pointer",

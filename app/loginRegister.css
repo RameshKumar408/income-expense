@@ -33,11 +33,11 @@ body {
     align-items: stretch;
     gap: 28px;
     padding: 48px 40px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--color-border-divider);
     border-radius: 28px;
     background: rgba(12, 14, 20, 0.45);
     box-shadow: 
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 var(--color-border-glass),
         0 24px 48px rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
@@ -89,7 +89,7 @@ body {
     border-radius: 16px;
     outline: 0;
     color: var(--text-primary);
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--color-bg-overlay-light);
     font: inherit;
     font-size: 20px;
     font-weight: 500;
@@ -168,11 +168,11 @@ body {
     min-height: 56px;
     border: 0;
     border-radius: 16px;
-    color: #1a1000;
+    color: var(--color-brand-dark-accent);
     background: linear-gradient(90deg, var(--brand-gradient-end) 0%, var(--brand-gradient-start) 50%, var(--brand-gradient-end) 100%);
     box-shadow: 
         inset 0 1px 0 rgba(255, 255, 255, 0.2),
-        0 12px 24px rgba(212, 160, 23, 0.3);
+        0 12px 24px var(--color-glass-glow);
     font: inherit;
     font-size: 18px;
     font-weight: 800;
@@ -185,7 +185,7 @@ body {
     transform: translateY(-2px);
     box-shadow: 
         inset 0 1px 0 rgba(255, 255, 255, 0.3),
-        0 16px 32px rgba(212, 160, 23, 0.4);
+        0 16px 32px var(--color-glass-glow-strong);
 }
 
 .login-register-link {
@@ -478,7 +478,7 @@ body {
 }
 
 .register-field input::placeholder {
-    color: #8f8f93;
+    color: var(--color-text-secondary);
     opacity: 1;
 }
 
@@ -524,11 +524,11 @@ body {
     min-height: 56px;
     border: 0;
     border-radius: 16px;
-    color: #1a1000;
+    color: var(--color-brand-dark-accent);
     background: linear-gradient(90deg, var(--brand-gradient-end) 0%, var(--brand-gradient-start) 50%, var(--brand-gradient-end) 100%);
     box-shadow: 
         inset 0 1px 0 rgba(255, 255, 255, 0.2),
-        0 12px 24px rgba(212, 160, 23, 0.3);
+        0 12px 24px var(--color-glass-glow);
     font: inherit;
     font-size: 18px;
     font-weight: 900;

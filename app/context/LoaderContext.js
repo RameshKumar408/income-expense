@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import colors from "@/colors";
 const LoaderContext = createContext();
 
 export function LoaderProvider({ children }) {
@@ -115,7 +116,9 @@ export function LoaderProvider({ children }) {
         <div
           className="app-loader-overlay"
           style={{
-            background: initialLoading ? "#000000" : "rgba(0, 0, 0, 0.72)",
+            background: initialLoading
+              ? colors.background.base
+              : colors.background.overlay,
             zIndex: 99999,
           }}
           onClick={() => {

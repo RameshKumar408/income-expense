@@ -28,7 +28,7 @@
   filter: blur(14px);
   opacity: 0.55;
   animation: float-bubble 15s infinite ease-in-out alternate;
-  box-shadow: 0 0 20px rgba(212, 160, 23, 0.4);
+  box-shadow: 0 0 20px var(--color-glass-shadow);
 }
 
 .bubble-1 {

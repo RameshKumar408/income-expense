@@ -7,6 +7,7 @@ import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined
 import InputAdornment from "@mui/material/InputAdornment";
 import LiquidTextField from "@/components/LiquidTextField";
 import dayjs from "dayjs";
+import colors from "@/colors";
 
 export default function FilterBottomSheet({
   onClose,
@@ -130,7 +131,7 @@ export default function FilterBottomSheet({
                     onChange={handleMonthChange}
                     fullWidth
                     sx={{
-                      color: "#ffffff",
+                      color: colors.text.primary,
                       backgroundColor: "rgba(255, 255, 255, 0.04)",
                       borderRadius: "12px",
                       fontSize: "15px",
@@ -138,33 +139,33 @@ export default function FilterBottomSheet({
                       minHeight: "48px",
                       height: "48px",
                       "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "rgba(212, 160, 23, 0.45)",
+                        borderColor: colors.border.input,
                         borderWidth: "1.5px",
                       },
                       "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "rgba(212, 160, 23, 0.8)",
+                        borderColor: colors.border.inputHover,
                       },
                       "&.Mui-focused": {
                         backgroundColor: "rgba(255, 255, 255, 0.08)",
                       },
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#d4a017",
+                        borderColor: colors.brand.primary,
                         borderWidth: "1.5px",
                       },
                       "& .MuiSvgIcon-root": {
-                        color: "#d4a017",
+                        color: colors.brand.primary,
                       },
                     }}
                     MenuProps={{
                       PaperProps: {
                         sx: {
-                          backgroundColor: "rgba(20, 20, 24, 0.98)",
+                          backgroundColor: colors.background.surfaceHigh,
                           backdropFilter: "blur(20px)",
                           WebkitBackdropFilter: "blur(20px)",
-                          color: "#ffffff",
-                          border: "1px solid rgba(212, 160, 23, 0.35)",
+                          color: colors.text.primary,
+                          border: `1px solid ${colors.border.subtle}`,
                           borderRadius: "12px",
-                          boxShadow: "0 12px 36px rgba(0, 0, 0, 0.75)",
+                          boxShadow: `0 12px 36px ${colors.background.overlayDark}`,
                           maxHeight: "260px",
                           "& .MuiMenuItem-root": {
                             fontSize: "14px",
@@ -175,7 +176,7 @@ export default function FilterBottomSheet({
                             },
                             "&.Mui-selected": {
                               backgroundColor: "rgba(212, 160, 23, 0.25)",
-                              color: "#d4a017",
+                              color: colors.brand.primary,
                               fontWeight: 800,
                               "&:hover": {
                                 backgroundColor: "rgba(212, 160, 23, 0.35)",
@@ -201,7 +202,7 @@ export default function FilterBottomSheet({
                     onChange={handleYearChange}
                     fullWidth
                     sx={{
-                      color: "#ffffff",
+                      color: colors.text.primary,
                       backgroundColor: "rgba(255, 255, 255, 0.04)",
                       borderRadius: "12px",
                       fontSize: "15px",
@@ -209,33 +210,33 @@ export default function FilterBottomSheet({
                       minHeight: "48px",
                       height: "48px",
                       "& .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "rgba(212, 160, 23, 0.45)",
+                        borderColor: colors.border.input,
                         borderWidth: "1.5px",
                       },
                       "&:hover .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "rgba(212, 160, 23, 0.8)",
+                        borderColor: colors.border.inputHover,
                       },
                       "&.Mui-focused": {
                         backgroundColor: "rgba(255, 255, 255, 0.08)",
                       },
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: "#d4a017",
+                        borderColor: colors.brand.primary,
                         borderWidth: "1.5px",
                       },
                       "& .MuiSvgIcon-root": {
-                        color: "#d4a017",
+                        color: colors.brand.primary,
                       },
                     }}
                     MenuProps={{
                       PaperProps: {
                         sx: {
-                          backgroundColor: "rgba(20, 20, 24, 0.98)",
+                          backgroundColor: colors.background.surfaceHigh,
                           backdropFilter: "blur(20px)",
                           WebkitBackdropFilter: "blur(20px)",
-                          color: "#ffffff",
-                          border: "1px solid rgba(212, 160, 23, 0.35)",
+                          color: colors.text.primary,
+                          border: `1px solid ${colors.border.subtle}`,
                           borderRadius: "12px",
-                          boxShadow: "0 12px 36px rgba(0, 0, 0, 0.75)",
+                          boxShadow: `0 12px 36px ${colors.background.overlayDark}`,
                           maxHeight: "260px",
                           "& .MuiMenuItem-root": {
                             fontSize: "14px",
@@ -246,7 +247,7 @@ export default function FilterBottomSheet({
                             },
                             "&.Mui-selected": {
                               backgroundColor: "rgba(212, 160, 23, 0.25)",
-                              color: "#d4a017",
+                              color: colors.brand.primary,
                               fontWeight: 800,
                               "&:hover": {
                                 backgroundColor: "rgba(212, 160, 23, 0.35)",
@@ -271,7 +272,7 @@ export default function FilterBottomSheet({
               <div className="filter-range-fields">
                 <div className="filter-date-field">
                   <span className="filter-select-label">
-                    Start date<b style={{ color: "#ff3b3f" }}>*</b>
+                    Start date<b style={{ color: colors.semantic.expense }}>*</b>
                   </span>
                   <LiquidTextField
                     value={draftFrom}
@@ -345,7 +346,7 @@ export default function FilterBottomSheet({
 
                 <div className="filter-date-field">
                   <span className="filter-select-label">
-                    End date<b style={{ color: "#ff3b3f" }}>*</b>
+                    End date<b style={{ color: colors.semantic.expense }}>*</b>
                   </span>
                   <LiquidTextField
                     value={draftTo}

@@ -74,12 +74,12 @@
   align-items: center;
   gap: 10px;
   min-width: 0;
-  border: 1.5px solid rgba(212, 160, 23, 0.8);
+  border: 1.5px solid var(--color-border-input-focus);
   border-radius: 999px;
   padding: 6px 16px 6px 6px;
   color: #ffffff;
-  background: rgba(0, 0, 0, 0.3);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: var(--color-bg-overlay-light);
+  box-shadow: inset 0 1px 0 var(--color-border-divider);
   font: inherit;
   font-size: 14px;
   font-weight: 700;
@@ -89,7 +89,7 @@
 
 .account-pill:hover,
 .account-pill.active {
-  box-shadow: 0 0 15px rgba(212, 160, 23, 0.3);
+  box-shadow: 0 0 15px var(--color-glass-glow);
 }
 
 .account-pill span {
@@ -104,8 +104,8 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #d4a017;
-  color: #1a1000;
+  background: var(--color-brand-primary);
+  color: var(--color-brand-dark-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -129,9 +129,9 @@
   z-index: 30;
   min-width: 260px;
   padding: 8px 0;
-  border: 1.5px solid rgba(212, 160, 23, 0.8);
+  border: 1.5px solid var(--color-border-input-focus);
   border-radius: 16px;
-  background: rgba(15, 15, 15, 0.95);
+  background: var(--color-bg-surface-modal);
   backdrop-filter: blur(16px);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8);
 }
@@ -153,7 +153,7 @@
 }
 
 .account-menu-item:hover {
-  background: rgba(212, 160, 23, 0.1);
+  background: var(--color-border-subtle);
 }
 
 .account-menu-avatar {
@@ -166,15 +166,15 @@
   font-size: 15px;
   font-weight: 800;
   flex-shrink: 0;
-  border: 1.5px solid #d4a017;
-  color: #d4a017;
+  border: 1.5px solid var(--color-brand-primary);
+  color: var(--color-brand-primary);
   background: transparent;
 }
 
 .account-menu-item.active .account-menu-avatar {
-  background: #d4a017;
-  color: #1a1000;
-  border-color: #d4a017;
+  background: var(--color-brand-primary);
+  color: var(--color-brand-dark-accent);
+  border-color: var(--color-brand-primary);
 }
 
 .account-menu-info {
@@ -193,19 +193,19 @@
 .account-menu-email {
   font-size: 13px;
   font-weight: 500;
-  color: #8f8f93;
+  color: var(--color-text-secondary);
   line-height: 1;
 }
 
 .account-menu-check {
-  color: #d4a017;
+  color: var(--color-brand-primary);
   margin-left: auto;
 }
 
 .account-menu-divider {
   height: 1px;
   margin: 8px 0;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-border-glass);
 }
 
 .account-menu-action {
@@ -226,11 +226,11 @@
 }
 
 .account-menu-action svg {
-  color: #d4a017;
+  color: var(--color-brand-primary);
 }
 
 .account-menu-action:hover {
-  background: rgba(212, 160, 23, 0.1);
+  background: var(--color-border-subtle);
 }
 
 /* Desktop Dropdown vs Mobile Bottom Sheet */
@@ -255,7 +255,7 @@
 .mobile-account-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.72);
+  background: var(--color-bg-overlay);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   z-index: 99998;
@@ -272,9 +272,9 @@
   background: #181818;
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--color-border-divider);
   padding: 14px 22px calc(24px + env(safe-area-inset-bottom, 12px)) 22px;
-  box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.85);
+  box-shadow: 0 -12px 48px var(--color-bg-overlay-dark);
   z-index: 99999;
   box-sizing: border-box;
   animation: slideUpSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -293,7 +293,7 @@
 .sheet-title {
   font-size: 20px;
   font-weight: 700;
-  color: #e5a92a;
+  color: var(--color-brand-hover);
   margin: 0 0 16px 0;
   letter-spacing: -0.01em;
 }
@@ -311,7 +311,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px 0;
-  border-bottom: 1px solid rgba(212, 160, 23, 0.25);
+  border-bottom: 1px solid var(--color-glass-shadow);
   background: transparent;
   cursor: pointer;
   user-select: none;
@@ -335,7 +335,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background-color: #00c853;
+  background-color: var(--color-brand-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -350,7 +350,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #ff3b30;
+  color: var(--color-expense-alt);
   flex-shrink: 0;
   border-radius: 50%;
   transition:
@@ -377,7 +377,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 18px rgba(212, 160, 23, 0.3);
+  box-shadow: 0 4px 18px var(--color-glass-glow);
   transition:
     transform 0.15s ease,
     filter 0.15s ease;
@@ -462,7 +462,7 @@
   background-color: rgba(255, 255, 255, 0.03) !important;
   backdrop-filter: blur(16px) saturate(150%) !important;
   -webkit-backdrop-filter: blur(16px) saturate(150%) !important;
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: inset 0 1px 2px var(--color-border-glass), 0 8px 24px rgba(0, 0, 0, 0.4) !important;
   border-radius: 12px !important;
   transition: all 0.3s ease !important;
 }
@@ -478,7 +478,7 @@
 .create-detail-page .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline,
 .expense-form .MuiOutlinedInput-root fieldset,
 .expense-form .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
-  border-color: rgba(212, 160, 23, 0.45) !important;
+  border-color: var(--color-border-input) !important;
   border-width: 1.5px !important;
   border-style: solid !important;
 }
@@ -487,20 +487,20 @@
 .create-detail-page .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline,
 .expense-form .MuiOutlinedInput-root:hover fieldset,
 .expense-form .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-  border-color: rgba(212, 160, 23, 0.45) !important;
+  border-color: var(--color-border-input) !important;
 }
 
 .create-detail-page .MuiOutlinedInput-root.Mui-focused,
 .expense-form .MuiOutlinedInput-root.Mui-focused {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 0 20px rgba(212, 160, 23, 0.2) !important;
+  background-color: var(--color-border-divider) !important;
+  box-shadow: inset 0 1px 2px var(--color-border-divider-bright), 0 0 20px var(--color-border-subtle) !important;
 }
 
 .create-detail-page .MuiOutlinedInput-root.Mui-focused fieldset,
 .create-detail-page .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline,
 .expense-form .MuiOutlinedInput-root.Mui-focused fieldset,
 .expense-form .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-  border-color: rgba(212, 160, 23, 1) !important;
+  border-color: var(--color-brand-primary) !important;
   border-width: 1.5px !important;
 }
 
@@ -510,7 +510,7 @@
   overflow-y: auto !important;
   resize: none !important;
   scrollbar-width: thin;
-  scrollbar-color: rgba(212, 160, 23, 0.4) transparent;
+  scrollbar-color: var(--color-glass-glow-strong) transparent;
 }
 
 .create-detail-page textarea.MuiInputBase-input::-webkit-scrollbar,
@@ -520,7 +520,7 @@
 
 .create-detail-page textarea.MuiInputBase-input::-webkit-scrollbar-thumb,
 .expense-form textarea.MuiInputBase-input::-webkit-scrollbar-thumb {
-  background-color: rgba(212, 160, 23, 0.4);
+  background-color: var(--color-glass-glow-strong);
   border-radius: 4px;
 }
 
@@ -550,9 +550,9 @@
   padding: 13px 24px;
   color: var(--text-primary);
   background: rgba(0, 0, 0, 0.2);
-  border-color: #d4a017;
+  border-color: var(--color-brand-primary);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 var(--color-border-divider),
     0 10px 24px rgba(0, 0, 0, 0.26);
   font: inherit;
   font-size: 22px;
@@ -566,11 +566,11 @@
 }
 
 .suggestion-chip.active {
-  background: linear-gradient(145deg, #d4a017, #ffd88a);
-  color: #1a1000;
+  background: linear-gradient(145deg, var(--color-brand-primary), var(--color-brand-highlight));
+  color: var(--color-brand-dark-accent);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    0 10px 24px rgba(212, 160, 23, 0.3);
+    0 10px 24px var(--color-glass-glow);
 }
 
 /* Flying suggestion pill smooth morph animation */
@@ -585,13 +585,13 @@
   font: inherit;
   font-size: 20px;
   font-weight: 700;
-  color: #1a1000;
-  background: linear-gradient(145deg, #d4a017, #ffd88a);
+  color: var(--color-brand-dark-accent);
+  background: linear-gradient(145deg, var(--color-brand-primary), var(--color-brand-highlight));
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 999px;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 10px 28px rgba(212, 160, 23, 0.45);
+    0 10px 28px var(--color-border-input);
   will-change: transform, opacity, border-radius;
   white-space: nowrap;
 }
@@ -599,7 +599,7 @@
 @keyframes inputArrivalPulse {
   0% {
     box-shadow:
-      inset 0 1px 2px rgba(255, 255, 255, 0.15),
+      inset 0 1px 2px var(--color-border-divider-bright),
       0 0 0 rgba(212, 160, 23, 0) !important;
     background-color: rgba(255, 255, 255, 0.03) !important;
   }
@@ -612,7 +612,7 @@
   }
   100% {
     box-shadow:
-      inset 0 1px 2px rgba(255, 255, 255, 0.1),
+      inset 0 1px 2px var(--color-border-glass),
       0 8px 24px rgba(0, 0, 0, 0.4) !important;
     background-color: rgba(255, 255, 255, 0.03) !important;
   }
@@ -620,7 +620,7 @@
 
 @keyframes inputArrivalFieldsetPulse {
   0% {
-    border-color: rgba(212, 160, 23, 0.45) !important;
+    border-color: var(--color-border-input) !important;
     border-width: 1.5px !important;
   }
   35% {
@@ -628,7 +628,7 @@
     border-width: 2.5px !important;
   }
   100% {
-    border-color: rgba(212, 160, 23, 0.45) !important;
+    border-color: var(--color-border-input) !important;
     border-width: 1.5px !important;
   }
 }
@@ -662,7 +662,7 @@
   margin-top: 36px;
   border-radius: 16px;
   border: 0;
-  color: #1a1000;
+  color: var(--color-brand-dark-accent);
   background: linear-gradient(
     90deg,
     var(--brand-gradient-end) 0%,
@@ -671,7 +671,7 @@
   );
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 12px 24px rgba(212, 160, 23, 0.3);
+    0 12px 24px var(--color-glass-glow);
   font: inherit;
   font-size: 22px;
   font-weight: 800;
@@ -695,7 +695,7 @@
   transform: translateY(-2px);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    0 16px 32px rgba(212, 160, 23, 0.4);
+    0 16px 32px var(--color-glass-glow-strong);
 }
 
 .add-data-btn.is-submitting {
@@ -714,7 +714,7 @@
   width: 24px;
   height: 24px;
   border: 3px solid rgba(26, 16, 0, 0.25);
-  border-top-color: #1a1000;
+  border-top-color: var(--color-brand-dark-accent);
   border-radius: 50%;
   animation: submit-btn-spin 0.7s linear infinite;
   display: inline-block;
@@ -787,13 +787,13 @@
   min-height: 92px;
   padding: 10px 18px;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid var(--color-border-divider-bright);
   border-bottom: 1px solid rgba(0, 0, 0, 0.8);
   border-radius: 999px;
   background: rgba(12, 14, 20, 0.55);
   box-shadow:
     0 24px 48px rgba(0, 0, 0, 0.8),
-    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    inset 0 1px 1px var(--color-border-glass);
   transform: translateX(-50%);
   backdrop-filter: blur(32px) saturate(150%);
   -webkit-backdrop-filter: blur(32px) saturate(150%);
@@ -875,7 +875,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
     var(--brand-gradient-mid)
   );
   box-shadow:
-    0 8px 24px rgba(212, 160, 23, 0.4),
+    0 8px 24px var(--color-glass-glow-strong),
     inset 0 2px 4px rgba(255, 255, 255, 0.3);
   animation: bubbleBloom 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -986,7 +986,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   padding: 0 20px;
   border-radius: 16px;
   border: 0;
-  color: #1a1000;
+  color: var(--color-brand-dark-accent);
   background: linear-gradient(
     90deg,
     var(--brand-gradient-end) 0%,
@@ -995,7 +995,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   );
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 12px 24px rgba(212, 160, 23, 0.3);
+    0 12px 24px var(--color-glass-glow);
   font: inherit;
   font-size: 22px;
   font-weight: 800;
@@ -1015,13 +1015,13 @@ body:has(.MuiDialog-root) .bottom-navigation,
   transform: translateY(-2px);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    0 16px 32px rgba(212, 160, 23, 0.4);
+    0 16px 32px var(--color-glass-glow-strong);
 }
 
 .settings-action svg {
   width: 28px;
   height: 28px;
-  color: #1a1000;
+  color: var(--color-brand-dark-accent);
 }
 
 .settings-action.danger {
@@ -1189,8 +1189,8 @@ body:has(.MuiDialog-root) .bottom-navigation,
 .history-header-spinner {
   width: 24px;
   height: 24px;
-  border: 2.5px solid rgba(212, 160, 23, 0.25);
-  border-top-color: #d4a017;
+  border: 2.5px solid var(--color-glass-shadow);
+  border-top-color: var(--color-brand-primary);
   border-radius: 50%;
   animation: historyHeaderSpin 0.75s linear infinite;
   display: inline-block;
@@ -1479,7 +1479,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
 }
 
 .swipe-btn.delete-action {
-  background: #ff3b30;
+  background: var(--color-expense-alt);
   color: #ffffff;
 }
 
@@ -1504,14 +1504,14 @@ body:has(.MuiDialog-root) .bottom-navigation,
   width: 100%;
   min-height: 80px;
   padding: 16px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--color-border-divider);
   border-top: 1px solid rgba(255, 255, 255, 0.2);
-  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  border-left: 1px solid var(--color-border-divider-bright);
   border-radius: 16px;
   color: var(--text-primary);
   backdrop-filter: blur(24px) saturate(150%);
   -webkit-backdrop-filter: blur(24px) saturate(150%);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px 0 var(--color-bg-overlay-light);
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -1541,7 +1541,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
 
 .history-card:hover {
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 1px 0 var(--color-border-divider-bright),
     0 8px 16px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
 }
@@ -1658,7 +1658,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
 }
 
 .desktop-action-btn.delete-btn {
-  color: #ff3b30;
+  color: var(--color-expense-alt);
   border-color: rgba(255, 59, 48, 0.35);
   background: rgba(255, 59, 48, 0.12);
 }
@@ -1704,22 +1704,22 @@ body:has(.MuiDialog-root) .bottom-navigation,
   border: 1.5px solid rgba(212, 160, 23, 0.85);
   background: rgba(28, 24, 16, 0.65) !important;
   box-shadow:
-    0 0 16px rgba(212, 160, 23, 0.25),
+    0 0 16px var(--color-glass-shadow),
     inset 0 0 0 1px rgba(212, 160, 23, 0.35),
     0 10px 28px rgba(0, 0, 0, 0.5);
 }
 
 .history-card.expanded:hover {
-  border-color: rgba(212, 160, 23, 1);
+  border-color: var(--color-brand-primary);
   box-shadow:
     0 0 20px rgba(212, 160, 23, 0.35),
-    inset 0 0 0 1px rgba(212, 160, 23, 0.45),
+    inset 0 0 0 1px var(--color-border-input),
     0 12px 32px rgba(0, 0, 0, 0.6);
 }
 
 .desc-label {
   font-weight: 800;
-  color: #d4a017;
+  color: var(--color-brand-primary);
   margin-right: 4px;
 }
 
@@ -1754,21 +1754,21 @@ body:has(.MuiDialog-root) .bottom-navigation,
 .history-detailed-view-btn svg {
   width: 30px;
   height: 30px;
-  color: #d4a017;
+  color: var(--color-brand-primary);
   transition:
     transform 0.2s ease,
     color 0.2s ease;
 }
 
 .history-detailed-view-btn:hover {
-  background: rgba(212, 160, 23, 0.2);
-  border-color: rgba(212, 160, 23, 0.8);
+  background: var(--color-border-subtle);
+  border-color: var(--color-border-input-focus);
   box-shadow: 0 0 16px rgba(212, 160, 23, 0.35);
 }
 
 .history-detailed-view-btn:hover svg {
   transform: scale(1.1);
-  color: #ffd88a;
+  color: var(--color-brand-highlight);
 }
 
 .history-detailed-view-btn:active {
@@ -1779,7 +1779,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   padding: 32px 16px;
   border: 1.5px solid var(--border-subtle);
   border-radius: 14px;
-  color: #8f8f93;
+  color: var(--color-text-secondary);
   background: #101010;
   text-align: center;
   font-size: 18px;
@@ -1906,9 +1906,9 @@ body:has(.MuiDialog-root) .bottom-navigation,
   color: var(--text-primary);
   background: #000000 !important;
   box-shadow:
-    0 -12px 40px rgba(0, 0, 0, 0.95),
+    0 -12px 40px var(--color-bg-overlay-dark),
     0 0 24px rgba(212, 160, 23, 0.12),
-    inset 0 1px 0 rgba(212, 160, 23, 0.2);
+    inset 0 1px 0 var(--color-border-subtle);
 }
 
 .record-detail-head {
@@ -1989,7 +1989,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   min-height: 56px;
   border: 0;
   border-radius: 16px;
-  color: #1a1000;
+  color: var(--color-brand-dark-accent);
   background: linear-gradient(
     90deg,
     var(--brand-gradient-end) 0%,
@@ -1998,7 +1998,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   );
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 12px 24px rgba(212, 160, 23, 0.3);
+    0 12px 24px var(--color-glass-glow);
   font: inherit;
   font-size: 18px;
   font-weight: 800;
@@ -2018,7 +2018,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   );
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    0 16px 32px rgba(212, 160, 23, 0.4);
+    0 16px 32px var(--color-glass-glow-strong);
 }
 
 @media (min-width: 900px) {
@@ -2063,9 +2063,9 @@ body:has(.MuiDialog-root) .bottom-navigation,
     padding: 6px 14px;
     font-size: 13px;
     gap: 6px;
-    color: #d4a017;
+    color: var(--color-brand-primary);
     background: rgba(0, 0, 0, 0.4);
-    border: 1.5px solid rgba(212, 160, 23, 0.4);
+    border: 1.5px solid var(--color-glass-glow-strong);
   }
 
   .account-pill .account-avatar {
@@ -2075,12 +2075,12 @@ body:has(.MuiDialog-root) .bottom-navigation,
   .account-pill span {
     display: inline-block;
     max-width: 140px;
-    color: #d4a017;
+    color: var(--color-brand-primary);
     font-weight: 700;
   }
 
   .account-pill svg {
-    color: #d4a017;
+    color: var(--color-brand-primary);
   }
 
   .expense-form {
@@ -2761,7 +2761,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
 
   .bottom-nav-bubble-inner {
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--color-border-divider);
     box-shadow: none;
   }
 
@@ -2942,7 +2942,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
 
   .bottom-nav-bubble-inner {
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--color-border-divider);
     box-shadow: none;
   }
 
@@ -3037,7 +3037,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   padding: 0 16px;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.04);
-  border: 1.5px solid rgba(212, 160, 23, 0.45);
+  border: 1.5px solid var(--color-border-input);
   color: #ffffff;
   font-family: inherit;
   font-size: 15px;
@@ -3046,24 +3046,24 @@ body:has(.MuiDialog-root) .bottom-navigation,
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.1),
+    inset 0 1px 2px var(--color-border-glass),
     0 4px 16px rgba(0, 0, 0, 0.35);
   transition: all 0.25s ease;
 }
 
 .history-date-selector-btn:hover {
   border-color: rgba(212, 160, 23, 0.85);
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--color-border-divider);
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.15),
-    0 0 18px rgba(212, 160, 23, 0.25);
+    inset 0 1px 2px var(--color-border-divider-bright),
+    0 0 18px var(--color-glass-shadow);
 }
 
 .history-date-selector-btn.active {
-  border-color: #d4a017;
+  border-color: var(--color-brand-primary);
   background: rgba(212, 160, 23, 0.12);
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.15),
+    inset 0 1px 2px var(--color-border-divider-bright),
     0 0 20px rgba(212, 160, 23, 0.35);
 }
 
@@ -3076,7 +3076,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
 
 .history-date-selector-btn .filter-pill-icon {
   font-size: 18px;
-  color: #d4a017;
+  color: var(--color-brand-primary);
   flex-shrink: 0;
 }
 
@@ -3090,7 +3090,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
 }
 
 .history-date-selector-btn .filter-pill-arrow {
-  color: #d4a017;
+  color: var(--color-brand-primary);
   font-size: 20px;
   flex-shrink: 0;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -3112,12 +3112,12 @@ body:has(.MuiDialog-root) .bottom-navigation,
   box-sizing: border-box;
   padding: 16px;
   background: rgba(18, 20, 26, 0.96);
-  border: 1.5px solid rgba(212, 160, 23, 0.45);
+  border: 1.5px solid var(--color-border-input);
   border-radius: 16px;
   box-shadow:
-    0 24px 48px rgba(0, 0, 0, 0.85),
-    0 0 24px rgba(212, 160, 23, 0.2),
-    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    0 24px 48px var(--color-bg-overlay-dark),
+    0 0 24px var(--color-border-subtle),
+    inset 0 1px 1px var(--color-border-glass);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
   animation: monthDropdownIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -3140,7 +3140,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   justify-content: space-between;
   margin-bottom: 10px;
   padding: 0 4px 8px 4px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--color-border-divider);
 }
 
 .month-dropdown-title {
@@ -3154,10 +3154,10 @@ body:has(.MuiDialog-root) .bottom-navigation,
   font-size: 12px;
   font-weight: 600;
   color: rgba(212, 160, 23, 0.85);
-  background: rgba(212, 160, 23, 0.1);
+  background: var(--color-border-subtle);
   padding: 2px 8px;
   border-radius: 999px;
-  border: 1px solid rgba(212, 160, 23, 0.25);
+  border: 1px solid var(--color-glass-shadow);
 }
 
 .month-dropdown-list {
@@ -3189,7 +3189,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
 
 .month-dropdown-row:hover {
   background: rgba(212, 160, 23, 0.12);
-  border-color: rgba(212, 160, 23, 0.4);
+  border-color: var(--color-glass-glow-strong);
   color: #ffffff;
 }
 
@@ -3200,13 +3200,13 @@ body:has(.MuiDialog-root) .bottom-navigation,
 .month-dropdown-row.selected {
   background: linear-gradient(
     135deg,
-    rgba(212, 160, 23, 0.3),
+    var(--color-glass-glow),
     rgba(212, 160, 23, 0.12)
   );
-  border-color: #d4a017;
-  color: #d4a017;
+  border-color: var(--color-brand-primary);
+  color: var(--color-brand-primary);
   font-weight: 800;
-  box-shadow: 0 0 16px rgba(212, 160, 23, 0.25);
+  box-shadow: 0 0 16px var(--color-glass-shadow);
 }
 
 .month-dropdown-row-main {
@@ -3224,22 +3224,22 @@ body:has(.MuiDialog-root) .bottom-navigation,
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 999px;
-  background: rgba(212, 160, 23, 0.2);
-  color: #d4a017;
-  border: 1px solid rgba(212, 160, 23, 0.45);
+  background: var(--color-border-subtle);
+  color: var(--color-brand-primary);
+  border: 1px solid var(--color-border-input);
   text-transform: uppercase;
   letter-spacing: 0.4px;
 }
 
 .month-dropdown-check-icon {
-  color: #d4a017;
+  color: var(--color-brand-primary);
   font-size: 18px !important;
 }
 
 .month-dropdown-footer {
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--color-border-divider);
   display: flex;
   justify-content: center;
 }
@@ -3260,7 +3260,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
 }
 
 .month-dropdown-more-btn:hover {
-  color: #d4a017;
+  color: var(--color-brand-primary);
 }
 
 .month-dropdown-more-btn:active {
@@ -3277,12 +3277,12 @@ body:has(.MuiDialog-root) .bottom-navigation,
   border-radius: 12px;
   background: rgba(212, 160, 23, 0.12);
   border: 1.5px solid rgba(212, 160, 23, 0.5);
-  color: #d4a017;
+  color: var(--color-brand-primary);
   cursor: pointer;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.1),
+    inset 0 1px 2px var(--color-border-glass),
     0 4px 16px rgba(0, 0, 0, 0.35);
   transition: all 0.25s ease;
 }
@@ -3291,7 +3291,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   background: rgba(212, 160, 23, 0.24);
   border-color: rgba(212, 160, 23, 0.9);
   transform: translateY(-1px);
-  box-shadow: 0 0 20px rgba(212, 160, 23, 0.4);
+  box-shadow: 0 0 20px var(--color-glass-glow-strong);
 }
 
 /* Bottom Sheet / Modal Overlay */
@@ -3324,7 +3324,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   max-height: 88vh;
   overflow-y: auto;
   padding: 16px 16px max(24px, env(safe-area-inset-bottom, 24px));
-  border: 1px solid rgba(212, 160, 23, 1);
+  border: 1px solid var(--color-brand-primary);
   border-bottom: 0;
   border-radius: 24px 24px 0 0;
   background: #141418;
@@ -3392,7 +3392,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
 
 .filter-sheet-close-btn:hover {
   background: rgba(255, 59, 48, 0.2);
-  color: #ff455b;
+  color: var(--color-expense);
   border-color: rgba(255, 59, 48, 0.4);
 }
 
@@ -3403,7 +3403,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   background: rgba(0, 0, 0, 0.45);
   padding: 4px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--color-border-divider);
 }
 
 .filter-mode-tab {
@@ -3420,8 +3420,8 @@ body:has(.MuiDialog-root) .bottom-navigation,
 }
 
 .filter-mode-tab.active {
-  color: #d4a017;
-  background: rgba(212, 160, 23, 0.15);
+  color: var(--color-brand-primary);
+  background: var(--color-border-subtle);
   border: 1px solid rgba(212, 160, 23, 0.5);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
   font-weight: 800;
@@ -3472,7 +3472,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   padding: 12px 14px;
   border-radius: 12px;
   background: rgba(212, 160, 23, 0.08);
-  border: 1px solid rgba(212, 160, 23, 0.25);
+  border: 1px solid var(--color-glass-shadow);
 }
 
 .filter-preview-banner div {
@@ -3549,7 +3549,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
 }
 
 .filter-btn-reset:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-border-glass);
   border-color: rgba(255, 255, 255, 0.35);
 }
 
@@ -3558,18 +3558,18 @@ body:has(.MuiDialog-root) .bottom-navigation,
   min-height: 48px;
   border-radius: 12px;
   border: 0;
-  background: linear-gradient(90deg, #d4a017 0%, #f3c959 50%, #d4a017 100%);
-  color: #1a1000;
+  background: linear-gradient(90deg, var(--color-brand-primary) 0%, #f3c959 50%, var(--color-brand-primary) 100%);
+  color: var(--color-brand-dark-accent);
   font-family: inherit;
   font-size: 15px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(212, 160, 23, 0.3);
+  box-shadow: 0 4px 16px var(--color-glass-glow);
   transition: all 0.2s ease;
 }
 
 .filter-btn-apply:hover {
-  box-shadow: 0 6px 22px rgba(212, 160, 23, 0.45);
+  box-shadow: 0 6px 22px var(--color-border-input);
   transform: translateY(-1px);
 }
 
@@ -3582,7 +3582,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
 
   .history-filter-sheet {
     border-radius: 20px;
-    border-bottom: 1px solid rgba(212, 160, 23, 0.4);
+    border-bottom: 1px solid var(--color-glass-glow-strong);
     padding: 24px;
     max-width: 480px;
     animation: scaleUpFilterModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -3677,13 +3677,13 @@ body:has(.MuiDialog-root) .bottom-navigation,
 
 .history-category-pill .pill-count {
   margin-left: 7px;
-  color: #8e8e93;
+  color: var(--color-text-secondary);
   font-size: 13px;
   font-weight: 600;
 }
 
 .history-category-pill.active .pill-count {
-  color: #ffd88a;
+  color: var(--color-brand-highlight);
   opacity: 0.9;
 }
 
@@ -3700,7 +3700,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   height: 18px;
   padding: 0 4px;
   border-radius: 9px;
-  background: #d4a017;
+  background: var(--color-brand-primary);
   color: #141418;
   font-size: 11px;
   font-weight: 900;
@@ -3717,7 +3717,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   flex-direction: column;
   gap: 10px;
   padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--color-border-divider);
 }
 
 .filter-category-header {
@@ -3760,7 +3760,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   padding: 6px 12px;
   border-radius: 9px;
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--color-border-glass);
   color: rgba(255, 255, 255, 0.85);
   font-family: inherit;
   font-size: 13px;
@@ -3772,8 +3772,8 @@ body:has(.MuiDialog-root) .bottom-navigation,
 }
 
 .filter-category-chip:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(212, 160, 23, 0.4);
+  background: var(--color-border-divider);
+  border-color: var(--color-glass-glow-strong);
 }
 
 .filter-category-chip:active {
@@ -3782,22 +3782,22 @@ body:has(.MuiDialog-root) .bottom-navigation,
 
 .filter-category-chip.selected {
   background: rgba(212, 160, 23, 0.18);
-  border: 1.5px solid #d4a017;
-  color: #ffd88a;
+  border: 1.5px solid var(--color-brand-primary);
+  color: var(--color-brand-highlight);
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(212, 160, 23, 0.2);
+  box-shadow: 0 2px 8px var(--color-border-subtle);
 }
 
 .filter-category-chip .chip-check {
   font-size: 12px;
   font-weight: 900;
-  color: #d4a017;
+  color: var(--color-brand-primary);
 }
 
 .filter-category-chip .chip-count {
   font-size: 11px;
   font-weight: 700;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--color-border-divider);
   border: 1px solid rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.7);
   padding: 1px 6px;
@@ -3832,7 +3832,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #d4a017;
+  color: var(--color-brand-primary);
   margin: 0 0 10px 14px;
 }
 
@@ -3846,7 +3846,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   overflow: hidden;
   box-shadow:
     0 16px 40px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    inset 0 1px 0 var(--color-border-divider);
 }
 
 .ios-settings-row {
@@ -3890,14 +3890,14 @@ body:has(.MuiDialog-root) .bottom-navigation,
   border-radius: 10px;
   flex-shrink: 0;
   background: rgba(212, 160, 23, 0.12);
-  border: 1px solid rgba(212, 160, 23, 0.25);
-  color: #d4a017;
+  border: 1px solid var(--color-glass-shadow);
+  color: var(--color-brand-primary);
 }
 
 .ios-settings-icon-pill.danger {
   background: rgba(255, 69, 91, 0.12);
   border: 1px solid rgba(255, 69, 91, 0.3);
-  color: #ff455b;
+  color: var(--color-expense);
 }
 
 .ios-settings-row-label {
@@ -3935,7 +3935,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ffd88a, #d4a017 60%, #805200);
+  background: linear-gradient(135deg, var(--color-brand-highlight), var(--color-brand-primary) 60%, var(--color-brand-shadow));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3943,7 +3943,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   font-weight: 800;
   color: #111111;
   border: 1.5px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 4px 18px rgba(212, 160, 23, 0.4);
+  box-shadow: 0 4px 18px var(--color-glass-glow-strong);
   flex-shrink: 0;
 }
 
@@ -3978,15 +3978,15 @@ body:has(.MuiDialog-root) .bottom-navigation,
 }
 
 .ios-role-pill.admin {
-  background: rgba(212, 160, 23, 0.2);
-  color: #ffd88a;
-  border: 1px solid rgba(212, 160, 23, 0.45);
+  background: var(--color-border-subtle);
+  color: var(--color-brand-highlight);
+  border: 1px solid var(--color-border-input);
 }
 
 .ios-role-pill.member {
   background: rgba(212, 160, 23, 0.08);
   color: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(212, 160, 23, 0.25);
+  border: 1px solid var(--color-glass-shadow);
 }
 
 .ios-profile-badges {
@@ -4005,9 +4005,9 @@ body:has(.MuiDialog-root) .bottom-navigation,
   border-radius: 6px;
   font-size: 11px;
   font-weight: 700;
-  color: #2fd06f;
-  background: rgba(47, 208, 111, 0.1);
-  border: 1px solid rgba(47, 208, 111, 0.3);
+  color: var(--color-brand-primary);
+  background: var(--color-border-subtle);
+  border: 1px solid var(--color-border-input);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -4016,8 +4016,8 @@ body:has(.MuiDialog-root) .bottom-navigation,
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: #2fd06f;
-  box-shadow: 0 0 6px rgba(47, 208, 111, 0.8);
+  background-color: var(--color-brand-primary);
+  box-shadow: 0 0 6px var(--color-glass-shadow);
 }
 
 /* Other Saved Accounts Group */
@@ -4112,7 +4112,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
   border-radius: 999px;
   background: rgba(212, 160, 23, 0.12);
   border: 1px solid rgba(212, 160, 23, 0.35);
-  color: #ffd88a;
+  color: var(--color-brand-highlight);
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
@@ -4122,7 +4122,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
 .ios-switch-btn:hover,
 .ios-switch-btn:active {
   background: rgba(212, 160, 23, 0.24);
-  border-color: #ffd88a;
+  border-color: var(--color-brand-highlight);
   transform: translateY(-1px);
 }
 
@@ -4142,7 +4142,7 @@ body:has(.MuiDialog-root) .bottom-navigation,
 
 .ios-remove-account-btn:hover,
 .ios-remove-account-btn:active {
-  color: #ff455b;
+  color: var(--color-expense);
   background: rgba(255, 69, 91, 0.15);
 }
 
@@ -4169,10 +4169,10 @@ body:has(.MuiDialog-root) .bottom-navigation,
   position: absolute;
   cursor: pointer;
   inset: 0;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--color-border-glass);
   transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   border-radius: 30px;
-  border: 1px solid rgba(212, 160, 23, 0.25);
+  border: 1px solid var(--color-glass-shadow);
 }
 
 .ios-toggle-slider:before {
@@ -4189,9 +4189,9 @@ body:has(.MuiDialog-root) .bottom-navigation,
 }
 
 .ios-toggle-switch input:checked + .ios-toggle-slider {
-  background: linear-gradient(135deg, #ffd88a, #d4a017);
-  border-color: #ffd88a;
-  box-shadow: 0 0 16px rgba(212, 160, 23, 0.4);
+  background: linear-gradient(135deg, var(--color-brand-highlight), var(--color-brand-primary));
+  border-color: var(--color-brand-highlight);
+  box-shadow: 0 0 16px var(--color-glass-glow-strong);
 }
 
 .ios-toggle-switch input:checked + .ios-toggle-slider:before {
@@ -4280,13 +4280,13 @@ body:has(.MuiDialog-root) .bottom-navigation,
 }
 
 .ios-confirm-btn.danger {
-  background: #ff455b;
+  background: var(--color-expense);
   color: #ffffff;
   box-shadow: 0 4px 16px rgba(255, 69, 91, 0.35);
 }
 
 .ios-confirm-btn.cancel {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--color-border-divider);
   color: #ffffff;
 }
 

@@ -19,6 +19,7 @@ import {
 } from "@/libs/dataCache";
 import { decodeToken } from "@/libs/jwt";
 import { toast } from "react-toastify";
+import colors from "@/colors";
 
 const Pie = dynamic(
   () => import("../../components/Charts").then((mod) => mod.Pie),
@@ -312,18 +313,7 @@ export default function Analytics() {
     },
   };
 
-  const pieColors = [
-    "#ff3053",
-    "#ffad35",
-    "#1d64ff",
-    "#598cff",
-    "#ff6b81",
-    "#2ed573",
-    "#a6c4ff",
-    "#ff9f43",
-    "#10ac84",
-    "#5f27cd",
-  ];
+  const pieColors = colors.chart.pie;
 
   const pieData = {
     labels: Object.keys(categoryTotals),
@@ -343,7 +333,7 @@ export default function Analytics() {
       {
         label: "Amount (₹)",
         data: [totalIncome, totalExpense],
-        backgroundColor: ["#2ed573", "#ff3053"],
+        backgroundColor: [colors.semantic.income, colors.semantic.expenseChart],
         borderRadius: 8,
       },
     ],
@@ -355,11 +345,11 @@ export default function Analytics() {
     },
     scales: {
       y: {
-        ticks: { color: "rgba(255,255,255,0.7)" },
-        grid: { color: "rgba(255,255,255,0.1)" },
+        ticks: { color: colors.text.secondary },
+        grid: { color: colors.border.divider },
       },
       x: {
-        ticks: { color: "rgba(255,255,255,0.7)" },
+        ticks: { color: colors.text.secondary },
         grid: { display: false },
       },
     },
@@ -385,11 +375,11 @@ export default function Analytics() {
       {
         label: "Daily Spend (₹)",
         data: sortedDailyKeys.map((k) => dailySpends[k]),
-        borderColor: "#ff3053",
-        backgroundColor: "rgba(255, 48, 83, 0.2)",
+        borderColor: colors.semantic.expenseChart,
+        backgroundColor: colors.chart.expense.background,
         borderWidth: 2,
         pointRadius: 4,
-        pointBackgroundColor: "#ff3053",
+        pointBackgroundColor: colors.semantic.expenseChart,
         tension: 0.3,
       },
     ],
@@ -412,14 +402,14 @@ export default function Analytics() {
     boxSizing: "border-box",
     width: "100%",
     background:
-      "rgba(35, 35, 40, 0.4)" /* Slightly lighter base so it stands out from pitch black */,
+      colors.background.surfaceGlass /* Slightly lighter base so it stands out from pitch black */,
     backdropFilter: "blur(24px) saturate(150%)",
     WebkitBackdropFilter: "blur(24px) saturate(150%)",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
-    borderTop: "1px solid rgba(255, 255, 255, 0.2)",
-    borderLeft: "1px solid rgba(255, 255, 255, 0.15)",
+    border: `1px solid ${colors.border.divider}`,
+    borderTop: `1px solid ${colors.border.dividerBright}`,
+    borderLeft: `1px solid ${colors.border.glass}`,
     borderRadius: "16px",
-    boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.5)",
+    boxShadow: `0 8px 32px 0 ${colors.background.overlay}`,
   };
 
   return (
@@ -688,13 +678,13 @@ export default function Analytics() {
                   <p
                     style={{
                       fontSize: "14px",
-                      color: "rgba(255,255,255,0.5)",
+                      color: colors.text.secondary,
                       margin: "0 0 4px",
                     }}
                   >
                     Total Income
                   </p>
-                  <strong style={{ fontSize: "22px", color: "#2ed573" }}>
+                  <strong style={{ fontSize: "22px", color: colors.semantic.income }}>
                     ₹{totalIncome.toLocaleString("en-IN")}
                   </strong>
                 </div>
@@ -702,13 +692,13 @@ export default function Analytics() {
                   <p
                     style={{
                       fontSize: "14px",
-                      color: "rgba(255,255,255,0.5)",
+                      color: colors.text.secondary,
                       margin: "0 0 4px",
                     }}
                   >
                     Total Expense
                   </p>
-                  <strong style={{ fontSize: "22px", color: "#ff3053" }}>
+                  <strong style={{ fontSize: "22px", color: colors.semantic.expenseChart }}>
                     ₹{totalExpense.toLocaleString("en-IN")}
                   </strong>
                 </div>
@@ -717,20 +707,20 @@ export default function Analytics() {
                 style={{
                   width: "100%",
                   paddingTop: "16px",
-                  borderTop: "1px solid rgba(255,255,255,0.1)",
+                  borderTop: `1px solid ${colors.border.dividerBright}`,
                 }}
               >
                 <p
                   style={{
                     fontSize: "14px",
-                    color: "rgba(255,255,255,0.5)",
+                    color: colors.text.secondary,
                     margin: "0 0 4px",
                   }}
                 >
                   Daily Average Spend
                 </p>
                 <strong
-                  style={{ fontSize: "18px", color: "rgba(255,255,255,0.9)" }}
+                  style={{ fontSize: "18px", color: colors.text.primary }}
                 >
                   ₹
                   {dailyAvg.toLocaleString("en-IN", {
@@ -739,7 +729,7 @@ export default function Analytics() {
                   <span
                     style={{
                       fontSize: "14px",
-                      color: "rgba(255,255,255,0.4)",
+                      color: colors.text.placeholder,
                       fontWeight: "normal",
                     }}
                   >
@@ -919,8 +909,8 @@ export default function Analytics() {
                 display: "flex",
                 flexDirection: "column",
                 overflow: "hidden",
-                background: "#000000",
-                backgroundColor: "#000000",
+                background: colors.background.base,
+                backgroundColor: colors.background.base,
               }}
             >
               <div className="record-detail-head" style={{ flexShrink: 0 }}>
@@ -960,14 +950,14 @@ export default function Analytics() {
                         display: "flex",
                         justifyContent: "space-between",
                         padding: "12px 0",
-                        borderBottom: "1px solid rgba(255,255,255,0.05)",
+                        borderBottom: `1px solid ${colors.border.divider}`,
                       }}
                     >
                       <div style={{ display: "flex", flexDirection: "column" }}>
                         <span
                           style={{
                             fontSize: "15px",
-                            color: "rgba(255,255,255,0.9)",
+                            color: colors.text.primary,
                           }}
                         >
                           {dayjs(item.TimeStamp).format("DD MMM YYYY, hh:mm A")}
@@ -975,14 +965,14 @@ export default function Analytics() {
                         <span
                           style={{
                             fontSize: "13px",
-                            color: "rgba(255,255,255,0.4)",
+                            color: colors.text.placeholder,
                             marginTop: "2px",
                           }}
                         >
                           {item.Description || "No description"}
                         </span>
                       </div>
-                      <strong style={{ fontSize: "15px", color: "#ff3053" }}>
+                      <strong style={{ fontSize: "15px", color: colors.semantic.expenseChart }}>
                         ₹{Number(item.Amount || 0).toLocaleString("en-IN")}
                       </strong>
                     </div>

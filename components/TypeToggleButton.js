@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./TypeToggleButton.module.css";
+import colors from "@/colors";
 
 function IoniconsSwapHorizontal({
   size = 20,
@@ -66,13 +67,13 @@ export default function TypeToggleButton({
           ? value
           : "Expense";
 
-  const greenColor = propColors?.green || "#05B534";
-  const errorColor = propColors?.error || "#FC3728";
-  const activeColor = isIncome ? greenColor : errorColor;
+  const incomeColor = propColors?.income || propColors?.green || colors.semantic.income;
+  const errorColor = propColors?.error || colors.semantic.expense;
+  const activeColor = isIncome ? incomeColor : errorColor;
 
   const backgroundColor = isIncome
-    ? "rgba(5, 181, 52, 0.05)"
-    : "rgba(252, 55, 40, 0.05)";
+    ? colors.semantic.incomeSubtle
+    : colors.semantic.expenseSubtle;
 
   const [isPressed, setIsPressed] = useState(false);
   const pressTimeoutRef = useRef(null);
