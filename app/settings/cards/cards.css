@@ -1,0 +1,314 @@
+.cards-page-shell {
+  max-width: 560px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px 16px 120px;
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.cards-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.cards-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cards-back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border-glass);
+  background: var(--color-glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.2s ease;
+}
+
+.cards-back-btn:hover {
+  border-color: var(--color-border-input-hover);
+}
+
+.cards-back-btn:active {
+  transform: scale(0.95);
+}
+
+.cards-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.2px;
+}
+
+.cards-subtitle {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.cards-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 22px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.cards-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-divider-bright);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.cards-filter-chip:active {
+  transform: scale(0.96);
+}
+
+.cards-filter-chip.active {
+  background: var(--color-brand-primary);
+  border-color: var(--color-brand-primary);
+  color: var(--color-text-inverse);
+}
+
+.cards-filter-chip.active-credit {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+  color: #bae6fd;
+}
+
+.cards-filter-chip.active-debit {
+  background: rgba(5, 181, 52, 0.22);
+  border-color: #05b534;
+  color: #a7f3d0;
+}
+
+/* Apple Wallet Stacked Deck */
+.wallet-deck {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-bottom: 24px;
+}
+
+.wallet-deck-item {
+  width: 100%;
+  position: relative;
+  transition:
+    margin-top 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: margin-top, transform;
+}
+
+.wallet-deck-item.stacked-overlap {
+  margin-top: -158px;
+}
+
+.wallet-deck-item.stacked-after-expanded {
+  margin-top: 16px;
+}
+
+.wallet-deck-item.is-expanded {
+  transform: translateY(-2px);
+}
+
+.wallet-deck-item .card-actions-collapse {
+  overflow: hidden;
+  transition:
+    max-height 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.28s ease;
+}
+
+/* Empty State */
+.cards-empty-state {
+  margin-top: 28px;
+  padding: 40px 24px;
+  border-radius: 22px;
+  border: 1px dashed var(--color-border-input);
+  background: var(--color-glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.cards-empty-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: rgba(212, 160, 23, 0.14);
+  border: 1px solid var(--color-border-input);
+  color: var(--color-brand-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cards-empty-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.cards-empty-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+.cards-empty-btn {
+  margin-top: 6px;
+  padding: 11px 22px;
+  border-radius: 12px;
+  border: none;
+  background: var(--color-brand-primary);
+  color: var(--color-text-inverse);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Floating + Button */
+.cards-fab {
+  position: fixed;
+  right: 22px;
+  bottom: 94px;
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  border: 1.5px solid var(--color-brand-highlight);
+  background: linear-gradient(
+    135deg,
+    var(--color-brand-highlight) 0%,
+    var(--color-brand-primary) 55%,
+    var(--color-brand-shadow) 100%
+  );
+  color: var(--color-text-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.55),
+    0 0 18px var(--color-glass-glow);
+  cursor: pointer;
+  z-index: 40;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), filter 0.2s ease;
+}
+
+.cards-fab:hover {
+  filter: brightness(1.06);
+  transform: translateY(-2px);
+}
+
+.cards-fab:active {
+  transform: scale(0.94);
+}
+
+/* Delete Confirmation Modal */
+.cards-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg-overlay-dark);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.cards-modal-box {
+  width: 100%;
+  max-width: 360px;
+  border-radius: 20px;
+  border: 1px solid var(--color-border-divider-bright);
+  background: var(--color-bg-surface-modal);
+  padding: 22px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.65);
+}
+
+.cards-modal-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.cards-modal-body {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.cards-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cards-modal-cancel {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border-divider-bright);
+  background: transparent;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cards-modal-delete {
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: none;
+  background: var(--color-expense);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 400px) {
+  .wallet-deck-item.stacked-overlap {
+    margin-top: -152px;
+  }
+}

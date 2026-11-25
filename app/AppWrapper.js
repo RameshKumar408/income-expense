@@ -1,6 +1,7 @@
 "use client";
 
 import { LoaderProvider } from "./context/LoaderContext";
+import { CardsProvider } from "./context/CardsContext";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import "@/libs/setupToast";
@@ -86,8 +87,10 @@ export default function AppWrapper({ children }) {
 
   return (
     <LoaderProvider>
-      <div className="app-container">{children}</div>
-      <BottomNavBar />
+      <CardsProvider>
+        <div className="app-container">{children}</div>
+        <BottomNavBar />
+      </CardsProvider>
     </LoaderProvider>
   );
 }

@@ -219,6 +219,64 @@ export const colors = {
       background: palette.redSubtle20,
     },
   },
+
+  // Credit & Debit Cards Theme Tokens (Dark & Light Modes)
+  cards: {
+    credit: {
+      dark: {
+        gradientStart: "#0B131E",
+        gradientMid: "#162B42",
+        gradientEnd: "#1F4E6E",
+        gradient: "linear-gradient(135deg, #0B131E 0%, #162B42 52%, #1F4E6E 100%)",
+      },
+      light: {
+        gradientStart: "#132238",
+        gradientMid: "#1E3A5F",
+        gradientEnd: "#2B5B84",
+        gradient: "linear-gradient(135deg, #132238 0%, #1E3A5F 52%, #2B5B84 100%)",
+      },
+      border: "#38BDF8",
+      badgeText: "#BAE6FD",
+      badgeBg: "rgba(56, 189, 248, 0.2)",
+      chip: "#E2E8F0",
+      chipBorder: "rgba(226, 232, 240, 0.5)",
+      accent: "#38BDF8",
+      toggleBg: "rgba(56, 189, 248, 0.16)",
+    },
+    debit: {
+      dark: {
+        gradientStart: "#0b2b1d",
+        gradientMid: "#114b32",
+        gradientEnd: "#176b47",
+        gradient: "linear-gradient(135deg, #0b2b1d 0%, #114b32 52%, #176b47 100%)",
+      },
+      light: {
+        gradientStart: "#0f5132",
+        gradientMid: "#198754",
+        gradientEnd: "#20a065",
+        gradient: "linear-gradient(135deg, #0f5132 0%, #198754 52%, #20a065 100%)",
+      },
+      border: "#05b534",
+      badgeText: "#A7F3D0",
+      badgeBg: "rgba(5, 181, 52, 0.25)",
+      chip: "#f3d27a",
+      chipBorder: "rgba(243, 210, 122, 0.55)",
+      accent: "#05b534",
+      toggleBg: "rgba(5, 181, 52, 0.16)",
+    },
+    expiry: {
+      expired: {
+        text: "#fc3728",
+        bg: "rgba(252, 55, 40, 0.22)",
+        border: "rgba(252, 55, 40, 0.45)",
+      },
+      expiringSoon: {
+        text: "#ffa726",
+        bg: "rgba(255, 167, 38, 0.22)",
+        border: "rgba(255, 167, 38, 0.45)",
+      },
+    },
+  },
 };
 
 /**

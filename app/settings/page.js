@@ -14,6 +14,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
+import CreditCardOutlinedIcon from "@mui/icons-material/CreditCardOutlined";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -24,6 +25,7 @@ import {
 import { clearRangeDataCache } from "@/libs/dataCache";
 import GlowingBubbles from "@/components/GlowingBubbles";
 import { loadDynamicFont } from "@/app/AppWrapper";
+import { useCards } from "@/app/context/CardsContext";
 import colors from "@/colors";
 
 const FONT_OPTIONS = [
@@ -61,6 +63,7 @@ const FONT_OPTIONS = [
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { cards } = useCards();
 
   // Account State
   const [activeAccount, setActiveAccount] = useState("");
@@ -122,6 +125,7 @@ export default function SettingsPage() {
   useEffect(() => {
     router.prefetch("/createDetail");
     router.prefetch("/viewDetails");
+    router.prefetch("/settings/cards");
     if (role === "admin") {
       router.prefetch("/authorize");
     }
@@ -511,7 +515,9 @@ export default function SettingsPage() {
                       gap: "6px",
                       fontSize: "13px",
                       fontWeight: 700,
-                      color: isOnline ? colors.brand.highlight : colors.semantic.expense,
+                      color: isOnline
+                        ? colors.brand.highlight
+                        : colors.semantic.expense,
                     }}
                   >
                     <span
@@ -519,7 +525,9 @@ export default function SettingsPage() {
                         width: "8px",
                         height: "8px",
                         borderRadius: "50%",
-                        backgroundColor: isOnline ? colors.brand.primary : colors.semantic.expense,
+                        backgroundColor: isOnline
+                          ? colors.brand.primary
+                          : colors.semantic.expense,
                         boxShadow: isOnline
                           ? `0 0 8px ${colors.border.inputHover}`
                           : `0 0 8px ${colors.semantic.expenseSubtle}`,
@@ -623,6 +631,41 @@ export default function SettingsPage() {
             </div>
           </section>
 
+          {/* Section 3.5: Wallet & Cards */}
+          <section
+            className="ios-settings-section"
+            aria-label="Wallet and Cards"
+          >
+            <div className="ios-settings-section-title">Wallet &amp; Cards</div>
+            <div className="ios-settings-card">
+              <div
+                className="ios-settings-row clickable"
+                onClick={() => router.push("/settings/cards")}
+              >
+                <div className="ios-settings-row-left">
+                  <div className="ios-settings-icon-pill">
+                    <CreditCardOutlinedIcon sx={{ fontSize: 18 }} />
+                  </div>
+                  <div>
+                    <div className="ios-settings-row-label">
+                      Credit &amp; Debit Cards
+                    </div>
+                    <div className="ios-settings-row-subtext">
+                      {cards.length === 0
+                        ? "Save cards locally on this device"
+                        : `${cards.length} ${cards.length === 1 ? "card" : "cards"} saved locally`}
+                    </div>
+                  </div>
+                </div>
+                <div className="ios-settings-row-right">
+                  <ChevronRightIcon
+                    sx={{ fontSize: 20, color: colors.border.inputHover }}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* Section 4: Security / Logout */}
           <section
             className="ios-settings-section"
@@ -672,7 +715,9 @@ export default function SettingsPage() {
               <PhoneIphoneIcon
                 sx={{
                   fontSize: 15,
-                  color: isStandalone ? colors.brand.highlight : colors.text.secondary,
+                  color: isStandalone
+                    ? colors.brand.highlight
+                    : colors.text.secondary,
                 }}
               />
               <span>
@@ -702,7 +747,7 @@ export default function SettingsPage() {
                 }
               }}
             >
-              Expenses Tracker • Version 1.119
+              Expenses Tracker • Version 1.120
             </div>
           </div>
         </div>
@@ -719,7 +764,9 @@ export default function SettingsPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="ios-confirm-icon-wrap">
-              <LogoutIcon sx={{ fontSize: 28, color: colors.semantic.expense }} />
+              <LogoutIcon
+                sx={{ fontSize: 28, color: colors.semantic.expense }}
+              />
             </div>
             <h3>{accounts.length > 1 ? "Remove Account?" : "Log Out?"}</h3>
             <p>
