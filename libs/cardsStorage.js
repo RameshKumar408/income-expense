@@ -29,8 +29,8 @@ export function detectCardNetwork(cardNumber = "") {
     return "Visa";
   }
 
-  // RuPay: common BIN ranges (60, 6521, 6522, 81, 82, 508)
-  if (/^(60|6521|6522|81|82|508)/.test(digits)) {
+  // RuPay: common BIN ranges (60, 652x, 81, 82, 508)
+  if (/^(60|652\d|81|82|508)/.test(digits)) {
     return "RuPay";
   }
 
@@ -189,3 +189,113 @@ export function buildCardShareText(card) {
     `Expiry: ${card.expiry}`,
   ].join("\n");
 }
+
+/**
+ * Format backup filename matching mobile app: Cards_Backup_DD-MM-YYYY_HHMMSS.json
+ */
+export function getCardsBackupFilename(date = new Date()) {
+  const pad = (n) => String(n).padStart(2, "0");
+  const dd = pad(date.getDate());
+  const mm = pad(date.getMonth() + 1);
+  const yyyy = date.getFullYear();
+  const hh = pad(date.getHours());
+  const min = pad(date.getMinutes());
+  const ss = pad(date.getSeconds());
+  return `Cards_Backup_${dd}-${mm}-${yyyy}_${hh}${min}${ss}.json`;
+}
+
+/**
+ * Build backup JSON payload matching mobile app schema (version: 1).
+ */
+export function buildCardsBackupPayload(cards) {
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    cards: Array.isArray(cards) ? cards : [],
+  };
+}
+
+/**
+ * Trigger browser download of cards backup JSON file.
+ */
+export function downloadCardsBackup(cards) {
+  if (typeof window === "undefined") return { fileName: "" };
+  const fileName = getCardsBackupFilename();
+  const payload = buildCardsBackupPayload(cards);
+  const json = JSON.stringify(payload, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  return { fileName };
+}
+
+/**
+ * Parse and normalize a cards backup JSON string.
+ * Supports { version, exportedAt, cards: [...] } or a raw array of cards.
+ * Returns { cards, exportedAt } or throws an Error with a clear message.
+ */
+export function parseCardsBackupJson(rawText) {
+  let parsed;
+  try {
+    parsed = JSON.parse(rawText);
+  } catch {
+    throw new Error("Invalid JSON file");
+  }
+
+  const rawCards = Array.isArray(parsed)
+    ? parsed
+    : Array.isArray(parsed?.cards)
+      ? parsed.cards
+      : null;
+
+  if (!rawCards) {
+    throw new Error("Invalid backup format: missing cards array");
+  }
+
+  const normalized = [];
+  for (let i = 0; i < rawCards.length; i++) {
+    const item = rawCards[i];
+    if (!item || typeof item !== "object") continue;
+
+    const cleanNumber = sanitizeCardNumber(item.cardNumber);
+    const bankName = String(item.bankName || "").trim();
+    const cardHolderName = String(item.cardHolderName || "").trim();
+    const expiry = String(item.expiry || "").trim();
+    const cvv = String(item.cvv || "").replace(/\D/g, "").slice(0, 4);
+
+    if (!bankName || cleanNumber.length < 13 || !expiry) {
+      continue;
+    }
+
+    normalized.push({
+      id:
+        typeof item.id === "string" && item.id.trim()
+          ? item.id.trim()
+          : `card_${Date.now()}_${i}`,
+      cardType: item.cardType === "debit" ? "debit" : "credit",
+      bankName,
+      cardHolderName: cardHolderName || "CARDHOLDER",
+      cardNumber: cleanNumber,
+      expiry,
+      cvv: cvv || "000",
+      network: item.network || detectCardNetwork(cleanNumber),
+      createdAt: item.createdAt ?? Date.now(),
+    });
+  }
+
+  if (normalized.length === 0) {
+    throw new Error("No valid cards found in backup file");
+  }
+
+  return {
+    cards: normalized,
+    exportedAt: parsed?.exportedAt || null,
+  };
+}
+

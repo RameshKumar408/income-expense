@@ -105,6 +105,37 @@ function useCardsStore(enabled = true) {
     [cards],
   );
 
+  const restoreCards = useCallback(
+    (incomingCards, mode = "merge") => {
+      if (!Array.isArray(incomingCards)) return { added: 0, total: cards.length };
+      if (mode === "replace") {
+        persist(incomingCards);
+        return { added: incomingCards.length, total: incomingCards.length };
+      }
+
+      let addedCount = 0;
+      persist((prev) => {
+        const existingIds = new Set(prev.map((c) => c.id));
+        const existingFingerprints = new Set(
+          prev.map((c) => `${c.cardNumber}_${c.expiry}`),
+        );
+        const toAdd = incomingCards.filter((c) => {
+          const fp = `${c.cardNumber}_${c.expiry}`;
+          if (existingIds.has(c.id) || existingFingerprints.has(fp)) {
+            return false;
+          }
+          existingIds.add(c.id);
+          existingFingerprints.add(fp);
+          return true;
+        });
+        addedCount = toAdd.length;
+        return [...toAdd, ...prev];
+      });
+      return { added: addedCount, total: cards.length + addedCount };
+    },
+    [persist, cards.length],
+  );
+
   return {
     cards,
     isLoaded,
@@ -112,6 +143,7 @@ function useCardsStore(enabled = true) {
     updateCard,
     deleteCard,
     getCardById,
+    restoreCards,
   };
 }
 
